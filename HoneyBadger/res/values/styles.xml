@@ -1,0 +1,21 @@
+<resources>
+    
+<!-- 
+  _________________________________________________________________________________________________________________________________________________________
+ * Author(s): Alex Harris
+ * Version: 1.1
+ * Date of last modification: 4 MAR 2012
+ * Source Info:    
+ |Information regarding the creation of a splash screen was obtained and adapted from the following resource created by Igor Kushnarev:
+ |http://www.codeproject.com/Articles/113831/An-Advanced-Splash-Screen-for-Android-App
+ |_________________________________________________________________________________________________________________________________________________________
+ -->   
+    
+    <!-- http://www.codeproject.com/Articles/113831/An-Advanced-Splash-Screen-for-Android-App -->
+    <style name="Animations" parent="@android:Animation" />
+    <style name="Animations.SplashScreen">
+        <item name="android:windowEnterAnimation">@anim/appear</item>
+        <item name="android:windowExitAnimation">@anim/disappear</item> 
+    </style>
+
+</resources> 

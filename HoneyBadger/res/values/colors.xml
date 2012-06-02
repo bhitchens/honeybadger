@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  _________________________________________________________________________________________________________________________________________________________
+ * Author(s): Alex Harris
+ * Version: 1.1
+ * Date of last modification: 4 MAR 2012
+ * Source Info:
+ |Information regarding the creation of the buttons used in the main view was obtained from user Sreeram at stackoverflow.com in the following thread:
+ |http://stackoverflow.com/questions/3738886/android-button-with-different-background-colors
+  _________________________________________________________________________________________________________________________________________________________
+  -->
+  
+<resources>
+   <color name="yellow1">#F9E60E</color>
+   <color name="yellow2">#F9F89D</color>
+   <color name="orange4">#F7BE45</color>
+   <color name="orange5">#F7D896</color>
+   <color name="blue2">#19FCDA</color>
+   <color name="blue25">#D9F7F2</color>
+   <color name="grey05">#ACA899</color>
+   <color name="white1">#FFFFFF</color>
+   <color name="white2">#DDDDDD</color>
+   <color name="darkblue">#0000A0</color>
+   <color name="lightblue">#0000FF</color>
+   <color name="mage">#003333</color>
+   
+</resources>

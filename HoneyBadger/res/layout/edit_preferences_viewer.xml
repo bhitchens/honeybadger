@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+ * Author(s): Alex Harris
+ * Version: 1.1
+ * Date of last modification: 4 MAR 2012
+ *   
+ -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/redback">
+
+    <TextView
+        android:id="@+id/addRulelabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"  
+        android:text="Set Preferences:"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+     <TextView
+        android:id="@+id/masterRule"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" 
+        android:text="Master Rule:"/>
+     <TextView
+        android:id="@+id/notelabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="*Note: This rule determines whether all network traffic will be initially blocked or allowed."/>
+     
+         
+    <RadioGroup
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+      >
+      <RadioButton android:id="@+id/radioBlock"
+          android:layout_gravity="center"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Block All" />
+      <RadioButton android:id="@+id/radioAllow"
+          android:layout_gravity="center"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Allow All" />
+    </RadioGroup>
+    
+     
+     <TextView
+        android:id="@+id/logRule"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" 
+        android:text="Logging Rule"/>
+     
+     <RadioGroup
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      >
+      <RadioButton android:id="@+id/radioLogOn"
+          android:layout_gravity="center"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Enable Logging" />
+      <RadioButton android:id="@+id/radioLogOff"
+          android:layout_gravity="center"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Disable Logging" />
+    </RadioGroup>     
+   
+    <CheckBox android:id="@+id/checkAutoUpdate"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Enable Auto Update" />
+
+</LinearLayout>

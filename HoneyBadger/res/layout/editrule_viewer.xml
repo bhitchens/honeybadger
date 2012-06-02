@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+ _________________________________________________________________________________________________________________________________________________________
+ * Author(s): Alex Harris
+ * Version: 1.1
+ * Date of last modification: 4 MAR 2012
+ * Source Info:    
+ |The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
+ |located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
+ |Background image obtained from: http://www.slashphone.com/wallpaper/detail.php?photo=33152
+ _________________________________________________________________________________________________________________________________________________________
+ -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/redback">
+
+    <TextView
+        android:id="@+id/addRulelabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"  
+        android:text="Add Rule:"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+     <TextView
+        android:id="@+id/enterUrllabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" 
+        android:text="Enter URL:"/>
+     <TextView
+        android:id="@+id/notelabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="*Note: This rule will apply to IP addresses currently associated with the designated URL.  If the site obtains new IP addresses the rule will not apply to them."/>
+     
+     <EditText
+        android:id="@+id/urlEntry"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"         
+        android:imeOptions="actionDone" 
+        android:background="@android:drawable/editbox_background" />
+        <!-- android:layout_below="@id/label"/> -->
+     
+     <TextView
+        android:id="@+id/orlabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"  
+        android:text="OR"/>
+     
+     <TextView
+        android:id="@+id/enterIPlabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold" 
+        android:text="Enter IP Address:"/>
+     
+      <EditText
+         android:id="@+id/ipEntry"
+         android:inputType="number"
+         android:digits="0,1,2,3,4,5,6,7,8,9,."
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:imeOptions="actionDone"
+         android:background="@android:drawable/editbox_background" >
+
+     </EditText>
+  
+    <CheckBox android:id="@+id/checkIn"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Apply to Incoming Traffic" />
+    
+    <CheckBox android:id="@+id/checkOut"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="Apply to Outgoing Traffic" />
+
+     <Button
+         android:id="@+id/buttonCommit"
+         android:layout_gravity="center"
+         android:layout_width="200dp"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="10dip"
+         android:textColor="@android:color/white"
+         android:background="@drawable/cust_buttons"
+         android:text="Commit" />
+         
+     <Button
+         android:id="@+id/buttonDownload"
+         android:layout_gravity="center"
+         android:layout_width="200dp"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="10dip"
+         android:textColor="@android:color/white"
+         android:background="@drawable/cust_buttons"
+         android:text="Download IPs" />
+
+</LinearLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ _________________________________________________________________________________________________________________________________________________________
+ * Author(s): Alex Harris
+ * Version: 1.1
+ * Date of last modification: 4 MAR 2012
+ * Source Info:    
+ --> 
+ 
+ 
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content" 
+  android:id="@+id/TheSplashLayout"
+  android:layout_gravity="center"
+  >
+    <ImageView 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:id="@+id/SplashImageView"
+        android:layout_gravity="center"        
+        android:src="@drawable/finalbadgers"     
+        >
+    </ImageView>
+</LinearLayout>
+ 

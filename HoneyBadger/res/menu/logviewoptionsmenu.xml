@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+ _________________________________________________________________________________________________________________________________________________________
+ * Author(s): Brad Hitchens
+ * Version: 1.1
+ * Date of last modification: 4 MAR 2012
+ * Source Info:    
+ --> 
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/refresh"
+          android:icon="@drawable/ic_menu_refresh"
+          android:title="Refresh" />
+    <item android:id="@+id/clearLog"
+          android:icon="@drawable/ic_menu_clear_playlist"
+          android:title="Clear Log" />
+    <item android:id="@+id/addRule"
+          android:icon="@drawable/ic_menu_add"
+          android:title="Add Rule" />
+    <item android:id="@+id/viewRules"
+          android:icon="@drawable/ic_menu_info_details"
+          android:title="View Rules" /> 
+    <item android:id="@+id/settingsFromLog"
+          android:icon="@drawable/ic_menu_manage"
+          android:title="Settings" />
+</menu>

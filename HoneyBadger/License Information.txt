@@ -1,0 +1,4 @@
+This product (with the exception(s) listed below) was authored by U.S. government employees, on government time and as part of their job, and is therefore in the public domain.
+
+Exception(s):
+	1. The "Scripts.java" class is a slight modification of code from "gscript-android", which is hosted here: http://code.google.com/p/gscript-android/, and released under the Apached License 2.0.
