@@ -101,10 +101,6 @@ public class ViewLogActivity extends ListActivity
 				DATA.add("Blocked recieving of " + c.getString(11) + " packet(s) from " + c.getString(2)
 						+ " via " + c.getString(6) + " protocol on port " + c.getString(7));
 			}
-			/*else
-			{
-				DATA.add(c.getString(1) + " " + c.getString(2) + c.getString(0));
-			}*/
 		}
 	}
 
