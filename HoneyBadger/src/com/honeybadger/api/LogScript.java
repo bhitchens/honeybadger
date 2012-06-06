@@ -66,10 +66,7 @@ public class LogScript extends Scripts
 
 		scriptOutput += line + "\n";
 		tokens = line.split(delims);
-		inout = line;
-		//inout = tokens[2];
-		//inoutToken = inout.split(inoutDelim);
-		//inout = inoutToken[0];
+		inout = tokens[3];
 
 		for (int i = 3; i < tokens.length; i++)
 		{

@@ -78,7 +78,7 @@ public class Blocker extends Service
 
 				if (c.getString(2).contains("out"))
 				{
-					inOut = "OUTPUT";
+					inOut = "OUT";
 					if (c.getString(4).contains("domain"))
 					{
 						// create chain with name of domain name
@@ -89,22 +89,22 @@ public class Blocker extends Service
 								// create rule(s) for domain in chain
 								+ this.getDir("bin", 0) + "/iptables -A " + c.getString(0) + inOut
 								+ " -d " + c.getString(0)
-								+ " -m state --state NEW,RELATED,ESTABLISHED -j " + drop + "\n"
+								+ " -m state --state NEW,RELATED,ESTABLISHED -j " + drop + inOut + "\n"
 								// create rule to jump to the chain
-								+ this.getDir("bin", 0) + "/iptables -A " + inOut + " -j "
+								+ this.getDir("bin", 0) + "/iptables -I " + inOut + "PUT" + " -j "
 								+ c.getString(0) + inOut + "\n";
 
 					}
 					else
 					{
-						rule += this.getDir("bin", 0) + "/iptables -A " + inOut + " -d "
+						rule += this.getDir("bin", 0) + "/iptables -I " + inOut + "PUT" + " -d "
 								+ c.getString(0) + " -m state --state NEW,RELATED,ESTABLISHED -j "
-								+ drop;
+								+ drop + inOut + "\n";
 					}
 				}
 				else
 				{
-					inOut = "INPUT";
+					inOut = "IN";
 					if (c.getString(4).contains("domain"))
 					{
 						// create chain with name of domain name + direction
@@ -113,15 +113,15 @@ public class Blocker extends Service
 								+ "\n"
 								// create rule(s) for domain in chain
 								+ this.getDir("bin", 0) + "/iptables -A " + c.getString(0) + inOut
-								+ " -s " + c.getString(0) + " -j " + drop + "\n"
+								+ " -s " + c.getString(0) + " -j " + drop + inOut+ "\n"
 								// create rule to jump to the chain
-								+ this.getDir("bin", 0) + "/iptables -A " + inOut + " -j "
+								+ this.getDir("bin", 0) + "/iptables -I " + inOut + "PUT" + " -j "
 								+ c.getString(0) + inOut + "\n";
 					}
 					else
 					{
-						rule += this.getDir("bin", 0) + "/iptables -A " + inOut + " -s "
-								+ c.getString(0) + " -j " + drop;
+						rule += this.getDir("bin", 0) + "/iptables -I " + inOut + "PUT" + " -s "
+								+ c.getString(0) + " -j " + drop + inOut + "\n";
 					}
 				}
 

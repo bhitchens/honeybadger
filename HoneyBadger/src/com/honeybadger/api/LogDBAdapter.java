@@ -120,11 +120,9 @@ public class LogDBAdapter
 	{
 		// attempts to query table entry with same data (source, destination,
 		// protocol, etc)
-
-		Cursor c = mDb.query(DATABASE_TABLE, null, "INOUT='" + inOut + "' AND SRC='" + src + "' AND DST='" + dst
-				+ "' AND TOS='" + tos + "' AND PREC='" + prec + "' AND ID='" + id + "' AND Proto='"
-				+ proto + "' AND SPT='" + spt + "' AND DPT='" + dpt + "' AND UID='" + uid
-				+ "' AND GID='" + gid + "'", null, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, null, "INOUT='" + inOut + "' AND SRC='" + src
+				+ "' AND DST='" + dst + "' AND Proto='" + proto + "' AND SPT='" + spt
+				+ "' AND DPT='" + dpt + "'", null, null, null, null);
 
 		// if such an entry does not exist, c will be null
 		if (c == null || c.getCount() == 0)
