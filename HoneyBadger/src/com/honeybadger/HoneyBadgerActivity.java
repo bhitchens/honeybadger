@@ -84,8 +84,7 @@ public class HoneyBadgerActivity extends Activity
 		{
 			public void onClick(View view)
 			{
-				Intent myIntent = new Intent(view.getContext(),
-						ViewLogActivity.class);
+				Intent myIntent = new Intent(view.getContext(), ViewLogActivity.class);
 				startActivity(myIntent);
 			}
 		});
@@ -99,8 +98,7 @@ public class HoneyBadgerActivity extends Activity
 		{
 			public void onClick(View view)
 			{
-				Intent ruleIntent = new Intent(view.getContext(),
-						ViewRulesActivity.class);
+				Intent ruleIntent = new Intent(view.getContext(), ViewRulesActivity.class);
 				startActivity(ruleIntent);
 			}
 		});
@@ -114,8 +112,7 @@ public class HoneyBadgerActivity extends Activity
 		{
 			public void onClick(View view)
 			{
-				Intent myIntent = new Intent(view.getContext(),
-						EditRulesActivity.class);
+				Intent myIntent = new Intent(view.getContext(), EditRulesActivity.class);
 				startActivity(myIntent);
 			}
 		});
@@ -145,25 +142,50 @@ public class HoneyBadgerActivity extends Activity
 	private String initialString(String input)
 	{
 		return input
-				+ this.getDir("bin", 0)
-				+ "/iptables -D OUTPUT -m limit --limit 1/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - OUTPUT]\" --log-uid"
-				+ "\n"
-				+ this.getDir("bin", 0)
-				+ "/iptables -D INPUT -m limit --limit 1/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - INPUT]\" --log-uid"
-				+ "\n" + this.getDir("bin", 0)
-				+ "/iptables -D OUTPUT -p udp --dport 53 -j ACCEPT" + "\n"
-				+ this.getDir("bin", 0)
-				+ "/iptables -D INPUT -p udp --sport 53 -j ACCEPT" + "\n"
-				+ this.getDir("bin", 0)
-				+ "/iptables -A OUTPUT -p udp --dport 53 -j ACCEPT" + "\n"
-				+ this.getDir("bin", 0)
-				+ "/iptables -A INPUT -p udp --sport 53 -j ACCEPT" + "\n"
+				+ "\n" + this.getDir("bin", 0) + "/iptables -D OUTPUT -p udp --dport 53 -j ACCEPT"
+				+ "\n" + this.getDir("bin", 0) + "/iptables -D INPUT -p udp --sport 53 -j ACCEPT"
+				+ "\n" + this.getDir("bin", 0) + "/iptables -I OUTPUT -p udp --dport 53 -j ACCEPT"
+				+ "\n" + this.getDir("bin", 0) + "/iptables -I INPUT -p udp --sport 53 -j ACCEPT"
+				+ "\n" 
+				
 				+ this.getDir("bin", 0) + "/iptables -N FETCH" + "\n"
-				+ this.getDir("bin", 0) + "/iptables -P FETCH DROP" + "\n"
+				+ this.getDir("bin", 0)	+ "/iptables -N ACCEPTIN" + "\n" 
+				+ this.getDir("bin", 0)	+ "/iptables -N ACCEPTOUT" + "\n" 
+				+ this.getDir("bin", 0) + "/iptables -N DROPIN" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -N DROPOUT" + "\n"
+				
 				+ this.getDir("bin", 0) + "/iptables -D INPUT -j FETCH" + "\n"
 				+ this.getDir("bin", 0) + "/iptables -D OUTPUT -j FETCH" + "\n"
-				+ this.getDir("bin", 0) + "/iptables -A OUTPUT -j FETCH" + "\n"
-				+ this.getDir("bin", 0) + "/iptables -A INPUT -j FETCH" + "\n";
+				+ this.getDir("bin", 0) + "/iptables -I OUTPUT -j FETCH" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -I INPUT -j FETCH" + "\n"
+
+				+ this.getDir("bin", 0) + "/iptables -D ACCEPTIN -j ACCEPT" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -D ACCEPTOUT -j ACCEPT" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -A ACCEPTOUT -j ACCEPT" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -A ACCEPTIN -j ACCEPT" + "\n"
+
+				+ this.getDir("bin", 0) + "/iptables -D DROPIN -j DROP" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -D DROPOUT -j DROP" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -A DROPOUT -j DROP" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -A DROPIN -j DROP" + "\n"
+				
+				+ this.getDir("bin", 0)
+				+ "/iptables -D ACCEPTOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTOUT]\" --log-uid"
+				+ "\n"
+				+ this.getDir("bin", 0)
+				+ "/iptables -D ACCEPTIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTIN]\" --log-uid"
+				+ "\n"
+				+ this.getDir("bin", 0)
+				+ "/iptables -D DROPOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPOUT]\" --log-uid"
+				+ "\n"
+				+ this.getDir("bin", 0)
+				+ "/iptables -D DROPIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPIN]\" --log-uid"
+				+ "\n"
+				
+				+ this.getDir("bin", 0) + "/iptables -D INPUT -j ACCEPTIN" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -D INPUT -j DROPIN" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -D OUTPUT -j ACCEPTOUT" + "\n"
+				+ this.getDir("bin", 0) + "/iptables -D OUTPUT -j DROPOUT" + "\n";				
 	}
 
 	/**
@@ -181,12 +203,18 @@ public class HoneyBadgerActivity extends Activity
 		if (settings.getBoolean("log", true))
 		{
 			return input
-					+ this.getDir("bin", 0)
-					+ "/iptables -A OUTPUT -m limit --limit 1/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - OUTPUT]\" --log-uid"
-					+ "\n"
-					+ this.getDir("bin", 0)
-					+ "/iptables -A INPUT -m limit --limit 1/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - INPUT]\" --log-uid"
-					+ "\n";
+			+ this.getDir("bin", 0)
+			+ "/iptables -I ACCEPTOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTOUT]\" --log-uid"
+			+ "\n"
+			+ this.getDir("bin", 0)
+			+ "/iptables -I ACCEPTIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTIN]\" --log-uid"
+			+ "\n"
+			+ this.getDir("bin", 0)
+			+ "/iptables -I DROPOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPOUT]\" --log-uid"
+			+ "\n"
+			+ this.getDir("bin", 0)
+			+ "/iptables -I DROPIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPIN]\" --log-uid"
+			+ "\n";
 		}
 		else
 		{
@@ -208,15 +236,17 @@ public class HoneyBadgerActivity extends Activity
 	{
 		if (settings.getBoolean("block", false))
 		{
-			return input + this.getDir("bin", 0) + "/iptables -P INPUT DROP"
-					+ "\n" + this.getDir("bin", 0) + "/iptables -P OUTPUT DROP"
-					+ "\n";
+			return input + this.getDir("bin", 0) + "/iptables -P INPUT DROP" + "\n"
+					+ this.getDir("bin", 0) + "/iptables -P OUTPUT DROP" + "\n"
+					+ this.getDir("bin", 0) + "/iptables -A INPUT -j DROPIN" + "\n"
+					+ this.getDir("bin", 0) + "/iptables -A OUTPUT -j DROPOUT" + "\n";
 		}
 		else
 		{
-			return input + this.getDir("bin", 0) + "/iptables -P INPUT ACCEPT"
-					+ "\n" + this.getDir("bin", 0)
-					+ "/iptables -P OUTPUT ACCEPT" + "\n";
+			return input + this.getDir("bin", 0) + "/iptables -P INPUT ACCEPT" + "\n"
+					+ this.getDir("bin", 0) + "/iptables -P OUTPUT ACCEPT" + "\n"
+					+ this.getDir("bin", 0) + "/iptables -A INPUT -j ACCEPTIN" + "\n"
+					+ this.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
 		}
 	}
 
@@ -232,15 +262,14 @@ public class HoneyBadgerActivity extends Activity
 		Notification notification = new Notification(R.drawable.icon,
 				"IPTables has been installed.", System.currentTimeMillis());
 
-		PendingIntent contentI = PendingIntent.getActivity(this, 1, new Intent(
-				this, HoneyBadgerNotify.class), 0);
+		PendingIntent contentI = PendingIntent.getActivity(this, 1, new Intent(this,
+				HoneyBadgerNotify.class), 0);
 
-		notification.setLatestEventInfo(this, "HoneyBadger",
-				"IPTables has been installed.", contentI);
+		notification.setLatestEventInfo(this, "HoneyBadger", "IPTables has been installed.",
+				contentI);
 
 		manager.notify(2, notification);
 	}
-	
 
 	/**
 	 * Launches an options menu when the device options button is selected. The
@@ -269,8 +298,7 @@ public class HoneyBadgerActivity extends Activity
 		switch (item.getItemId())
 		{
 			case R.id.settings:
-				Intent prefIntent = new Intent(this,
-						EditPreferencesActivity.class);
+				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
 				startActivity(prefIntent);
 				return true;
 			case R.id.clearLog:
