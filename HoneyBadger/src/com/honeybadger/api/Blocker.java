@@ -1,17 +1,20 @@
+package com.honeybadger.api;
+
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Brad Hitchens
- * Version: 1.1
+ * Version: 1.2
  * Date of last modification: 4 MAR 2012
  * Source Info: n/a
-  --------------------------------------------------------------------------------------------------------------------------------
+ * 
+ * Edit 1.2: Checks for "reload" extra, and applies all rules if this value is true.
+ *--------------------------------------------------------------------------------------------------------------------------------
  */
-
-package com.honeybadger.api;
 
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 
 public class Blocker extends Service
@@ -49,7 +52,8 @@ public class Blocker extends Service
 	 */
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
-
+		Bundle extras = intent.getExtras();
+		
 		// Opens rules database and creates cursor to iterate through all
 		// entries
 		ruleAdapter.open();
@@ -63,7 +67,7 @@ public class Blocker extends Service
 			// If rule has not yet been applied to IPTables, add it to the
 			// script string. Generate its components based on the values in the
 			// cells.
-			if (c.getString(5).contains("false"))
+			if (c.getString(5).contains("false") | extras.getString("reload").contains("true"))
 			{
 				String drop;
 				String inOut;

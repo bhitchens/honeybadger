@@ -2,14 +2,16 @@ package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Alex Harris, Brad Hitchens, Todd Berry Ann
- * Version: 1.1
+ * Version: 1.2
  * Date of last modification: 09 April 2012
  * Source Info:    
- |The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
- |located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
- |Information regarding the creation of an Alert Dialog was obtained and adapted from the following two resources:
- |http://stackoverflow.com/questions/4850493/open-a-dialog-when-i-click-a-button
- |http://developer.android.com/guide/topics/ui/dialogs.html#AlertDialog
+ *The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
+ *located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
+ *Information regarding the creation of an Alert Dialog was obtained and adapted from the following two resources:
+ *http://stackoverflow.com/questions/4850493/open-a-dialog-when-i-click-a-button
+ *http://developer.android.com/guide/topics/ui/dialogs.html#AlertDialog
+ *
+ * Edit 1.2: Add entry to shared preferences when "Download IPs" button is selected.
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -59,6 +61,7 @@ public class EditRulesActivity extends Activity
 	EditText urlEdit;
 
 	SharedPreferences settings;
+	SharedPreferences.Editor editor;
 
 	RulesDBAdapter rulesDB = new RulesDBAdapter(this);
 
@@ -152,14 +155,17 @@ public class EditRulesActivity extends Activity
 
 	/**
 	 * Empties FETCH Chain and then repopulates it from
-	 * www.malwaredomainlist.com.
+	 * www.malwaredomainlist.com. Also adds entry to shared preferences
+	 * specifying this has been done.
 	 */
 	public void fetchIPs()
 	{
+		editor = settings.edit();
+		editor.putBoolean("generate", true);
+		editor.commit();
+
 		Intent start = new Intent();
-
 		start.setClass(this, Fetcher.class);
-
 		start.putExtra(
 				"script",
 				getDir("bin", 0)
@@ -167,7 +173,6 @@ public class EditRulesActivity extends Activity
 						+ "\n"
 						+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
 						+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'");
-
 		startService(start);
 	}
 
@@ -281,6 +286,7 @@ public class EditRulesActivity extends Activity
 					public void onClick(DialogInterface dialog, int id)
 					{
 						Intent myIntent = new Intent(EditRulesActivity.this, Blocker.class);
+						myIntent.putExtra("reload", "false");
 						startService(myIntent);
 						EditRulesActivity.this.finish();
 					}
