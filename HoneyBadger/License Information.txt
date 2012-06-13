@@ -1,4 +1,19 @@
-This product (with the exception(s) listed below) was authored by U.S. government employees, on government time and as part of their job, and is therefore in the public domain.
+The code contained within the first commit of this project (with the exception(s) listed below) was authored by U.S. government employees, on government time and as part of their job, and is therefore in the public domain.
 
-Exception(s):
-	1. The "Scripts.java" class is a slight modification of code from "gscript-android", which is hosted here: http://code.google.com/p/gscript-android/, and released under the Apached License 2.0.
+Exception to above: The "Scripts.java" class is a slight modification of code from "gscript-android", which is hosted here: http://code.google.com/p/gscript-android/, and released under the Apached License 2.0.
+
+All subsequent versions of the code are covered under the following:
+
+Copyright 2012 Todd Berry Ann, Alexander Harris, Brad Hitchens
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
