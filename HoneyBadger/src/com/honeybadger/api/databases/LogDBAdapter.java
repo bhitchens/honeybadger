@@ -1,14 +1,15 @@
-package com.honeybadger.api;
+package com.honeybadger.api.databases;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Todd Berry Ann, Brad Hitchens
- * Version: 1.1
- * Date of last modification: 22 APRIL 2012
+ * Version: 1.3
+ * Date of last modification: 14 JUNE 2012
  * Source Info: n/a
- |Information regarding the creation of a database was obtained and adapted from the notepad tutorial on the official 
- |Android developers website.
- |
- --------------------------------------------------------------------------------------------------------------------------------
+ * Information regarding the creation of a database was obtained and adapted from the notepad tutorial on the official 
+ * Android developers website.
+ *
+ * Edit 1.3: Moved to new package
+ *--------------------------------------------------------------------------------------------------------------------------------
  */
 
 import android.content.ContentValues;

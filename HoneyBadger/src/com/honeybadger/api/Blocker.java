@@ -2,13 +2,15 @@ package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Brad Hitchens
- * Version: 1.2
- * Date of last modification: 4 MAR 2012
+ * Version: 1.3
+ * Date of last modification: 14 June 2012
  * Source Info: n/a
  * 
- * Edit 1.2: Checks for "reload" extra, and applies all rules if this value is true.
+ * Edit 1.3: Effected by move of database adapter
  *--------------------------------------------------------------------------------------------------------------------------------
  */
+
+import com.honeybadger.api.databases.RulesDBAdapter;
 
 import android.app.Service;
 import android.content.Intent;

@@ -2,8 +2,8 @@ package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Alex Harris, Brad Hitchens, Todd Berry Ann
- * Version: 1.2
- * Date of last modification: 09 April 2012
+ * Version: 1.3
+ * Date of last modification: 14 JUNE 2012
  * Source Info:    
  *The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
  *located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
@@ -11,7 +11,7 @@ package com.honeybadger.views;
  *http://stackoverflow.com/questions/4850493/open-a-dialog-when-i-click-a-button
  *http://developer.android.com/guide/topics/ui/dialogs.html#AlertDialog
  *
- * Edit 1.2: Add entry to shared preferences when "Download IPs" button is selected.
+ * Edit 1.3: Effected by move of database adapter.
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -19,7 +19,7 @@ import com.honeybadger.HoneyBadgerNotify;
 import com.honeybadger.R;
 import com.honeybadger.api.Blocker;
 import com.honeybadger.api.Fetcher;
-import com.honeybadger.api.RulesDBAdapter;
+import com.honeybadger.api.databases.RulesDBAdapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;

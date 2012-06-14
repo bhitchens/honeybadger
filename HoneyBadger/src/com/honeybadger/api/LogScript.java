@@ -2,12 +2,16 @@ package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Todd Berry Ann
- * Version: 1.1
- * Date of last modification: 22 APRIL 2012
+ * Version: 1.3
+ * Date of last modification: 14 JUNE 2012
  * Source Info:    
- | This file receives logs and parses them to the log database.
- --------------------------------------------------------------------------------------------------------------------------------
+ * This file receives logs and parses them to the log database.
+ *
+ * Edit 1.3: Effected by move of database adapter.
+ *--------------------------------------------------------------------------------------------------------------------------------
  */
+
+import com.honeybadger.api.databases.LogDBAdapter;
 
 import android.content.Intent;
 import android.os.Bundle;

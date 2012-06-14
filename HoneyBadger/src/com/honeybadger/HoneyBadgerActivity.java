@@ -2,13 +2,13 @@ package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Todd Berry Ann, Alex Harris, Brad Hitchens
- * Version: 1.2
- * Date of last modification: 12 June 2012
+ * Version: 1.3
+ * Date of last modification: 14 June 2012
  * Source Info:    
  *The majority of the form code used in this activity is the adaptation of tutorials from the Android Developers Resource page  
  *located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
  *
- *Edit 1.2: Moved functions that are used to build initial script to static class.
+ *Edit 1.3: Added button for app based rules
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -26,12 +26,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.honeybadger.api.LogDBAdapter;
 import com.honeybadger.api.ScriptCreation;
 import com.honeybadger.api.Scripts;
 import com.honeybadger.api.StartUp;
+import com.honeybadger.api.databases.LogDBAdapter;
 import com.honeybadger.views.EditPreferencesActivity;
 import com.honeybadger.views.EditRulesActivity;
+import com.honeybadger.views.ShowAppsActivity;
 import com.honeybadger.views.ViewLogActivity;
 import com.honeybadger.views.ViewRulesActivity;
 
@@ -105,6 +106,20 @@ public class HoneyBadgerActivity extends Activity
 			}
 		});
 
+		// Create ViewApps button.
+		Button ViewApps = (Button) findViewById(R.id.button4);
+
+		// Create listener to launch activity to view rules when ViewApps
+		// button is pressed.
+		ViewApps.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View view)
+			{
+				Intent ruleIntent = new Intent(view.getContext(), ShowAppsActivity.class);
+				startActivity(ruleIntent);
+			}
+		});
+
 		// Create EditRules button.
 		Button EditRules = (Button) findViewById(R.id.button2);
 
@@ -121,7 +136,6 @@ public class HoneyBadgerActivity extends Activity
 
 	}
 
-	
 	/**
 	 * Used to send system notification that the IPTables binary has been
 	 * installed. This is done by starting the {@link HoneyBadgerNotify}

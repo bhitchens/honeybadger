@@ -77,6 +77,8 @@
         
         <activity android:name=".views.EditPreferencesActivity" />
         
+        <activity android:name=".views.ShowAppsActivity" />
+        
     </application>
 
 </manifest>

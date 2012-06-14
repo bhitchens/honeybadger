@@ -2,20 +2,22 @@ package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Alex Harris, Brad Hitchens
- * Version: 1.1
- * Date of last modification: 27 MARCH 2012
+ * Version: 1.3
+ * Date of last modification: 14 JUNE 2012
  * Source Info:    
- |The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
- |located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
- |
- --------------------------------------------------------------------------------------------------------------------------------
+ * The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
+ * located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
+ *
+ * Edit 1.3: Effected by move of database adapter
+ *--------------------------------------------------------------------------------------------------------------------------------
  */
 
 import java.util.ArrayList;
 
 import com.honeybadger.R;
-import com.honeybadger.api.RulesDBAdapter;
 import com.honeybadger.api.Scripts;
+import com.honeybadger.api.databases.RulesDBAdapter;
+
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
