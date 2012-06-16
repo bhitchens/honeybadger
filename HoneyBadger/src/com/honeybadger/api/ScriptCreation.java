@@ -116,6 +116,7 @@ public final class ScriptCreation
 				+ "/iptables -D OUTPUT -m limit --limit 1/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - OUTPUT]\" --log-uid"
 				+ "\n"
 
+				//clears previous version
 				+ ctx.getDir("bin", 0)
 				+ "/iptables -D ACCEPTOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTOUT]\" --log-uid"
 				+ "\n"
@@ -127,6 +128,19 @@ public final class ScriptCreation
 				+ "\n"
 				+ ctx.getDir("bin", 0)
 				+ "/iptables -D DROPIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPIN]\" --log-uid"
+				+ "\n"
+
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -D ACCEPTOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger-ACCEPTOUT]\" --log-uid"
+				+ "\n"
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -D ACCEPTIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger-ACCEPTIN]\" --log-uid"
+				+ "\n"
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -D DROPOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger-DROPOUT]\" --log-uid"
+				+ "\n"
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -D DROPIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger-DROPIN]\" --log-uid"
 				+ "\n"
 
 				+ ctx.getDir("bin", 0) + "/iptables -D INPUT -j ACCEPTIN" + "\n"
@@ -151,16 +165,16 @@ public final class ScriptCreation
 		{
 			return input
 					+ ctx.getDir("bin", 0)
-					+ "/iptables -I ACCEPTOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTOUT]\" --log-uid"
+					+ "/iptables -I ACCEPTOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger-ACCEPTOUT]\" --log-uid"
 					+ "\n"
 					+ ctx.getDir("bin", 0)
-					+ "/iptables -I ACCEPTIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTIN]\" --log-uid"
+					+ "/iptables -I ACCEPTIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger-ACCEPTIN]\" --log-uid"
 					+ "\n"
 					+ ctx.getDir("bin", 0)
-					+ "/iptables -I DROPOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPOUT]\" --log-uid"
+					+ "/iptables -I DROPOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger-DROPOUT]\" --log-uid"
 					+ "\n"
 					+ ctx.getDir("bin", 0)
-					+ "/iptables -I DROPIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPIN]\" --log-uid"
+					+ "/iptables -I DROPIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger-DROPIN]\" --log-uid"
 					+ "\n";
 		}
 		else

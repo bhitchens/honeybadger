@@ -63,15 +63,15 @@ public class LogScript extends Scripts
 		String uid = "";
 		String gid = "";
 
-		String delims = "[- =]+";
+		String delims = "[ =]+";
 		//String inoutDelim = "[]]";
 		String[] tokens;
 		//String[] inoutToken;
 
 		scriptOutput += line + "\n";
 		tokens = line.split(delims);
-		inout = tokens[3];
-
+		inout = tokens[1];
+		
 		for (int i = 3; i < tokens.length; i++)
 		{
 			if (tokens[i].contains("SRC"))
@@ -115,8 +115,7 @@ public class LogScript extends Scripts
 				gid = tokens[i + 1];
 			}
 
-		}
-
+		}		
 		logAdapter.open();
 		logAdapter.createEntry(inout, src, dst, tos, prec, id, proto, spt, dpt, uid, gid);
 		logAdapter.close();

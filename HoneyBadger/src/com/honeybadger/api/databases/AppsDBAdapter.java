@@ -26,17 +26,17 @@ public class AppsDBAdapter
 	private static final String TAG = "LogDBAdapter";
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
-	
-	private static final String DATABASE_CREATE = "create table apps (NAME text not null)";
-	
+
+	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, STATUS text not null)";
+
 	private static final String DATABASE_NAME = "appDB";
 	private static final String DATABASE_TABLE = "apps";
 	private static final int DATABASE_VERSION = 1;
-	
+
 	private final Context mCtx;
-	
+
 	public String check = "bad";
-	
+
 	private static class DatabaseHelper extends SQLiteOpenHelper
 	{
 		DatabaseHelper(Context context)
@@ -65,7 +65,7 @@ public class AppsDBAdapter
 			onCreate(db);
 		}
 	}
-	
+
 	/**
 	 * Constructor - takes the context to allow the database to be
 	 * opened/created
@@ -77,7 +77,7 @@ public class AppsDBAdapter
 	{
 		this.mCtx = ctx;
 	}
-	
+
 	/**
 	 * Open the Log database. If it cannot be opened, try to create a new
 	 * instance of the database. If it cannot be created, throw an exception to
@@ -100,7 +100,7 @@ public class AppsDBAdapter
 	{
 		mDbHelper.close();
 	}
-	
+
 	/**
 	 * Create a new entry using the body provided. If the entry is successfully
 	 * created return the new rowId for that entry, otherwise return a -1 to
@@ -110,18 +110,76 @@ public class AppsDBAdapter
 	 *            the body of the note
 	 * @return rowId or -1 if failed
 	 */
-	public long createEntry(String name)
+	public long createEntry(int uid, String name, String status)
 	{
-		
+		// Check to see if entry already exists
+		Cursor c = mDb.query(DATABASE_TABLE, null, "UID='" + uid + "'", null, null, null, null);
+
+		// if there is no entry
+		if (c == null || c.getCount() == 0)
+		{
 			// this prepares values to be placed into entry
 			ContentValues initialValues = new ContentValues();
+			initialValues.put("UID", uid);
 			initialValues.put("NAME", name);
+			initialValues.put("STATUS", status);
 
 			// inserts entry with data from initialValues
 			return mDb.insert(DATABASE_TABLE, null, initialValues);
-	
+		}
+		else
+		{
+			return 1;
+		}
+
 	}
+
+	/**
+	 * Used to change block/allow status of apps.
+	 * 
+	 * @param uid
+	 *            UID of app
+	 * @param status
+	 *            whether app is blocked or allowed
+	 */
+	public void changeStatus(int uid, String name, String status)
+	{
+		// Check to see if entry already exists
+		Cursor c = mDb.query(DATABASE_TABLE, null, "UID='" + uid + "'", null, null, null, null);
+		// if there is no entry
+		if (c == null || c.getCount() == 0)
+		{
+			this.createEntry(uid, name, status);
+		}
+		else
+		{
+			mDb.execSQL("UPDATE apps SET STATUS='" + status + "'" + "WHERE (UID='" + uid + "')");
+		}
+	}
+
+	public void checkAll(Boolean check)
+	{
+		String block = "";
+		if (check)
+		{
+			block = "block";
+		}
+		else
+		{
+			block = "allow";
+		}
+		
+		// fetch the table
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]{"UID", "NAME"}, null, null, null, null, null);
 	
+		while (c.getPosition() < c.getCount() - 1)
+		{
+			c.moveToNext();
+			this.changeStatus(c.getInt(0), c.getString(1), block);
+			//mDb.execSQL("UPDATE apps SET STATUS='" + block + "'" + "WHERE (UID='" + c.getInt(0) + "')");
+		}
+	}
+
 	/**
 	 * Return a Cursor over the list of all entries in the database
 	 * 
@@ -131,4 +189,27 @@ public class AppsDBAdapter
 	{
 		return mDb.query(DATABASE_TABLE, null, null, null, null, null, null);
 	}
+
+	public Boolean checkBlock(int uid)
+	{
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+		{ "STATUS" }, "UID='" + uid + "'", null, null, null, null);
+		if (c != null && c.getCount() != 0)
+		{
+			c.moveToFirst();
+			if (c.getString(0).contains("block"))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 }

@@ -65,11 +65,12 @@ public class ViewLogActivity extends ListActivity
 
 		setData(c);
 		dbAdapter.close();
-
+		
 		setListAdapter(new ArrayAdapter<String>(this, R.layout.log_viewer, DATA));
 
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
+
 	}
 
 	/**
@@ -80,29 +81,34 @@ public class ViewLogActivity extends ListActivity
 	 */
 	private void setData(Cursor c)
 	{
+		
 		while (c.getPosition() < c.getCount() - 1)
 		{
 			c.moveToNext();
 			if (c.getString(0).contains("ACCEPTIN"))
 			{
-				DATA.add("Allowed recieving of " + c.getString(11) + " packet(s) from " + c.getString(1)
-						+ " via " + c.getString(6) + " protocol on port " + c.getString(7));
+				DATA.add("Allowed recieving of " + c.getString(11) + " packet(s) from "
+						+ c.getString(1) + " via " + c.getString(6) + " protocol on port "
+						+ c.getString(7));
 			}
 			else if (c.getString(0).contains("ACCEPTOUT"))
-			{				
-				DATA.add("Allowed sending of " + c.getString(11) + " packet(s) to " + c.getString(2) + " via "
-						+ c.getString(6) + " protocol on port " + c.getString(8));
+			{
+				DATA.add("Allowed sending of " + c.getString(11) + " packet(s) to "
+						+ c.getString(2) + " via " + c.getString(6) + " protocol on port "
+						+ c.getString(8));
 			}
 			else if (c.getString(0).contains("DROPIN"))
 			{
-				DATA.add("Blocked recieving of " + c.getString(11) + " packet(s) from " + c.getString(1)
-						+ " via " + c.getString(6) + " protocol on port " + c.getString(7));
-				
+				DATA.add("Blocked recieving of " + c.getString(11) + " packet(s) from "
+						+ c.getString(1) + " via " + c.getString(6) + " protocol on port "
+						+ c.getString(7));
+
 			}
 			else if (c.getString(0).contains("DROPOUT"))
 			{
-				DATA.add("Blocked sending of " + c.getString(11) + " packet(s) to " + c.getString(2) + " via "
-						+ c.getString(6) + " protocol on port " + c.getString(8));
+				DATA.add("Blocked sending of " + c.getString(11) + " packet(s) to "
+						+ c.getString(2) + " via " + c.getString(6) + " protocol on port "
+						+ c.getString(8));
 			}
 		}
 	}

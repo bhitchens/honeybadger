@@ -15,10 +15,10 @@ import java.io.InputStream;
 import com.honeybadger.R;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 public final class StartUp
 {
-
 	/**
 	 * This method ensures that IPTables is installed.
 	 * 
@@ -26,17 +26,17 @@ public final class StartUp
 	 *            Context of the calling Activity or Service
 	 * @return Return true if IPTables is installed, false if it is not.
 	 */
-	public static boolean installIPTables(Context ctx)
+	public static boolean installIPTables(Context ctx, SharedPreferences settings, SharedPreferences.Editor editor)
 	{
 		boolean ret = false;
 		File file = new File(ctx.getDir("bin", 0), "iptables");
-		if (!file.exists())
+		if (!file.exists() || settings.getBoolean("newIPT", false))
 		{
 			try
 			{
 				final String path = file.getAbsolutePath();
 				final FileOutputStream os = new FileOutputStream(file);
-				final InputStream is = ctx.getResources().openRawResource(R.raw.iptables_armv5);
+				final InputStream is = ctx.getResources().openRawResource(R.raw.iptables);
 				byte buffer[] = new byte[1024];
 				int count;
 				while ((count = is.read(buffer)) > 0)
@@ -53,7 +53,10 @@ public final class StartUp
 				e.printStackTrace();
 			}
 			ret = true;
+			editor.putBoolean("newIPT", true);
+			editor.commit();
 		}
 		return ret;
 	}
+
 }

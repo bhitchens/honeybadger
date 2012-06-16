@@ -13,32 +13,157 @@ package com.honeybadger.views;
 import java.util.ArrayList;
 import java.util.List;
 import com.honeybadger.R;
+import com.honeybadger.api.Scripts;
+import com.honeybadger.api.databases.AppsDBAdapter;
 
-import android.app.ListActivity;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 
-public class ShowAppsActivity extends ListActivity
+public class ShowAppsActivity extends Activity
 {
-	private ListView listView1;
+	private ListView lv;
+	private AppsDBAdapter appAdapter = new AppsDBAdapter(this);
+
+	Button CheckAllButton;
+	Button ClearAllButton;
+	Button ApplyButton;
+
+	SharedPreferences settings;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		display();
+
+		CheckAllButton = (Button) findViewById(R.id.check_all);
+		ClearAllButton = (Button) findViewById(R.id.clear_all);
+		ApplyButton = (Button) findViewById(R.id.apply);
+		createListeners(this);
+
+	}
+
+	private void createListeners(Context ctx)
+	{
+		CheckAllButton.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				// Perform action on clicks
+				appAdapter.open();
+				appAdapter.checkAll(true);
+				appAdapter.close();
+				setLV();
+			}
+		});
+
+		ClearAllButton.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				// Perform action on clicks
+				appAdapter.open();
+				appAdapter.checkAll(false);
+				appAdapter.close();
+				setLV();
+			}
+		});
+
+		ApplyButton.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				createRules();
+				// put toast here
+			}
+		});
+
+	}
+
+	public void createRules()
+	{
+		settings = getSharedPreferences("main", 0);
+		String script = "";
+		// Perform action on clicks
+		appAdapter.open();
+		Cursor c = appAdapter.fetchAllEntries();
+		if (!settings.getBoolean("block", false))
+		{
+			script += this.getDir("bin", 0) + "/iptables -D OUTPUT -j ACCEPTOUT" + "\n";
+			while (c.getPosition() < c.getCount() - 1)
+			{
+				c.moveToNext();
+				if (c.getString(2).contains("block"))
+				{
+					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
+							+ c.getInt(0) + " -j ACCEPTOUT" + "\n";
+					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
+							+ c.getInt(0) + " -j DROPOUT" + "\n";
+					script += this.getDir("bin", 0) + "/iptables -A OUTPUT -m owner --uid-owner "
+							+ c.getInt(0) + " -j DROPOUT" + "\n";
+				}
+				else
+				{
+					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
+							+ c.getInt(0) + " -j DROPOUT" + "\n";
+				}
+			}
+			script += this.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
+		}
+		else
+		{
+			script += this.getDir("bin", 0) + "/iptables -D OUTPUT -j DROPOUT" + "\n";
+			while (c.getPosition() < c.getCount() - 1)
+			{
+				c.moveToNext();
+				if (!c.getString(2).contains("block"))
+				{
+					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
+							+ c.getInt(0) + " -j DROPOUT" + "\n";
+					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
+							+ c.getInt(0) + " -j ACCEPTOUT" + "\n";
+					script += this.getDir("bin", 0) + "/iptables -A OUTPUT -m owner --uid-owner "
+							+ c.getInt(0) + " -j ACCEPTOUT" + "\n";
+				}
+				else
+				{
+					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
+							+ c.getInt(0) + " -j ACCEPTOUT" + "\n";
+				}
+			}
+			script += this.getDir("bin", 0) + "/iptables -A OUTPUT -j DROPOUT" + "\n";			
+		}
+		appAdapter.close();
+
+		Intent scriptIntent = new Intent();
+		scriptIntent.setClass(this, Scripts.class);
+		scriptIntent.putExtra("script", script);
+		startService(scriptIntent);
 	}
 
 	public void display()
 	{
-		
+		appAdapter = new AppsDBAdapter(this);
+		appAdapter.open();
+
 		setContentView(R.layout.show_apps);
-		
+		setLV();
+	}
+
+	public void setLV()
+	{
 		ArrayList<App> appData = new ArrayList<App>();
 		ArrayList<AppInfo> list = getPackages();
 		int i;
@@ -46,15 +171,12 @@ public class ShowAppsActivity extends ListActivity
 		{
 			appData.add(new App(list.get(i).icon, list.get(i).appname, list.get(i).uid));
 		}
-		
+
 		AppAdapter adapter = new AppAdapter(this, R.layout.app_item_row, appData);
-		listView1 = getListView();
-		
-		View header = (View)getLayoutInflater().inflate(R.layout.apps_header_row, null);
-        listView1.addHeaderView(header);
-        
-        listView1.setAdapter(adapter);
-				
+		lv = (ListView) this.findViewById(R.id.listView1);
+
+		lv.setAdapter(adapter);
+		lv.setItemsCanFocus(false);
 	}
 
 	public class App
@@ -110,4 +232,5 @@ public class ShowAppsActivity extends ListActivity
 		}
 		return res;
 	}
+
 }
