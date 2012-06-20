@@ -2,18 +2,15 @@ package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Todd Berry Ann, Alex Harris, Brad Hitchens
- * Version: 1.3
- * Date of last modification: 14 June 2012
+ * Version: 2.1
+ * Date of last modification: 19 June 2012
  * Source Info:    
- *The majority of the form code used in this activity is the adaptation of tutorials from the Android Developers Resource page  
- *located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
+ * The majority of the form code used in this activity is the adaptation of tutorials from the Android Developers Resource page  
+ * located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
  *
- *Edit 1.3: Added button for app based rules
- --------------------------------------------------------------------------------------------------------------------------------
+ * Edit 2.1: Added method call to load apps; conformed to change from StartUp to SharedMethods
+ *--------------------------------------------------------------------------------------------------------------------------------
  */
-
-import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -22,9 +19,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,9 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.honeybadger.api.ScriptCreation;
+import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.Scripts;
-import com.honeybadger.api.StartUp;
 import com.honeybadger.api.databases.AppsDBAdapter;
 import com.honeybadger.api.databases.LogDBAdapter;
 import com.honeybadger.views.EditPreferencesActivity;
@@ -69,19 +62,17 @@ public class HoneyBadgerActivity extends Activity
 		settings = getSharedPreferences("main", 1);
 		editor = settings.edit();
 		
-		boolean check = StartUp.installIPTables(this, settings, editor);
+		boolean check = SharedMethods.installIPTables(this, settings, editor);
 		if (check == true)
 		{
 			sendNotification();
-		}
+		}		
 
-		
+		startScript = SharedMethods.initialString(startScript, this);
 
-		startScript = ScriptCreation.initialString(startScript, this);
+		startScript = SharedMethods.setLogging(startScript, settings, this);
 
-		startScript = ScriptCreation.setLogging(startScript, settings, this);
-
-		startScript = ScriptCreation.setBlock(startScript, settings, this);
+		startScript = SharedMethods.setBlock(startScript, settings, this);
 
 		// Launch Script
 		Intent script = new Intent();
@@ -148,9 +139,10 @@ public class HoneyBadgerActivity extends Activity
 			}
 		});
 		
+		// Load apps if not already added
 		if (!settings.getBoolean("loaded", false))
 		{
-			loadApps(this);
+			SharedMethods.loadApps(this, settings, appAdapter);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
 			editor.commit();
@@ -223,82 +215,4 @@ public class HoneyBadgerActivity extends Activity
 				return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	public void loadApps(Context ctx)
-	{
-		String block = "";
-
-		appAdapter = new AppsDBAdapter(this);
-		appAdapter.open();
-
-		if (settings.getBoolean("block", false))
-		{
-			block = "block";
-		}
-		else
-		{
-			block = "allow";
-		}
-
-		ArrayList<AppInfo> list = getPackages(ctx);
-		int i;
-		for (i = 0; i < list.size(); i++)
-		{
-			appAdapter.createEntry(list.get(i).uid, list.get(i).appname, block);
-		}
-		appAdapter.close();
-	}
-
-	public class App
-	{
-		public Drawable icon;
-		public String title;
-		public int uid;
-
-		public App()
-		{
-			super();
-		}
-
-		public App(Drawable icon, String title, int uid)
-		{
-			super();
-			this.icon = icon;
-			this.title = title;
-			this.uid = uid;
-		}
-	}
-
-	private ArrayList<AppInfo> getPackages(Context ctx)
-	{
-		ArrayList<AppInfo> apps = getInstalledApps(ctx);
-		return apps;
-	}
-
-	class AppInfo
-	{
-		private String appname = "";
-		private int uid = 0;
-	}
-
-	private ArrayList<AppInfo> getInstalledApps(Context ctx)
-	{
-		ArrayList<AppInfo> res = new ArrayList<AppInfo>();
-		List<PackageInfo> packs = ctx.getPackageManager().getInstalledPackages(0);
-		for (int i = 0; i < packs.size(); i++)
-		{
-			PackageInfo p = packs.get(i);
-			if ((packs.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1)
-			{
-				continue;
-			}
-
-			AppInfo newApp = new AppInfo();
-			newApp.appname = p.applicationInfo.loadLabel(ctx.getPackageManager()).toString();
-			newApp.uid = p.applicationInfo.uid;
-			res.add(newApp);
-		}
-		return res;
-	}
-
 }

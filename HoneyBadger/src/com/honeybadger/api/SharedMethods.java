@@ -2,18 +2,80 @@ package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Brad Hitchens
- * Version: 1.2
- * Date of last modification: 12 June 2012
+ * Version: 2.1
+ * Date of last modification: 19 June 2012
  *
- * Edit 1.2 (Initial): This class contains static functions that are used to create the initial script.
+ * Edit 2.1: Combined startup and script creation; added methods for fetching application data.
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.honeybadger.R;
+import com.honeybadger.api.databases.AppsDBAdapter;
+
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.graphics.drawable.Drawable;
 
-public final class ScriptCreation
+public final class SharedMethods
 {
+
+	/********************************************************
+	 * Start up method
+	 ********************************************************/
+	
+	/**
+	 * This method ensures that IPTables is installed.
+	 * 
+	 * @param ctx
+	 *            Context of the calling Activity or Service
+	 * @return Return true if IPTables is installed, false if it is not.
+	 */
+	public static boolean installIPTables(Context ctx, SharedPreferences settings, SharedPreferences.Editor editor)
+	{
+		boolean ret = false;
+		File file = new File(ctx.getDir("bin", 0), "iptables");
+		if (!file.exists() || settings.getBoolean("newIPT", false))
+		{
+			try
+			{
+				final String path = file.getAbsolutePath();
+				final FileOutputStream os = new FileOutputStream(file);
+				final InputStream is = ctx.getResources().openRawResource(R.raw.iptables);
+				byte buffer[] = new byte[1024];
+				int count;
+				while ((count = is.read(buffer)) > 0)
+				{
+					os.write(buffer, 0, count);
+				}
+				os.close();
+				is.close();
+
+				Runtime.getRuntime().exec("chmod 755 " + path);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			ret = true;
+			editor.putBoolean("newIPT", true);
+			editor.commit();
+		}
+		return ret;
+	}
+
+	
+	/********************************************************
+	 * Script Creation
+	 ********************************************************/
 
 	/**
 	 * Returns the initial string for the script. The script does the following:
@@ -116,7 +178,7 @@ public final class ScriptCreation
 				+ "/iptables -D OUTPUT -m limit --limit 1/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - OUTPUT]\" --log-uid"
 				+ "\n"
 
-				//clears previous version
+				// clears previous version
 				+ ctx.getDir("bin", 0)
 				+ "/iptables -D ACCEPTOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTOUT]\" --log-uid"
 				+ "\n"
@@ -209,6 +271,85 @@ public final class ScriptCreation
 					+ ctx.getDir("bin", 0) + "/iptables -A INPUT -j ACCEPTIN" + "\n"
 					+ ctx.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
 		}
+	}
+
+	/*************************************************
+	 * Application information
+	 *************************************************/
+
+	/**
+	 * Loads applications into database
+	 * 
+	 * @param ctx
+	 *            Passed in context.
+	 * @param settings
+	 *            Passed in SharedPreferences.
+	 * @param appAdapter
+	 *            Passed in AppsDBAdapter
+	 */
+	public static void loadApps(Context ctx, SharedPreferences settings, AppsDBAdapter appAdapter)
+	{
+		if (!settings.getBoolean("loaded", false))
+		{
+			String block = "";
+			appAdapter = new AppsDBAdapter(ctx);
+			appAdapter.open();
+
+			if (settings.getBoolean("block", false))
+			{
+				block = "block";
+			}
+			else
+			{
+				block = "allow";
+			}
+
+			ArrayList<AppInfo> list = getPackages(ctx);
+			int i;
+			for (i = 0; i < list.size(); i++)
+			{
+				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, block);
+			}
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("loaded", true);
+		}
+	}
+
+	/**
+	 * Returns array of applications.
+	 * 
+	 * @param ctx Passed in Context.
+	 * @return ArrayList of AppInfo
+	 */
+	public static ArrayList<AppInfo> getPackages(Context ctx)
+	{
+		ArrayList<AppInfo> res = new ArrayList<AppInfo>();
+		List<PackageInfo> packs = ctx.getPackageManager().getInstalledPackages(0);
+		for (int i = 0; i < packs.size(); i++)
+		{
+			PackageInfo p = packs.get(i);
+			if ((packs.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1)
+			{
+				continue;
+			}
+
+			AppInfo newApp = (new SharedMethods()).new AppInfo();
+			newApp.appname = p.applicationInfo.loadLabel(ctx.getPackageManager()).toString();
+			newApp.icon = p.applicationInfo.loadIcon(ctx.getPackageManager());
+			newApp.uid = p.applicationInfo.uid;
+			res.add(newApp);
+		}
+		return res;
+	}
+
+	/**
+	 * AppInfo object.
+	 */
+	public class AppInfo
+	{
+		public String appname = "";
+		public Drawable icon;
+		public int uid = 0;
 	}
 
 }

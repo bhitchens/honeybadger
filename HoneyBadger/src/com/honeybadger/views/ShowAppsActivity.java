@@ -2,33 +2,31 @@ package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Brad Hitchens
- * Version: 1.3
+ * Version: 2.1
  * Date of last modification: 14 JUNE 2012
  * Source Info: n/a
  * 
- * Edit 1.3: Created
+ * Edit 2.1: Affected by refactoring.
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
 import java.util.ArrayList;
-import java.util.List;
 import com.honeybadger.R;
-import com.honeybadger.api.Scripts;
+import com.honeybadger.api.AppBlocker;
+import com.honeybadger.api.SharedMethods;
+import com.honeybadger.api.SharedMethods.AppInfo;
 import com.honeybadger.api.databases.AppsDBAdapter;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class ShowAppsActivity extends Activity
 {
@@ -55,6 +53,12 @@ public class ShowAppsActivity extends Activity
 
 	}
 
+	/**
+	 * Declares click listeners for all of the buttons.
+	 * 
+	 * @param ctx
+	 *            Passed in Context.
+	 */
 	private void createListeners(Context ctx)
 	{
 		CheckAllButton.setOnClickListener(new OnClickListener()
@@ -86,151 +90,45 @@ public class ShowAppsActivity extends Activity
 			public void onClick(View v)
 			{
 				createRules();
-				// put toast here
+				Toast.makeText(ShowAppsActivity.this, "Rules have been applied.", Toast.LENGTH_LONG)
+						.show();
 			}
 		});
 
 	}
 
+	/**
+	 * Launches AppBlocker class to create rules for applications.
+	 */
 	public void createRules()
 	{
-		settings = getSharedPreferences("main", 0);
-		String script = "";
-		// Perform action on clicks
-		appAdapter.open();
-		Cursor c = appAdapter.fetchAllEntries();
-		if (!settings.getBoolean("block", false))
-		{
-			script += this.getDir("bin", 0) + "/iptables -D OUTPUT -j ACCEPTOUT" + "\n";
-			while (c.getPosition() < c.getCount() - 1)
-			{
-				c.moveToNext();
-				if (c.getString(2).contains("block"))
-				{
-					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
-							+ c.getInt(0) + " -j ACCEPTOUT" + "\n";
-					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
-							+ c.getInt(0) + " -j DROPOUT" + "\n";
-					script += this.getDir("bin", 0) + "/iptables -A OUTPUT -m owner --uid-owner "
-							+ c.getInt(0) + " -j DROPOUT" + "\n";
-				}
-				else
-				{
-					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
-							+ c.getInt(0) + " -j DROPOUT" + "\n";
-				}
-			}
-			script += this.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
-		}
-		else
-		{
-			script += this.getDir("bin", 0) + "/iptables -D OUTPUT -j DROPOUT" + "\n";
-			while (c.getPosition() < c.getCount() - 1)
-			{
-				c.moveToNext();
-				if (!c.getString(2).contains("block"))
-				{
-					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
-							+ c.getInt(0) + " -j DROPOUT" + "\n";
-					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
-							+ c.getInt(0) + " -j ACCEPTOUT" + "\n";
-					script += this.getDir("bin", 0) + "/iptables -A OUTPUT -m owner --uid-owner "
-							+ c.getInt(0) + " -j ACCEPTOUT" + "\n";
-				}
-				else
-				{
-					script += this.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
-							+ c.getInt(0) + " -j ACCEPTOUT" + "\n";
-				}
-			}
-			script += this.getDir("bin", 0) + "/iptables -A OUTPUT -j DROPOUT" + "\n";			
-		}
-		appAdapter.close();
-
-		Intent scriptIntent = new Intent();
-		scriptIntent.setClass(this, Scripts.class);
-		scriptIntent.putExtra("script", script);
-		startService(scriptIntent);
+		Intent loadRules = new Intent();
+		loadRules.setClass(this, AppBlocker.class);
+		this.startService(loadRules);
 	}
 
+	/**
+	 * Sets overall content view then calls method to set the list view.
+	 */
 	public void display()
 	{
-		appAdapter = new AppsDBAdapter(this);
-		appAdapter.open();
-
 		setContentView(R.layout.show_apps);
 		setLV();
 	}
 
+	/**
+	 * Creates ArrayList of AppInfo objects (which contain application data) and
+	 * uses it to create and set a list view.
+	 */
 	public void setLV()
 	{
-		ArrayList<App> appData = new ArrayList<App>();
-		ArrayList<AppInfo> list = getPackages();
-		int i;
-		for (i = 0; i < list.size(); i++)
-		{
-			appData.add(new App(list.get(i).icon, list.get(i).appname, list.get(i).uid));
-		}
+		ArrayList<AppInfo> list = SharedMethods.getPackages(this);
 
-		AppAdapter adapter = new AppAdapter(this, R.layout.app_item_row, appData);
+		AppAdapter adapter = new AppAdapter(this, R.layout.app_item_row, list);
+
 		lv = (ListView) this.findViewById(R.id.listView1);
-
 		lv.setAdapter(adapter);
 		lv.setItemsCanFocus(false);
-	}
-
-	public class App
-	{
-		public Drawable icon;
-		public String title;
-		public int uid;
-
-		public App()
-		{
-			super();
-		}
-
-		public App(Drawable icon, String title, int uid)
-		{
-			super();
-			this.icon = icon;
-			this.title = title;
-			this.uid = uid;
-		}
-	}
-
-	private ArrayList<AppInfo> getPackages()
-	{
-		ArrayList<AppInfo> apps = getInstalledApps(false);
-		return apps;
-	}
-
-	class AppInfo
-	{
-		private String appname = "";
-		private Drawable icon;
-		private int uid = 0;
-	}
-
-	private ArrayList<AppInfo> getInstalledApps(boolean getSysPackages)
-	{
-		ArrayList<AppInfo> res = new ArrayList<AppInfo>();
-		List<PackageInfo> packs = getPackageManager().getInstalledPackages(0);
-		for (int i = 0; i < packs.size(); i++)
-		{
-			PackageInfo p = packs.get(i);
-			if ((packs.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1)
-			{
-				continue;
-			}
-
-			AppInfo newApp = new AppInfo();
-			newApp.appname = p.applicationInfo.loadLabel(getPackageManager()).toString();
-			newApp.icon = p.applicationInfo.loadIcon(getPackageManager());
-			newApp.uid = p.applicationInfo.uid;
-			res.add(newApp);
-		}
-		return res;
 	}
 
 }

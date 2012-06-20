@@ -25,17 +25,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.honeybadger.R;
+import com.honeybadger.api.SharedMethods.AppInfo;
 import com.honeybadger.api.databases.AppsDBAdapter;
-import com.honeybadger.views.ShowAppsActivity.App;
 
-public class AppAdapter extends ArrayAdapter<App>
+public class AppAdapter extends ArrayAdapter<AppInfo>
 {
 	private AppsDBAdapter dba;
 	Context context;
 	int layoutResourceId;
-	ArrayList<App> data = null;
+	ArrayList<AppInfo> data = null;
 
-	public AppAdapter(Context context, int layoutResourceId, ArrayList<App> data)
+	/**
+	 * Constructor for AppAdapter
+	 * 
+	 * @param context Passed in context.
+	 * @param layoutResourceId Passed in integer for ID of the layout.
+	 * @param data Passed in ArrayList of AppInfo
+	 */
+	public AppAdapter(Context context, int layoutResourceId, ArrayList<AppInfo> data)
 	{
 		super(context, layoutResourceId, data);
 		this.layoutResourceId = layoutResourceId;
@@ -67,7 +74,7 @@ public class AppAdapter extends ArrayAdapter<App>
 			holder = (AppHolder) row.getTag();
 		}
 
-		final App app = data.get(position);
+		final AppInfo app = data.get(position);
 
 		dba = new AppsDBAdapter(context);
 		dba.open();
@@ -82,11 +89,11 @@ public class AppAdapter extends ArrayAdapter<App>
 				Boolean prevBlock = dba.checkBlock(app.uid);
 				if (isChecked && !prevBlock)
 				{
-					dba.changeStatus(app.uid, app.title, "block");
+					dba.changeStatus(app.uid, app.appname, "block");
 				}
 				else if (!isChecked && prevBlock)
 				{
-					dba.changeStatus(app.uid, app.title, "allow");
+					dba.changeStatus(app.uid, app.appname, "allow");
 				}
 				dba.close();
 			}
@@ -94,8 +101,7 @@ public class AppAdapter extends ArrayAdapter<App>
 		final CheckBox box = holder.box;
 		box.setChecked(dba.checkBlock(app.uid));
 		dba.close();
-		// holder.box.setOnCheckedChangeListener((OnCheckedChangeListener)ShowAppsActivity.);
-		holder.txtTitle.setText(app.title + " (" + Integer.toString(app.uid) + ")");
+		holder.txtTitle.setText(app.appname + " (" + Integer.toString(app.uid) + ")");
 		holder.imgIcon.setImageDrawable(app.icon);
 
 		return row;
