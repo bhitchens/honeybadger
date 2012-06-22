@@ -21,7 +21,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -122,13 +128,67 @@ public class ShowAppsActivity extends Activity
 	 */
 	public void setLV()
 	{
-		ArrayList<AppInfo> list = SharedMethods.getPackages(this);
+		ArrayList<AppInfo> list = new ArrayList<AppInfo>();
+		appAdapter.open();
+		Cursor c = appAdapter.fetchAllEntries();
+		while (c.getPosition() < c.getCount() - 1)
+		{
+			c.moveToNext();
+			AppInfo app = (new SharedMethods()).new AppInfo();
+			app.uid = c.getInt(0);
+			app.appname = c.getString(1);
+			app.icon = new BitmapDrawable(BitmapFactory.decodeByteArray(c.getBlob(2), 0,
+					c.getBlob(2).length));
+			list.add(app);
+		}
+		c.close();
+		appAdapter.close();
 
 		AppAdapter adapter = new AppAdapter(this, R.layout.app_item_row, list);
 
 		lv = (ListView) this.findViewById(R.id.listView1);
 		lv.setAdapter(adapter);
 		lv.setItemsCanFocus(false);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.app_menu, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		// Handle item selection
+		switch (item.getItemId())
+		{
+
+			case R.id.refresh_apps:
+				settings = getSharedPreferences("main", 1);
+				SharedPreferences.Editor editor = settings.edit();
+				editor.putBoolean("loaded", false);
+				editor.commit();
+				SharedMethods.loadApps(this, settings, appAdapter);
+				display();
+				return true;
+			case R.id.go_to_rules:
+				Intent addRuleIntent = new Intent(this, EditRulesActivity.class);
+				startActivity(addRuleIntent);
+				return true;
+			case R.id.settings_from_apps:
+				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
+				startActivity(prefIntent);
+				return true;
+			case R.id.view_log:
+				Intent viewLogIntent = new Intent(this, ViewLogActivity.class);
+				startActivity(viewLogIntent);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 }

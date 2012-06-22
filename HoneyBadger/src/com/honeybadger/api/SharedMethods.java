@@ -9,6 +9,7 @@ package com.honeybadger.api;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,6 +24,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 public final class SharedMethods
@@ -31,7 +34,7 @@ public final class SharedMethods
 	/********************************************************
 	 * Start up method
 	 ********************************************************/
-	
+
 	/**
 	 * This method ensures that IPTables is installed.
 	 * 
@@ -39,11 +42,12 @@ public final class SharedMethods
 	 *            Context of the calling Activity or Service
 	 * @return Return true if IPTables is installed, false if it is not.
 	 */
-	public static boolean installIPTables(Context ctx, SharedPreferences settings, SharedPreferences.Editor editor)
+	public static boolean installIPTables(Context ctx, SharedPreferences settings,
+			SharedPreferences.Editor editor)
 	{
 		boolean ret = false;
 		File file = new File(ctx.getDir("bin", 0), "iptables");
-		if (!file.exists() || settings.getBoolean("newIPT", false))
+		if (!file.exists() || !settings.getBoolean("newIPT", false))
 		{
 			try
 			{
@@ -72,7 +76,6 @@ public final class SharedMethods
 		return ret;
 	}
 
-	
 	/********************************************************
 	 * Script Creation
 	 ********************************************************/
@@ -294,6 +297,8 @@ public final class SharedMethods
 			String block = "";
 			appAdapter = new AppsDBAdapter(ctx);
 			appAdapter.open();
+			
+			appAdapter.clear();
 
 			if (settings.getBoolean("block", false))
 			{
@@ -305,11 +310,42 @@ public final class SharedMethods
 			}
 
 			ArrayList<AppInfo> list = getPackages(ctx);
+			List<PackageInfo> packs = ctx.getPackageManager().getInstalledPackages(0);
 			int i;
 			for (i = 0; i < list.size(); i++)
 			{
-				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, block);
+				if ((packs.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1)
+				{
+					continue;
+				}
+				Drawable d = list.get(i).icon;
+				BitmapDrawable bitIcon = (BitmapDrawable) d;
+				Bitmap bm = bitIcon.getBitmap();
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+				byte[] imageInByte = stream.toByteArray();
+
+				appAdapter
+						.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block);
 			}
+			
+			for (i = 0; i < list.size(); i++)
+			{
+				if (!((packs.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1))
+				{
+					continue;
+				}
+				Drawable d = list.get(i).icon;
+				BitmapDrawable bitIcon = (BitmapDrawable) d;
+				Bitmap bm = bitIcon.getBitmap();
+				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+				byte[] imageInByte = stream.toByteArray();
+
+				appAdapter
+						.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block);
+			}
+			
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
 		}
@@ -318,7 +354,8 @@ public final class SharedMethods
 	/**
 	 * Returns array of applications.
 	 * 
-	 * @param ctx Passed in Context.
+	 * @param ctx
+	 *            Passed in Context.
 	 * @return ArrayList of AppInfo
 	 */
 	public static ArrayList<AppInfo> getPackages(Context ctx)
@@ -328,10 +365,6 @@ public final class SharedMethods
 		for (int i = 0; i < packs.size(); i++)
 		{
 			PackageInfo p = packs.get(i);
-			if ((packs.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1)
-			{
-				continue;
-			}
 
 			AppInfo newApp = (new SharedMethods()).new AppInfo();
 			newApp.appname = p.applicationInfo.loadLabel(ctx.getPackageManager()).toString();

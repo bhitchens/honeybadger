@@ -53,7 +53,7 @@ public class AppBlocker extends Service
 			while (c.getPosition() < c.getCount() - 1)
 			{
 				c.moveToNext();
-				if (c.getString(2).contains("block"))
+				if (c.getString(3).contains("block"))
 				{
 					script += context.getDir("bin", 0)
 							+ "/iptables -D OUTPUT -m owner --uid-owner " + c.getInt(0)

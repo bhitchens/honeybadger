@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/refresh_apps"
+          android:icon="@drawable/ic_menu_refresh"
+          android:title="Refresh Apps List" />
+          
+    <item android:id="@+id/settings_from_apps"
+          android:icon="@drawable/ic_menu_manage"
+          android:title="Settings" />
+          
+    <item android:id="@+id/go_to_rules"
+          android:icon="@drawable/ic_menu_add"
+          android:title="Add IP/URL Rule" />
+          
+    <item android:id="@+id/view_log"
+          android:icon="@drawable/ic_menu_info_details"
+          android:title="View Log" />    
+    
+</menu>

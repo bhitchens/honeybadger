@@ -23,11 +23,11 @@ public class AppsDBAdapter
 	public static final String KEY_BODY = "body";
 	public static final String KEY_ROWID = "_id";
 
-	private static final String TAG = "LogDBAdapter";
+	private static final String TAG = "AppsDBAdapter";
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 
-	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, STATUS text not null)";
+	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, ICON blob not null, STATUS text not null)";
 
 	private static final String DATABASE_NAME = "appDB";
 	private static final String DATABASE_TABLE = "apps";
@@ -110,10 +110,10 @@ public class AppsDBAdapter
 	 *            the body of the note
 	 * @return rowId or -1 if failed
 	 */
-	public long createEntry(int uid, String name, String status)
+	public void createEntry(int uid, String name, byte[] icon, String status)
 	{
 		// Check to see if entry already exists
-		Cursor c = mDb.query(DATABASE_TABLE, null, "UID='" + uid + "'", null, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]{"NAME"}, "UID='" + uid + "'", null, null, null, null);
 
 		// if there is no entry
 		if (c == null || c.getCount() == 0)
@@ -122,14 +122,19 @@ public class AppsDBAdapter
 			ContentValues initialValues = new ContentValues();
 			initialValues.put("UID", uid);
 			initialValues.put("NAME", name);
+			initialValues.put("ICON", icon);
 			initialValues.put("STATUS", status);
 
 			// inserts entry with data from initialValues
-			return mDb.insert(DATABASE_TABLE, null, initialValues);
+			mDb.insert(DATABASE_TABLE, null, initialValues);
 		}
 		else
 		{
-			return 1;
+			c.moveToFirst();
+			if (!c.getString(0).contains(name))
+			{
+				mDb.execSQL("UPDATE apps SET NAME='" + c.getString(0) + ", " + name + "'" + "WHERE (UID='" + uid + "')");
+			}
 		}
 
 	}
@@ -145,11 +150,11 @@ public class AppsDBAdapter
 	public void changeStatus(int uid, String name, String status)
 	{
 		// Check to see if entry already exists
-		Cursor c = mDb.query(DATABASE_TABLE, null, "UID='" + uid + "'", null, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]{"ICON"}, "UID='" + uid + "'", null, null, null, null);
 		// if there is no entry
 		if (c == null || c.getCount() == 0)
 		{
-			this.createEntry(uid, name, status);
+			this.createEntry(uid, name, c.getBlob(0), status);
 		}
 		else
 		{
@@ -170,13 +175,12 @@ public class AppsDBAdapter
 		}
 		
 		// fetch the table
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]{"UID", "NAME"}, null, null, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]{"UID", "NAME", "ICON"}, null, null, null, null, null);
 	
 		while (c.getPosition() < c.getCount() - 1)
 		{
 			c.moveToNext();
 			this.changeStatus(c.getInt(0), c.getString(1), block);
-			//mDb.execSQL("UPDATE apps SET STATUS='" + block + "'" + "WHERE (UID='" + c.getInt(0) + "')");
 		}
 	}
 
@@ -212,4 +216,9 @@ public class AppsDBAdapter
 		}
 	}
 
+	public void clear()
+	{
+		mDb.execSQL("DROP TABLE apps");
+		mDb.execSQL(DATABASE_CREATE);
+	}
 }

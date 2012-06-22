@@ -77,9 +77,8 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 		final AppInfo app = data.get(position);
 
 		dba = new AppsDBAdapter(context);
-		dba.open();
 		
-
+		
 		holder.box.setOnCheckedChangeListener(new OnCheckedChangeListener()
 		{
 
@@ -98,6 +97,8 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 				dba.close();
 			}
 		});
+		
+		dba.open();
 		final CheckBox box = holder.box;
 		box.setChecked(dba.checkBlock(app.uid));
 		dba.close();

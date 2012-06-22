@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal"
-    android:padding="10dp" >
+    android:orientation="horizontal">
+    <!-- android:padding="10dp" --> 
 
     <CheckBox android:id="@+id/block_allow"
        android:layout_width="wrap_content"
@@ -11,24 +11,24 @@
     
     <ImageView
         android:id="@+id/imgIcon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="3dp"
         android:gravity="center_vertical" />
 
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="0dp"
         android:gravity="center_vertical"
         android:textColor="#FFFFFF"
         android:textSize="15dp"

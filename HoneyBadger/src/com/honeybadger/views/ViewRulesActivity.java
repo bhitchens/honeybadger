@@ -215,7 +215,6 @@ public class ViewRulesActivity extends ListActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-
 		// Handle item selection
 		switch (item.getItemId())
 		{
