@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.honeybadger"
-    android:versionCode="9"
-    android:versionName="2.2" >
+    android:versionCode="10"
+    android:versionName="2.3" >
 
     <uses-sdk android:minSdkVersion="8" />
 
@@ -27,6 +27,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        
+        <activity android:name=".HBTabActivity" />
+        
         <activity android:name="com.honeybadger.SplashScreen" >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />

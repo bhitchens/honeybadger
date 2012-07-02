@@ -58,7 +58,7 @@ public class SplashScreen extends Activity
 
 				// Run next activity
 				Intent intent = new Intent();
-				intent.setClass(sPlashScreen, HoneyBadgerActivity.class);
+				intent.setClass(sPlashScreen, HBTabActivity.class);
 				startActivity(intent);
 				stop();
 			}

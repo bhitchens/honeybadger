@@ -54,7 +54,24 @@ public class Blocker extends Service
 	 */
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
+		boolean reload = false;
+		try
+		{
 		Bundle extras = intent.getExtras();
+		if (extras.getString("reload").contains("true"))
+		{
+			reload = true;
+		}
+		else
+		{
+			reload = false;
+		}
+		}
+		catch(Throwable error)
+		{
+			
+		}
+		
 		
 		// Opens rules database and creates cursor to iterate through all
 		// entries
@@ -69,7 +86,7 @@ public class Blocker extends Service
 			// If rule has not yet been applied to IPTables, add it to the
 			// script string. Generate its components based on the values in the
 			// cells.
-			if (c.getString(5).contains("false") | extras.getString("reload").contains("true"))
+			if (c.getString(5).contains("false") | reload)
 			{
 				String drop;
 				String inOut;

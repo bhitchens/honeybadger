@@ -1,80 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- * Author(s): Alex Harris
- * Version: 1.1
- * Date of last modification: 4 MAR 2012
- * Source Info:    
- |The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
- |located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
- |Background image obtained from: http://www.slashphone.com/wallpaper/detail.php?photo=33152
--->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/red"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="50dip"
-        android:src="@drawable/banner" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="230dip"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="45dip"
-        android:layout_marginTop="30dip"
-        android:background="@drawable/cust_buttons"
-        android:text="View/Edit Rules"
-        android:textColor="@android:color/white"
-        android:textSize="7pt" />
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="230dip"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="45dip"
-        android:layout_marginTop="25dip"
-        android:background="@drawable/cust_buttons"
-        android:text="Add IP/URL Rule"
-        android:textColor="@android:color/white"
-        android:textSize="7pt" />
-    
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="230dip"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="45dip"
-        android:layout_marginTop="25dip"
-        android:background="@drawable/cust_buttons"
-        android:text="Set APP Rules"
-        android:textColor="@android:color/white"
-        android:textSize="7pt" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="230dip"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="45dip"
-        android:layout_marginTop="25dip"
-        android:background="@drawable/cust_buttons"
-        android:text="View Log"
-        android:textColor="@android:color/white"
-        android:textSize="7pt" />
-
-</LinearLayout>
+</TabHost>

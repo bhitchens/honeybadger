@@ -18,13 +18,7 @@
     android:layout_height="fill_parent"
     android:background="@drawable/redback">
 
-    <TextView
-        android:id="@+id/addRulelabel"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"  
-        android:text="Add Rule:"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+   
     
      <TextView
         android:id="@+id/enterUrllabel"
@@ -36,7 +30,7 @@
         android:id="@+id/notelabel"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="*Note: This rule will apply to IP addresses currently associated with the designated URL.  If the site obtains new IP addresses the rule will not apply to them."/>
+        android:text="*Note: This rule will apply only to the IP addresses available from resolving the domain at the time it is set."/>
      
      <EditText
         android:id="@+id/urlEntry"

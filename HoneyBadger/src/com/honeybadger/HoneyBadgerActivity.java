@@ -23,8 +23,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.Scripts;
@@ -32,7 +30,6 @@ import com.honeybadger.api.databases.AppsDBAdapter;
 import com.honeybadger.api.databases.LogDBAdapter;
 import com.honeybadger.views.EditPreferencesActivity;
 import com.honeybadger.views.EditRulesActivity;
-import com.honeybadger.views.ShowAppsActivity;
 import com.honeybadger.views.ViewLogActivity;
 import com.honeybadger.views.ViewRulesActivity;
 
@@ -81,63 +78,9 @@ public class HoneyBadgerActivity extends Activity
 		startService(script);
 
 		// Set the view for the activity
-		setContentView(R.layout.main);
-
-		// Create ViewLog Button
-		Button ViewLog = (Button) findViewById(R.id.button3);
-
-		// Create listener to launch activity to view log when ViewLog button is
-		// pressed.
-		ViewLog.setOnClickListener(new View.OnClickListener()
-		{
-			public void onClick(View view)
-			{
-				Intent myIntent = new Intent(view.getContext(), ViewLogActivity.class);
-				startActivity(myIntent);
-			}
-		});
-
-		// Create ViewRules button.
-		Button ViewRules = (Button) findViewById(R.id.button1);
-
-		// Create listener to launch activity to view rules when ViewRules
-		// button is pressed.
-		ViewRules.setOnClickListener(new View.OnClickListener()
-		{
-			public void onClick(View view)
-			{
-				Intent ruleIntent = new Intent(view.getContext(), ViewRulesActivity.class);
-				startActivity(ruleIntent);
-			}
-		});
-
-		// Create ViewApps button.
-		Button ViewApps = (Button) findViewById(R.id.button4);
-
-		// Create listener to launch activity to view rules when ViewApps
-		// button is pressed.
-		ViewApps.setOnClickListener(new View.OnClickListener()
-		{
-			public void onClick(View view)
-			{
-				Intent ruleIntent = new Intent(view.getContext(), ShowAppsActivity.class);
-				startActivity(ruleIntent);
-			}
-		});
-
-		// Create EditRules button.
-		Button EditRules = (Button) findViewById(R.id.button2);
-
-		// Create listener to launch activity to edit rules when EditRules
-		// button is pressed.
-		EditRules.setOnClickListener(new View.OnClickListener()
-		{
-			public void onClick(View view)
-			{
-				Intent myIntent = new Intent(view.getContext(), EditRulesActivity.class);
-				startActivity(myIntent);
-			}
-		});
+		setContentView(R.layout.home);
+		
+		AppRater.app_launched(this);
 		
 		// Load apps if not already added
 		if (!settings.getBoolean("loaded", false))
@@ -147,7 +90,6 @@ public class HoneyBadgerActivity extends Activity
 			editor.putBoolean("loaded", true);
 			editor.commit();
 		}
-
 	}
 
 	/**
