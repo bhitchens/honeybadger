@@ -104,47 +104,23 @@ public class Blocker extends Service
 					inOut = "OUT";
 					if (c.getString(4).contains("domain"))
 					{
-						// create chain with name of domain name
-						rule += this.getDir("bin", 0) + "/iptables -N "
-								+ c.getString(0)
-								+ inOut
-								+ "\n"
-								// create rule(s) for domain in chain
-								+ this.getDir("bin", 0) + "/iptables -A " + c.getString(0) + inOut
-								+ " -d " + c.getString(0)
-								+ " -m state --state NEW,RELATED,ESTABLISHED -j " + drop + inOut + "\n"
-								// create rule to jump to the chain
-								+ this.getDir("bin", 0) + "/iptables -I " + inOut + "PUT" + " -j "
-								+ c.getString(0) + inOut + "\n";
-
+						rule = SharedMethods.ruleBuilder(this, rule, "Domain", c.getString(0), true, drop, inOut);
 					}
 					else
 					{
-						rule += this.getDir("bin", 0) + "/iptables -I " + inOut + "PUT" + " -d "
-								+ c.getString(0) + " -m state --state NEW,RELATED,ESTABLISHED -j "
-								+ drop + inOut + "\n";
+						rule = SharedMethods.ruleBuilder(this, rule, "IP", c.getString(0), true, drop, inOut);
 					}
 				}
 				else
 				{
 					inOut = "IN";
 					if (c.getString(4).contains("domain"))
-					{
-						// create chain with name of domain name + direction
-						rule += this.getDir("bin", 0) + "/iptables -N " + c.getString(0)
-								+ inOut
-								+ "\n"
-								// create rule(s) for domain in chain
-								+ this.getDir("bin", 0) + "/iptables -A " + c.getString(0) + inOut
-								+ " -s " + c.getString(0) + " -j " + drop + inOut+ "\n"
-								// create rule to jump to the chain
-								+ this.getDir("bin", 0) + "/iptables -I " + inOut + "PUT" + " -j "
-								+ c.getString(0) + inOut + "\n";
+					{						
+						rule = SharedMethods.ruleBuilder(this, rule, "Domain", c.getString(0), true, drop, inOut);
 					}
 					else
 					{
-						rule += this.getDir("bin", 0) + "/iptables -I " + inOut + "PUT" + " -s "
-								+ c.getString(0) + " -j " + drop + inOut + "\n";
+						rule = SharedMethods.ruleBuilder(this, rule, "IP", c.getString(0), true, drop, inOut);
 					}
 				}
 

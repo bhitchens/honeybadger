@@ -13,6 +13,8 @@ import android.widget.TabHost.TabSpec;
 
 public class HBTabActivity extends TabActivity
 {
+	TabHost tabHost;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -50,5 +52,11 @@ public class HBTabActivity extends TabActivity
 		tabHost.addTab(addspec);		
 		tabHost.addTab(rulesspec);
 		tabHost.addTab(logspec);
+	}
+	
+	public void switchTab(int tab)
+	{
+		tabHost = getTabHost();
+		tabHost.setCurrentTab(tab);
 	}
 }

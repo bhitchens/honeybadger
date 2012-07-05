@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -288,7 +289,7 @@ public class EditRulesActivity extends Activity
 						Intent myIntent = new Intent(EditRulesActivity.this, Blocker.class);
 						myIntent.putExtra("reload", "false");
 						startService(myIntent);
-						EditRulesActivity.this.finish();
+						clear();
 					}
 				}).setNegativeButton("No", new DialogInterface.OnClickListener()
 				{
@@ -297,8 +298,23 @@ public class EditRulesActivity extends Activity
 						dialog.cancel();
 					}
 				});
+		
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+	
+	private void clear()
+	{
+		urlEdit = (EditText) findViewById(R.id.urlEntry);
+		ipEdit = (EditText) findViewById(R.id.ipEntry);
+
+		CheckIn = (CheckBox) findViewById(R.id.checkIn);
+		CheckOut = (CheckBox) findViewById(R.id.checkOut);
+		
+		urlEdit.setText("");
+		ipEdit.setText("");
+		((CompoundButton) CheckIn).setChecked(false);
+		((CompoundButton) CheckOut).setChecked(false);
 	}
 
 }

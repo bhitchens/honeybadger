@@ -41,7 +41,7 @@ public class HoneyBadgerActivity extends Activity
 
 	SharedPreferences settings;
 	SharedPreferences.Editor editor;
-	
+
 	private AppsDBAdapter appAdapter;
 
 	/**
@@ -55,15 +55,15 @@ public class HoneyBadgerActivity extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		settings = getSharedPreferences("main", 1);
 		editor = settings.edit();
-		
+
 		boolean check = SharedMethods.installIPTables(this, settings, editor);
 		if (check == true)
 		{
 			sendNotification();
-		}		
+		}
 
 		startScript = SharedMethods.initialString(startScript, this);
 
@@ -79,9 +79,9 @@ public class HoneyBadgerActivity extends Activity
 
 		// Set the view for the activity
 		setContentView(R.layout.home);
-		
+
 		AppRater.app_launched(this);
-		
+
 		// Load apps if not already added
 		if (!settings.getBoolean("loaded", false))
 		{

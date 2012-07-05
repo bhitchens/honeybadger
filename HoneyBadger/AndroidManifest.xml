@@ -15,6 +15,7 @@
         <receiver android:name=".BootInit" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
@@ -24,15 +25,15 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        
         <activity android:name=".HBTabActivity" />
-        
         <activity android:name="com.honeybadger.SplashScreen" >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
@@ -51,7 +52,6 @@
                 <action android:name="com.honeybadger.api.Scripts" />
             </intent-filter>
         </service>
-        
         <service
             android:name="com.honeybadger.api.LogScript"
             android:process=":logProc" >
@@ -59,7 +59,6 @@
                 <action android:name="com.honeybadger.LogScript" />
             </intent-filter>
         </service>
-        
         <service
             android:name="com.honeybadger.api.Fetcher"
             android:process=":fetchProc" >
@@ -67,23 +66,16 @@
                 <action android:name="com.honeybadger.api.Fetcher" />
             </intent-filter>
         </service>
-        
         <service android:name="com.honeybadger.api.Blocker" />
-        
         <service android:name="com.honeybadger.api.AppBlocker" />
 
         <!-- views package -->
 
         <activity android:name="com.honeybadger.views.ViewRulesActivity" />
-        
         <activity android:name=".views.ViewLogActivity" />
-        
         <activity android:name=".views.EditRulesActivity" />
-        
         <activity android:name=".views.EditPreferencesActivity" />
-        
         <activity android:name=".views.ShowAppsActivity" />
-        
     </application>
 
 </manifest>

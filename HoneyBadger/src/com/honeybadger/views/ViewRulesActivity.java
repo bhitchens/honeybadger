@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import com.honeybadger.R;
 import com.honeybadger.api.Scripts;
+import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.RulesDBAdapter;
 
 import android.app.AlertDialog;
@@ -69,7 +70,7 @@ public class ViewRulesActivity extends ListActivity
 		while (c.getPosition() < c.getCount() - 1)
 		{
 			c.moveToNext();
-			RULES.add(c.getString(3) + " " + c.getString(2) + "bound traffic from IP address "
+			RULES.add(c.getString(3) + " " + c.getString(2) + "bound traffic from "
 					+ c.getString(0));
 		}
 
@@ -131,10 +132,10 @@ public class ViewRulesActivity extends ListActivity
 								}
 
 								ruleAdapter.open();
-								ruleAdapter.deleteEntry(tokens[6], direction);
+								ruleAdapter.deleteEntry(tokens[4], direction);
 								ruleAdapter.close();
 
-								deleteRule(tokens[6], direction, dropAllow);
+								deleteRule(tokens[4], direction, dropAllow);
 							}
 						}).setNegativeButton("No", new DialogInterface.OnClickListener()
 						{
@@ -168,23 +169,25 @@ public class ViewRulesActivity extends ListActivity
 		// set input/output strings to correct values
 		if (direction == "out")
 		{
-			inOut = "OUTPUT";
+			inOut = "OUT";
 		}
 		else
 		{
-			inOut = "INPUT";
+			inOut = "IN";
 		}
 
 		if (Character.isDigit(ip.charAt(0)))
 		{
-			rule += this.getDir("bin", 0) + "/iptables -D " + inOut + " -s " + ip + " -j "
-					+ dropAllow;
+			/*rule += this.getDir("bin", 0) + "/iptables -D " + inOut + "PUT" + " -s " + ip + " -j "
+					+ dropAllow + inOut;*/
+			rule = SharedMethods.ruleBuilder(this, rule, "IP", ip, false, dropAllow, inOut);
 		}
 		else
 		{
-			rule += this.getDir("bin", 0) + "/iptables -D " + inOut + " -j " + ip + inOut + "\n"
+			/*rule += this.getDir("bin", 0) + "/iptables -D " + inOut + "PUT" + " -j " + ip + inOut + "\n"
 					+ rule + this.getDir("bin", 0) + "/iptables -F " + ip + inOut + "\n"
-					+ this.getDir("bin", 0) + "/iptables -X " + ip + inOut;
+					+ this.getDir("bin", 0) + "/iptables -X " + ip + inOut;*/
+			rule = SharedMethods.ruleBuilder(this, rule, "Domain", ip, false, "", inOut);
 		}
 
 		Intent intent2 = new Intent();

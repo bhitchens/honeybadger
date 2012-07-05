@@ -55,21 +55,13 @@ public class AppBlocker extends Service
 				c.moveToNext();
 				if (c.getString(3).contains("block"))
 				{
-					script += context.getDir("bin", 0)
-							+ "/iptables -D OUTPUT -m owner --uid-owner " + c.getInt(0)
-							+ " -j ACCEPTOUT" + "\n";
-					script += context.getDir("bin", 0)
-							+ "/iptables -D OUTPUT -m owner --uid-owner " + c.getInt(0)
-							+ " -j DROPOUT" + "\n";
-					script += context.getDir("bin", 0)
-							+ "/iptables -A OUTPUT -m owner --uid-owner " + c.getInt(0)
-							+ " -j DROPOUT" + "\n";
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "ACCEPT", "OUT");
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "DROP", "OUT");
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), true, "DROP", "OUT");
 				}
 				else
 				{
-					script += context.getDir("bin", 0)
-							+ "/iptables -D OUTPUT -m owner --uid-owner " + c.getInt(0)
-							+ " -j DROPOUT" + "\n";
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "DROP", "OUT");
 				}
 			}
 			script += context.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
@@ -82,21 +74,13 @@ public class AppBlocker extends Service
 				c.moveToNext();
 				if (!c.getString(2).contains("block"))
 				{
-					script += context.getDir("bin", 0)
-							+ "/iptables -D OUTPUT -m owner --uid-owner " + c.getInt(0)
-							+ " -j DROPOUT" + "\n";
-					script += context.getDir("bin", 0)
-							+ "/iptables -D OUTPUT -m owner --uid-owner " + c.getInt(0)
-							+ " -j ACCEPTOUT" + "\n";
-					script += context.getDir("bin", 0)
-							+ "/iptables -A OUTPUT -m owner --uid-owner " + c.getInt(0)
-							+ " -j ACCEPTOUT" + "\n";
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "DROP", "OUT");
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "ACCEPT", "OUT");
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), true, "ACCEPT", "OUT");
 				}
 				else
 				{
-					script += context.getDir("bin", 0)
-							+ "/iptables -D OUTPUT -m owner --uid-owner " + c.getInt(0)
-							+ " -j ACCEPTOUT" + "\n";
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "ACCEPT", "OUT");
 				}
 			}
 			script += context.getDir("bin", 0) + "/iptables -A OUTPUT -j DROPOUT" + "\n";

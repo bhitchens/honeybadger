@@ -9,42 +9,49 @@
  |Background image obtained from: http://www.slashphone.com/wallpaper/detail.php?photo=33152
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/red"
-    android:orientation="vertical" >
+    android:fillViewport="true" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dip"
-        android:src="@drawable/banner" />
+    <LinearLayout
+        android:id="@+id/linLayHome"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/red"
+        android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dip"
+            android:src="@drawable/banner" />
 
-    <TextView
-        android:id="@+id/textViewHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/intro_header"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-    
-    <TextView
-        android:id="@+id/textViewBody"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/intro_body"
-        android:textSize="15dp"
-        android:layout_marginLeft="5dip" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/textViewHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/intro_header"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="5dip"
+            android:text="@string/intro_body"
+            android:textSize="15dp" />
+    </LinearLayout>
+
+</ScrollView>

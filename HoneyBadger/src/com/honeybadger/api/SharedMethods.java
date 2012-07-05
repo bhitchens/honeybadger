@@ -276,6 +276,70 @@ public final class SharedMethods
 		}
 	}
 
+	public static String ruleBuilder(Context ctx, String rule, String type, String target,
+			Boolean add, String block, String in)
+	{
+		String newRule = rule;
+		if (type == "App")
+		{
+			if (add)
+			{
+				newRule += ctx.getDir("bin", 0) + "/iptables -A OUTPUT -m owner --uid-owner "
+						+ target + " -j " + block + in + "\n";
+			}
+			else
+			{
+				newRule += ctx.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
+						+ target + " -j " + block + in + "\n";
+			}
+		}
+		else if (type == "Domain")
+		{
+			if (add)
+			{
+				// create chain with name of domain name + direction
+				newRule += ctx.getDir("bin", 0) + "/iptables -N " + target + in
+						+ "\n"
+						// create rule(s) for domain in chain
+						+ ctx.getDir("bin", 0) + "/iptables -A " + target + in + " -s " + target
+						+ " -j " + block + in + "\n"
+						// create rule to jump to the chain
+						+ ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -j " + target
+						+ in + "\n";
+			}
+			else
+			{
+				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -j " + target
+						+ in + "\n" + ctx.getDir("bin", 0) + "/iptables -F " + target + in + "\n"
+						+ ctx.getDir("bin", 0) + "/iptables -X " + target + in + "\n";
+			}
+		}
+		else if (type == "IP")
+		{
+			if (add & in == "IN")
+			{
+				newRule += ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -s " + target
+						+ " -j " + block + in + "\n";
+			}
+			else if (add & in == "OUT")
+			{
+				newRule += ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -d " + target
+						+ " -m state --state NEW,RELATED,ESTABLISHED -j " + block + in + "\n";
+			}
+			else if (in == "IN")
+			{
+				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -s " + target
+						+ " -j " + block + in + "\n";
+			}
+			else
+			{
+				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -d " + target
+						+ " -m state --state NEW,RELATED,ESTABLISHED -j " + block + in + "\n";
+			}
+		}
+		return newRule;
+	}
+
 	/*************************************************
 	 * Application information
 	 *************************************************/
@@ -297,7 +361,7 @@ public final class SharedMethods
 			String block = "";
 			appAdapter = new AppsDBAdapter(ctx);
 			appAdapter.open();
-			
+
 			appAdapter.clear();
 
 			if (settings.getBoolean("block", false))
@@ -325,10 +389,9 @@ public final class SharedMethods
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
 
-				appAdapter
-						.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block);
+				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block);
 			}
-			
+
 			for (i = 0; i < list.size(); i++)
 			{
 				if (!((packs.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1))
@@ -342,10 +405,9 @@ public final class SharedMethods
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
 
-				appAdapter
-						.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block);
+				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block);
 			}
-			
+
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
 		}
