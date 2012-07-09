@@ -62,7 +62,7 @@ public class ViewRulesActivity extends ListActivity
 		ruleAdapter = new RulesDBAdapter(this);
 		ruleAdapter.open();
 
-		c = ruleAdapter.fetchAllEntries();
+		c = ruleAdapter.fetchAllEntriesNew();
 		startManagingCursor(c);
 
 		RULES = new ArrayList<String>();
@@ -71,7 +71,7 @@ public class ViewRulesActivity extends ListActivity
 		{
 			c.moveToNext();
 			RULES.add(c.getString(3) + " " + c.getString(2) + "bound traffic from "
-					+ c.getString(0));
+					+ c.getString(0) + " over the" + c.getString(4) + " interface.");
 		}
 
 		ruleAdapter.close();
@@ -131,11 +131,13 @@ public class ViewRulesActivity extends ListActivity
 									dropAllow = "ALLOW";
 								}
 
+								String netInt = tokens[7];
+
 								ruleAdapter.open();
 								ruleAdapter.deleteEntry(tokens[4], direction);
 								ruleAdapter.close();
 
-								deleteRule(tokens[4], direction, dropAllow);
+								deleteRule(tokens[4], direction, dropAllow, netInt);
 							}
 						}).setNegativeButton("No", new DialogInterface.OnClickListener()
 						{
@@ -161,7 +163,7 @@ public class ViewRulesActivity extends ListActivity
 	 * @param dropAllow
 	 *            Helps ensure correct rule is deleted.
 	 */
-	public void deleteRule(String ip, String direction, String dropAllow)
+	public void deleteRule(String ip, String direction, String dropAllow, String netInt)
 	{
 		String inOut;
 		String rule = "";
@@ -178,16 +180,29 @@ public class ViewRulesActivity extends ListActivity
 
 		if (Character.isDigit(ip.charAt(0)))
 		{
-			/*rule += this.getDir("bin", 0) + "/iptables -D " + inOut + "PUT" + " -s " + ip + " -j "
-					+ dropAllow + inOut;*/
-			rule = SharedMethods.ruleBuilder(this, rule, "IP", ip, false, dropAllow, inOut);
+			if (netInt.contains("wifi"))
+			{
+				rule = SharedMethods.ruleBuilder(this, rule, "IP", ip, false, dropAllow, inOut,
+						true, false);
+			}
+			else
+			{
+				rule = SharedMethods.ruleBuilder(this, rule, "IP", ip, false, dropAllow, inOut,
+						false, true);
+			}
 		}
 		else
 		{
-			/*rule += this.getDir("bin", 0) + "/iptables -D " + inOut + "PUT" + " -j " + ip + inOut + "\n"
-					+ rule + this.getDir("bin", 0) + "/iptables -F " + ip + inOut + "\n"
-					+ this.getDir("bin", 0) + "/iptables -X " + ip + inOut;*/
-			rule = SharedMethods.ruleBuilder(this, rule, "Domain", ip, false, "", inOut);
+			if (netInt.contains("wifi"))
+			{
+				rule = SharedMethods.ruleBuilder(this, rule, "Domain", ip, false, "", inOut, true,
+						false);
+			}
+			else
+			{
+				rule = SharedMethods.ruleBuilder(this, rule, "Domain", ip, false, "", inOut, false,
+						true);
+			}
 		}
 
 		Intent intent2 = new Intent();

@@ -277,7 +277,32 @@ public final class SharedMethods
 	}
 
 	public static String ruleBuilder(Context ctx, String rule, String type, String target,
-			Boolean add, String block, String in)
+			Boolean add, String block, String in, Boolean wifi, Boolean cell)
+	{
+		String newRule = rule;
+		if (wifi)
+		{
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "tiwlan+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "wlan+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "eth+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "ra+");
+		}
+		if (cell)
+		{
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "rmnet+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "pdp+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "ppp+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "uwbr+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "wimax+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "vsnet+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "ccmni+");
+			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "usb+");
+		}
+		return newRule;
+	}
+	
+	private static String ruleBuilderF(Context ctx, String rule, String type, String target,
+			Boolean add, String block, String in, String netInt)
 	{
 		String newRule = rule;
 		if (type == "App")
@@ -389,7 +414,7 @@ public final class SharedMethods
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
 
-				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block);
+				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block, block);
 			}
 
 			for (i = 0; i < list.size(); i++)
@@ -405,7 +430,7 @@ public final class SharedMethods
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
 
-				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block);
+				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block, block);
 			}
 
 			SharedPreferences.Editor editor = settings.edit();

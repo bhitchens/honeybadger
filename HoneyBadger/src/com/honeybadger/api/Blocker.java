@@ -57,36 +57,38 @@ public class Blocker extends Service
 		boolean reload = false;
 		try
 		{
-		Bundle extras = intent.getExtras();
-		if (extras.getString("reload").contains("true"))
+			Bundle extras = intent.getExtras();
+			if (extras.getString("reload").contains("true"))
+			{
+				reload = true;
+			}
+			else
+			{
+				reload = false;
+			}
+		}
+		catch (Throwable error)
 		{
-			reload = true;
+
 		}
-		else
-		{
-			reload = false;
-		}
-		}
-		catch(Throwable error)
-		{
-			
-		}
-		
-		
+
 		// Opens rules database and creates cursor to iterate through all
 		// entries
 		ruleAdapter.open();
-		c = ruleAdapter.fetchAllEntries();
+		c = ruleAdapter.fetchAllEntriesNew();
+		String target;
+		String netInt;
 
 		// Loop through rows of database
 		while (c.getPosition() < c.getCount() - 1)
 		{
 			c.moveToNext();
-
+			target = c.getString(0);
+			netInt = c.getString(4);
 			// If rule has not yet been applied to IPTables, add it to the
 			// script string. Generate its components based on the values in the
 			// cells.
-			if (c.getString(5).contains("false") | reload)
+			if (c.getString(6).contains("false") | reload)
 			{
 				String drop;
 				String inOut;
@@ -102,25 +104,29 @@ public class Blocker extends Service
 				if (c.getString(2).contains("out"))
 				{
 					inOut = "OUT";
-					if (c.getString(4).contains("domain"))
+					if (c.getString(5).contains("domain"))
 					{
-						rule = SharedMethods.ruleBuilder(this, rule, "Domain", c.getString(0), true, drop, inOut);
+						rule = SharedMethods.ruleBuilder(this, rule, "Domain", target, true, drop,
+								inOut, netInt.contains("wifi"), netInt.contains("cell"));
 					}
 					else
 					{
-						rule = SharedMethods.ruleBuilder(this, rule, "IP", c.getString(0), true, drop, inOut);
+						rule = SharedMethods.ruleBuilder(this, rule, "IP", target, true, drop,
+								inOut, netInt.contains("wifi"), netInt.contains("cell"));
 					}
 				}
 				else
 				{
 					inOut = "IN";
-					if (c.getString(4).contains("domain"))
-					{						
-						rule = SharedMethods.ruleBuilder(this, rule, "Domain", c.getString(0), true, drop, inOut);
+					if (c.getString(5).contains("domain"))
+					{
+						rule = SharedMethods.ruleBuilder(this, rule, "Domain", target, true, drop,
+								inOut, netInt.contains("wifi"), netInt.contains("cell"));
 					}
 					else
 					{
-						rule = SharedMethods.ruleBuilder(this, rule, "IP", c.getString(0), true, drop, inOut);
+						rule = SharedMethods.ruleBuilder(this, rule, "IP", target, true, drop,
+								inOut, netInt.contains("wifi"), netInt.contains("cell"));
 					}
 				}
 

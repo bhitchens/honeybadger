@@ -63,7 +63,8 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 
 			holder = new AppHolder();
 
-			holder.box = (CheckBox) row.findViewById(R.id.block_allow);
+			holder.boxW = (CheckBox) row.findViewById(R.id.block_wifi);
+			holder.boxC = (CheckBox) row.findViewById(R.id.block_cell);
 			holder.imgIcon = (ImageView) row.findViewById(R.id.imgIcon);
 			holder.txtTitle = (TextView) row.findViewById(R.id.txtTitle);
 
@@ -76,31 +77,51 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 
 		final AppInfo app = data.get(position);
 
-		dba = new AppsDBAdapter(context);
+		dba = new AppsDBAdapter(context);		
 		
-		
-		holder.box.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		holder.boxW.setOnCheckedChangeListener(new OnCheckedChangeListener()
 		{
 
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 			{
 				dba.open();
-				Boolean prevBlock = dba.checkBlock(app.uid);
+				Boolean prevBlock = dba.checkBlockW(app.uid);
 				if (isChecked && !prevBlock)
 				{
-					dba.changeStatus(app.uid, app.appname, "block");
+					dba.changeStatus(app.uid, app.appname, "block", "default");
 				}
 				else if (!isChecked && prevBlock)
 				{
-					dba.changeStatus(app.uid, app.appname, "allow");
+					dba.changeStatus(app.uid, app.appname, "allow", "default");
+				}
+				dba.close();
+			}
+		});
+		
+		holder.boxC.setOnCheckedChangeListener(new OnCheckedChangeListener()
+		{
+
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+			{
+				dba.open();
+				Boolean prevBlock = dba.checkBlockC(app.uid);
+				if (isChecked && !prevBlock)
+				{
+					dba.changeStatus(app.uid, app.appname, "default", "block");
+				}
+				else if (!isChecked && prevBlock)
+				{
+					dba.changeStatus(app.uid, app.appname, "default", "allow");
 				}
 				dba.close();
 			}
 		});
 		
 		dba.open();
-		final CheckBox box = holder.box;
-		box.setChecked(dba.checkBlock(app.uid));
+		final CheckBox boxW = holder.boxW;
+		boxW.setChecked(dba.checkBlockW(app.uid));
+		final CheckBox boxC = holder.boxC;
+		boxC.setChecked(dba.checkBlockW(app.uid));
 		dba.close();
 		holder.txtTitle.setText(app.appname + " (" + Integer.toString(app.uid) + ")");
 		holder.imgIcon.setImageDrawable(app.icon);
@@ -110,7 +131,8 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 
 	static class AppHolder
 	{
-		CheckBox box;
+		CheckBox boxW;
+		CheckBox boxC;
 		ImageView imgIcon;
 		TextView txtTitle;
 	}

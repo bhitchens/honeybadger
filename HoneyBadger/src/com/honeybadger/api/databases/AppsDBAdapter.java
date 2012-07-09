@@ -27,7 +27,7 @@ public class AppsDBAdapter
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 
-	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, ICON blob not null, STATUS text not null)";
+	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, ICON blob not null, WSTATUS text not null, CSTATUS text not null)";
 
 	private static final String DATABASE_NAME = "appDB";
 	private static final String DATABASE_TABLE = "apps";
@@ -110,10 +110,11 @@ public class AppsDBAdapter
 	 *            the body of the note
 	 * @return rowId or -1 if failed
 	 */
-	public void createEntry(int uid, String name, byte[] icon, String status)
+	public void createEntry(int uid, String name, byte[] icon, String wStatus, String cStatus)
 	{
 		// Check to see if entry already exists
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]{"NAME"}, "UID='" + uid + "'", null, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+		{ "NAME" }, "UID='" + uid + "'", null, null, null, null);
 
 		// if there is no entry
 		if (c == null || c.getCount() == 0)
@@ -123,7 +124,8 @@ public class AppsDBAdapter
 			initialValues.put("UID", uid);
 			initialValues.put("NAME", name);
 			initialValues.put("ICON", icon);
-			initialValues.put("STATUS", status);
+			initialValues.put("WSTATUS", wStatus);
+			initialValues.put("CSTATUS", cStatus);
 
 			// inserts entry with data from initialValues
 			mDb.insert(DATABASE_TABLE, null, initialValues);
@@ -133,7 +135,8 @@ public class AppsDBAdapter
 			c.moveToFirst();
 			if (!c.getString(0).contains(name))
 			{
-				mDb.execSQL("UPDATE apps SET NAME='" + c.getString(0) + ", " + name + "'" + "WHERE (UID='" + uid + "')");
+				mDb.execSQL("UPDATE apps SET NAME='" + c.getString(0) + ", " + name + "'"
+						+ "WHERE (UID='" + uid + "')");
 			}
 		}
 
@@ -147,19 +150,22 @@ public class AppsDBAdapter
 	 * @param status
 	 *            whether app is blocked or allowed
 	 */
-	public void changeStatus(int uid, String name, String status)
+	public void changeStatus(int uid, String name, String wStatus, String cStatus)
 	{
 		// Check to see if entry already exists
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]{"ICON"}, "UID='" + uid + "'", null, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+		{ "ICON" }, "UID='" + uid + "'", null, null, null, null);
 		// if there is no entry
 		if (c == null || c.getCount() == 0)
 		{
-			this.createEntry(uid, name, c.getBlob(0), status);
+			this.createEntry(uid, name, c.getBlob(0), wStatus, cStatus);
 		}
 		else
 		{
-			mDb.execSQL("UPDATE apps SET STATUS='" + status + "'" + "WHERE (UID='" + uid + "')");
+			mDb.execSQL("UPDATE apps SET WSTATUS='" + wStatus + "'" + "WHERE (UID='" + uid + "')");
+			mDb.execSQL("UPDATE apps SET CSTATUS='" + cStatus + "'" + "WHERE (UID='" + uid + "')");
 		}
+
 	}
 
 	public void checkAll(Boolean check)
@@ -173,14 +179,15 @@ public class AppsDBAdapter
 		{
 			block = "allow";
 		}
-		
+
 		// fetch the table
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]{"UID", "NAME", "ICON"}, null, null, null, null, null);
-	
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+		{ "UID", "NAME", "ICON" }, null, null, null, null, null);
+
 		while (c.getPosition() < c.getCount() - 1)
 		{
 			c.moveToNext();
-			this.changeStatus(c.getInt(0), c.getString(1), block);
+			this.changeStatus(c.getInt(0), c.getString(1), block, block);
 		}
 	}
 
@@ -194,10 +201,32 @@ public class AppsDBAdapter
 		return mDb.query(DATABASE_TABLE, null, null, null, null, null, null);
 	}
 
-	public Boolean checkBlock(int uid)
+	public Boolean checkBlockW(int uid)
 	{
 		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "STATUS" }, "UID='" + uid + "'", null, null, null, null);
+		{ "WSTATUS" }, "UID='" + uid + "'", null, null, null, null);
+		if (c != null && c.getCount() != 0)
+		{
+			c.moveToFirst();
+			if (c.getString(0).contains("block"))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public Boolean checkBlockC(int uid)
+	{
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+		{ "CSTATUS" }, "UID='" + uid + "'", null, null, null, null);
 		if (c != null && c.getCount() != 0)
 		{
 			c.moveToFirst();

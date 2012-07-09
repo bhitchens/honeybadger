@@ -35,13 +35,15 @@ public class AppBlocker extends Service
 	}
 
 	/**
-	 * Uses database of applications and status of those applications to create rules.
+	 * Uses database of applications and status of those applications to create
+	 * rules.
 	 * 
 	 * @param context
 	 */
 	public void createAppRules(Context context)
 	{
 		String script = "";
+		int uid;
 
 		// Perform action on clicks
 		appAdapter = new AppsDBAdapter(context);
@@ -53,15 +55,24 @@ public class AppBlocker extends Service
 			while (c.getPosition() < c.getCount() - 1)
 			{
 				c.moveToNext();
+				uid = c.getInt(0);
 				if (c.getString(3).contains("block"))
 				{
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "ACCEPT", "OUT");
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "DROP", "OUT");
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), true, "DROP", "OUT");
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
+							false, "ACCEPT", "OUT", appAdapter.checkBlockW(uid),
+							appAdapter.checkBlockC(uid));
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
+							false, "DROP", "OUT", appAdapter.checkBlockW(uid),
+							appAdapter.checkBlockC(uid));
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
+							true, "DROP", "OUT", appAdapter.checkBlockW(uid),
+							appAdapter.checkBlockC(uid));
 				}
 				else
 				{
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "DROP", "OUT");
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
+							false, "DROP", "OUT", appAdapter.checkBlockW(uid),
+							appAdapter.checkBlockC(uid));
 				}
 			}
 			script += context.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
@@ -72,15 +83,24 @@ public class AppBlocker extends Service
 			while (c.getPosition() < c.getCount() - 1)
 			{
 				c.moveToNext();
+				uid = c.getInt(0);
 				if (!c.getString(2).contains("block"))
 				{
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "DROP", "OUT");
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "ACCEPT", "OUT");
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), true, "ACCEPT", "OUT");
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
+							false, "DROP", "OUT", appAdapter.checkBlockW(uid),
+							appAdapter.checkBlockC(uid));
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
+							false, "ACCEPT", "OUT", appAdapter.checkBlockW(uid),
+							appAdapter.checkBlockC(uid));
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
+							true, "ACCEPT", "OUT", appAdapter.checkBlockW(uid),
+							appAdapter.checkBlockC(uid));
 				}
 				else
 				{
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(c.getInt(0)), false, "ACCEPT", "OUT");
+					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
+							false, "ACCEPT", "OUT", appAdapter.checkBlockW(uid),
+							appAdapter.checkBlockC(uid));
 				}
 			}
 			script += context.getDir("bin", 0) + "/iptables -A OUTPUT -j DROPOUT" + "\n";

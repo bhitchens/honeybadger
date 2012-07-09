@@ -56,7 +56,6 @@ public class ShowAppsActivity extends Activity
 		ClearAllButton = (Button) findViewById(R.id.clear_all);
 		ApplyButton = (Button) findViewById(R.id.apply);
 		createListeners(this);
-
 	}
 
 	/**
@@ -100,7 +99,6 @@ public class ShowAppsActivity extends Activity
 						.show();
 			}
 		});
-
 	}
 
 	/**

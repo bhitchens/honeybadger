@@ -47,11 +47,16 @@ public class EditRulesActivity extends Activity
 
 	Button CheckIn;
 	Button CheckOut;
+	Button CheckWifi;
+	Button CheckCell;
 
 	Button BlockAllow;
 
-	String in = "null";
-	String out = "null";
+	Boolean in = false;
+	Boolean out = false;
+	Boolean wifi = false;
+	Boolean cell = false;
+	
 	String allow = "allow";
 	String ipAddress = "null";
 	String urlAddress = "null";
@@ -83,6 +88,8 @@ public class EditRulesActivity extends Activity
 
 		CheckIn = (CheckBox) findViewById(R.id.checkIn);
 		CheckOut = (CheckBox) findViewById(R.id.checkOut);
+		CheckWifi = (CheckBox) findViewById(R.id.checkWifi);
+		CheckCell = (CheckBox) findViewById(R.id.checkCell);
 
 		createListeners();
 	}
@@ -100,11 +107,11 @@ public class EditRulesActivity extends Activity
 				// checked
 				if (((CheckBox) v).isChecked())
 				{
-					in = "true";
+					in = true;
 				}
 				else
 				{
-					in = "false";
+					in = false;
 				}
 			}
 		});
@@ -117,11 +124,45 @@ public class EditRulesActivity extends Activity
 				// checked
 				if (((CheckBox) v).isChecked())
 				{
-					out = "true";
+					out = true;
 				}
 				else
 				{
-					out = "false";
+					out = false;
+				}
+			}
+		});
+		
+		CheckWifi.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				// Perform action on clicks, depending on whether it's now
+				// checked
+				if (((CheckBox) v).isChecked())
+				{
+					wifi = true;
+				}
+				else
+				{
+					wifi = false;
+				}
+			}
+		});
+		
+		CheckCell.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				// Perform action on clicks, depending on whether it's now
+				// checked
+				if (((CheckBox) v).isChecked())
+				{
+					cell = true;
+				}
+				else
+				{
+					cell = false;
 				}
 			}
 		});
@@ -205,7 +246,7 @@ public class EditRulesActivity extends Activity
 		String domain = "";
 
 		rulesDB.open();
-		if (!(ipAddress == "null" & urlAddress == "null") & !(in == "null" & out == "null"))
+		if ((!(ipAddress == "null" & urlAddress == "null") & (in | out)) & (wifi | cell))
 		{
 
 			if (settings.getBoolean("block", false))
@@ -218,6 +259,7 @@ public class EditRulesActivity extends Activity
 			}
 
 			String direction;
+			String netInt;
 
 			if ((ipAddress.length() < 3) & (urlAddress.length() < 3))
 			{
@@ -235,11 +277,11 @@ public class EditRulesActivity extends Activity
 				domain = "domain";
 			}
 
-			if (in == "true" & out == "true")
+			if (in & out)
 			{
 				direction = "both";
 			}
-			else if (in == "true")
+			else if (in)
 			{
 				direction = "in";
 			}
@@ -247,15 +289,46 @@ public class EditRulesActivity extends Activity
 			{
 				direction = "out";
 			}
-
-			if (direction == "both")
+			
+			if (wifi & cell)
 			{
-				rulesDB.createEntry(source, port, "in", allow, domain);
-				rulesDB.createEntry(source, port, "out", allow, domain);
+				netInt = "both";
+			}
+			else if (wifi)
+			{
+				netInt = "wifi";
 			}
 			else
 			{
-				rulesDB.createEntry(source, port, direction, allow, domain);
+				netInt = "cell";
+			}
+
+			if (direction == "both")
+			{
+				if (netInt == "both")
+				{
+					rulesDB.createEntry(source, port, "in", allow, domain, "wifi");
+					rulesDB.createEntry(source, port, "out", allow, domain, "wifi");
+					rulesDB.createEntry(source, port, "in", allow, domain, "cell");
+					rulesDB.createEntry(source, port, "out", allow, domain, "cell");
+				}
+				else
+				{
+					rulesDB.createEntry(source, port, "in", allow, domain, netInt);
+					rulesDB.createEntry(source, port, "out", allow, domain, netInt);
+				}
+			}
+			else
+			{
+				if (netInt == "both")
+				{
+					rulesDB.createEntry(source, port, direction, allow, domain, "wifi");
+					rulesDB.createEntry(source, port, direction, allow, domain, "cell");
+				}
+				else
+				{
+					rulesDB.createEntry(source, port, direction, allow, domain, netInt);
+				}
 			}
 
 			launchCommitDialog();
@@ -269,7 +342,7 @@ public class EditRulesActivity extends Activity
 		}
 		rulesDB.close();
 		ipAddress = "null";
-		in = "null";
+		// in = false;
 	}
 
 	/**
@@ -298,11 +371,11 @@ public class EditRulesActivity extends Activity
 						dialog.cancel();
 					}
 				});
-		
+
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
-	
+
 	private void clear()
 	{
 		urlEdit = (EditText) findViewById(R.id.urlEntry);
@@ -310,11 +383,13 @@ public class EditRulesActivity extends Activity
 
 		CheckIn = (CheckBox) findViewById(R.id.checkIn);
 		CheckOut = (CheckBox) findViewById(R.id.checkOut);
-		
+
 		urlEdit.setText("");
 		ipEdit.setText("");
 		((CompoundButton) CheckIn).setChecked(false);
+		in = false;
 		((CompoundButton) CheckOut).setChecked(false);
+		out = false;
 	}
 
 }

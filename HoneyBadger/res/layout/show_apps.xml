@@ -9,7 +9,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="75dp"
-        android:background="#000000"
+        android:background="@drawable/redlog"
         android:orientation="vertical" >
 
         <TextView
@@ -18,7 +18,6 @@
             android:layout_height="30dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/redlog"
             android:gravity="center_horizontal"
             android:padding="5dp"
             android:text="Select Applications to Block"
@@ -30,49 +29,71 @@
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/redlog"
-            android:gravity="center_horizontal"
+            android:gravity="bottom|center_horizontal"
             android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/check_all"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dip"
-                android:layout_marginTop="0dip"
-                android:background="@drawable/cust_buttons"
-                android:gravity="center"
-                android:singleLine="false"
-                android:text="Check All"
-                android:textColor="@android:color/white"
-                android:textSize="6pt" />
-
-            <Button
-                android:id="@+id/clear_all"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dip"
-                android:layout_marginTop="0dip"
-                android:background="@drawable/cust_buttons"
-                android:gravity="center"
-                android:singleLine="false"
-                android:text="Clear All"
-                android:textColor="@android:color/white"
-                android:textSize="6pt" />
-
-            <Button
-                android:id="@+id/apply"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="5dip"
-                android:layout_marginTop="0dip"
-                android:background="@drawable/cust_buttons"
-                android:gravity="center"
-                android:text="Apply"
-                android:textColor="@android:color/white"
-                android:textSize="6pt" />
 
+            <ImageView
+                android:id="@+id/imageWifi"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="5dip"
+                android:background="@android:color/white"
+                android:src="@drawable/wifi2" />
+
+            <ImageView
+                android:id="@+id/imageCell"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="7dip"
+                android:background="@android:color/white"
+                android:src="@drawable/cell2" />
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal|left"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/check_all"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dip"
+                    android:layout_marginTop="0dip"
+                    android:background="@drawable/cust_buttons"
+                    android:gravity="center"
+                    android:singleLine="false"
+                    android:text="Check All"
+                    android:textColor="@android:color/white"
+                    android:textSize="6pt" />
+
+                <Button
+                    android:id="@+id/clear_all"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dip"
+                    android:layout_marginTop="0dip"
+                    android:background="@drawable/cust_buttons"
+                    android:gravity="center"
+                    android:singleLine="false"
+                    android:text="Clear All"
+                    android:textColor="@android:color/white"
+                    android:textSize="6pt" />
+
+                <Button
+                    android:id="@+id/apply"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="5dip"
+                    android:layout_marginTop="0dip"
+                    android:background="@drawable/cust_buttons"
+                    android:gravity="center"
+                    android:text="Apply"
+                    android:textColor="@android:color/white"
+                    android:textSize="6pt" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

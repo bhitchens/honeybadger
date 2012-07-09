@@ -28,7 +28,8 @@ public class RulesDBAdapter
 	public static final String KEY_ACTION = "Action";
 	public static final String KEY_ROWID = "_id";
 	public static final String KEY_DOMAIN = "Domain";
-	public static final String KEY_SAVED = "Saved";
+	public static final String KEY_INTERFACE = "Interface";
+		public static final String KEY_SAVED = "Saved";
 
 	private static final String TAG = "RulesDBAdapter";
 	private DatabaseHelper mDbHelper;
@@ -40,7 +41,7 @@ public class RulesDBAdapter
 	 */
 	private static final String DATABASE_CREATE = "create table rules (_id integer, "
 			+ "IPAddress text not null, " + "Port text, " + "Direction text not null, "
-			+ "Action text not null, " + "Domain text not null, " + "Saved text not null, "
+			+ "Action text not null, " + "Domain text not null, " + "Interface text not null" + "Saved text not null, "
 			+ "PRIMARY KEY (IPAddress, Direction));";
 
 	private static final String DATABASE_NAME = "ruleDB";
@@ -118,7 +119,7 @@ public class RulesDBAdapter
 	 *            the body of the note
 	 * @return rowId or -1 if failed
 	 */
-	public long createEntry(String ip, String port, String direction, String action, String domain)
+	public long createEntry(String ip, String port, String direction, String action, String domain, String netInt)
 	{
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_IP_ADDRESS, ip);
@@ -126,6 +127,7 @@ public class RulesDBAdapter
 		initialValues.put(KEY_DIRECTION, direction);
 		initialValues.put(KEY_ACTION, action);
 		initialValues.put(KEY_DOMAIN, domain);
+		initialValues.put(KEY_INTERFACE, netInt);
 		initialValues.put(KEY_SAVED, "false");
 
 		return mDb.insert(DATABASE_TABLE, null, initialValues);
@@ -161,10 +163,17 @@ public class RulesDBAdapter
 	 * 
 	 * @return Cursor over all entries
 	 */
-	public Cursor fetchAllEntries()
+	public Cursor fetchAllEntriesOld()
 	{
 		return mDb.query(DATABASE_TABLE, new String[]
 		{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_DOMAIN, KEY_SAVED }, null, null,
+				null, null, null);
+	}
+	
+	public Cursor fetchAllEntriesNew()
+	{
+		return mDb.query(DATABASE_TABLE, new String[]
+		{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN, KEY_SAVED }, null, null,
 				null, null, null);
 	}
 
