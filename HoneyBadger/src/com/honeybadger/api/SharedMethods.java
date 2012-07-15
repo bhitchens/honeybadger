@@ -132,6 +132,9 @@ public final class SharedMethods
 				+ ctx.getDir("bin", 0)
 				+ "/iptables -N DROPOUT"
 				+ "\n"
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -N APPS"
+				+ "\n"
 
 				+ ctx.getDir("bin", 0)
 				+ "/iptables -D INPUT -j FETCH"
@@ -144,6 +147,13 @@ public final class SharedMethods
 				+ "\n"
 				+ ctx.getDir("bin", 0)
 				+ "/iptables -I INPUT -j FETCH"
+				+ "\n"
+
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -D OUTPUT -j APPS"
+				+ "\n"
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -I OUTPUT -j APPS"
 				+ "\n"
 
 				+ ctx.getDir("bin", 0)
@@ -298,9 +308,10 @@ public final class SharedMethods
 			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "ccmni+");
 			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "usb+");
 		}
+
 		return newRule;
 	}
-	
+
 	private static String ruleBuilderF(Context ctx, String rule, String type, String target,
 			Boolean add, String block, String in, String netInt)
 	{
@@ -309,34 +320,61 @@ public final class SharedMethods
 		{
 			if (add)
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -A OUTPUT -m owner --uid-owner "
-						+ target + " -j " + block + in + "\n";
+				newRule += ctx.getDir("bin", 0) + "/iptables -A APPS -m owner --uid-owner "
+						+ target + " -o " + netInt + " -j " + block + in + "\n";
 			}
 			else
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -D OUTPUT -m owner --uid-owner "
-						+ target + " -j " + block + in + "\n";
+				newRule += ctx.getDir("bin", 0) + "/iptables -D APPS -m owner --uid-owner "
+						+ target + " -o " + netInt + " -j " + block + in + "\n";
 			}
 		}
-		else if (type == "Domain")
+		else if (type == "Domain" || type == "domain")
 		{
-			if (add)
+			if (add && in == "IN")
 			{
 				// create chain with name of domain name + direction
-				newRule += ctx.getDir("bin", 0) + "/iptables -N " + target + in
+				newRule += ctx.getDir("bin", 0) + "/iptables -N " + target + in + netInt
 						+ "\n"
 						// create rule(s) for domain in chain
-						+ ctx.getDir("bin", 0) + "/iptables -A " + target + in + " -s " + target
-						+ " -j " + block + in + "\n"
+						+ ctx.getDir("bin", 0) + "/iptables -A " + target + in + netInt + " -s "
+						+ target + " -i " + netInt + " -j " + block + in + "\n"
 						// create rule to jump to the chain
-						+ ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -j " + target
-						+ in + "\n";
+						+ ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT -i " + netInt + " -j "
+						+ target + in + netInt + "\n";
+			}
+			else if (add && in == "OUT")
+			{
+				newRule += ctx.getDir("bin", 0) + "/iptables -N " + target + in
+						+ netInt
+						+ "\n"
+						// create rule(s) for domain in chain
+						+ ctx.getDir("bin", 0) + "/iptables -A " + target + in + netInt + " -d "
+						+ target + " -o " + netInt
+						+ " -m state --state NEW,RELATED,ESTABLISHED -j " + block + in + "\n"
+						// create rule to jump to the chain
+						+ ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT -o " + netInt + " -j "
+						+ target + in + netInt + "\n";
+			}
+			else if (in == "IN")
+			{
+				// delete rule that jumps to chain
+				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT -i " + netInt
+						+ " -j " + target + in + netInt + "\n"
+						// delete rules from in chain
+						+ ctx.getDir("bin", 0) + "/iptables -F " + target + in + netInt + "\n"
+						// attempt to delete chain (will fail if not empty)
+						+ ctx.getDir("bin", 0) + "/iptables -X " + target + in + netInt + "\n";
 			}
 			else
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -j " + target
-						+ in + "\n" + ctx.getDir("bin", 0) + "/iptables -F " + target + in + "\n"
-						+ ctx.getDir("bin", 0) + "/iptables -X " + target + in + "\n";
+				// delete rule that jumps to chain
+				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT -o " + netInt
+						+ " -j " + target + in + netInt + "\n"
+						// delete rules from in chain
+						+ ctx.getDir("bin", 0) + "/iptables -F " + target + in + netInt + "\n"
+						// attempt to delete chain (will fail if not empty)
+						+ ctx.getDir("bin", 0) + "/iptables -X " + target + in + netInt + "\n";
 			}
 		}
 		else if (type == "IP")
@@ -344,22 +382,24 @@ public final class SharedMethods
 			if (add & in == "IN")
 			{
 				newRule += ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -s " + target
-						+ " -j " + block + in + "\n";
+						+ " -i " + netInt + " -j " + block + in + "\n";
 			}
 			else if (add & in == "OUT")
 			{
 				newRule += ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -d " + target
-						+ " -m state --state NEW,RELATED,ESTABLISHED -j " + block + in + "\n";
+						+ " -o " + netInt + " -m state --state NEW,RELATED,ESTABLISHED -j " + block
+						+ in + "\n";
 			}
 			else if (in == "IN")
 			{
 				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -s " + target
-						+ " -j " + block + in + "\n";
+						+ " -i " + netInt + " -j " + block + in + "\n";
 			}
 			else
 			{
 				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -d " + target
-						+ " -m state --state NEW,RELATED,ESTABLISHED -j " + block + in + "\n";
+						+ " -o " + netInt + " -m state --state NEW,RELATED,ESTABLISHED -j " + block
+						+ in + "\n";
 			}
 		}
 		return newRule;
@@ -387,7 +427,7 @@ public final class SharedMethods
 			appAdapter = new AppsDBAdapter(ctx);
 			appAdapter.open();
 
-			appAdapter.clear();
+			// appAdapter.clear();
 
 			if (settings.getBoolean("block", false))
 			{
@@ -414,7 +454,8 @@ public final class SharedMethods
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
 
-				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block, block);
+				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block,
+						block);
 			}
 
 			for (i = 0; i < list.size(); i++)
@@ -430,7 +471,8 @@ public final class SharedMethods
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
 
-				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block, block);
+				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block,
+						block);
 			}
 
 			SharedPreferences.Editor editor = settings.edit();

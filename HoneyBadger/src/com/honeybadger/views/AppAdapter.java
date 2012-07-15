@@ -120,8 +120,9 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 		dba.open();
 		final CheckBox boxW = holder.boxW;
 		boxW.setChecked(dba.checkBlockW(app.uid));
+		dba.open();
 		final CheckBox boxC = holder.boxC;
-		boxC.setChecked(dba.checkBlockW(app.uid));
+		boxC.setChecked(dba.checkBlockC(app.uid));
 		dba.close();
 		holder.txtTitle.setText(app.appname + " (" + Integer.toString(app.uid) + ")");
 		holder.imgIcon.setImageDrawable(app.icon);

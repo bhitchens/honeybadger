@@ -13,25 +13,30 @@ package com.honeybadger.api;
 
 import com.honeybadger.api.databases.AppsDBAdapter;
 
-import android.app.Service;
+import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
-public class AppBlocker extends Service
+public class AppBlocker extends IntentService
 {
 	SharedPreferences settings;
 	private AppsDBAdapter appAdapter;
 	private final IBinder mBinder = new MyBinder();
+	
+	public AppBlocker()
+	{
+		super("AppBlocker");
+	}
 
-	public int onStartCommand(Intent intent, int flags, int startId)
+	protected void onHandleIntent(Intent intent)
 	{
 		settings = getSharedPreferences("main", 0);
 		createAppRules(this);
-		return START_NOT_STICKY;
 	}
 
 	/**
@@ -51,40 +56,55 @@ public class AppBlocker extends Service
 		Cursor c = appAdapter.fetchAllEntries();
 		if (!settings.getBoolean("block", false))
 		{
-			script += context.getDir("bin", 0) + "/iptables -D OUTPUT -j ACCEPTOUT" + "\n";
+			// script += context.getDir("bin", 0) +
+			// "/iptables -D OUTPUT -j ACCEPTOUT" + "\n";
 			while (c.getPosition() < c.getCount() - 1)
 			{
 				c.moveToNext();
 				uid = c.getInt(0);
-				if (c.getString(3).contains("block"))
+				if (c.getString(3).contains("block") || c.getString(4).contains("block"))
 				{
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							false, "ACCEPT", "OUT", appAdapter.checkBlockW(uid),
-							appAdapter.checkBlockC(uid));
+							false, "ACCEPT", "OUT", c.getString(3).contains("block"), c
+									.getString(4).contains("block"));
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							false, "DROP", "OUT", appAdapter.checkBlockW(uid),
-							appAdapter.checkBlockC(uid));
+							false, "DROP", "OUT", c.getString(3).contains("block"), c.getString(4)
+									.contains("block"));
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							true, "DROP", "OUT", appAdapter.checkBlockW(uid),
-							appAdapter.checkBlockC(uid));
+							true, "DROP", "OUT", c.getString(3).contains("block"), c.getString(4)
+									.contains("block"));
+					/*
+					 * Log.d("test", Integer.toString(uid) + ", " +
+					 * appAdapter.checkBlockW(uid) + ", " +
+					 * appAdapter.checkBlockC(uid));
+					 */
 				}
 				else
 				{
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							false, "DROP", "OUT", appAdapter.checkBlockW(uid),
-							appAdapter.checkBlockC(uid));
+							false, "DROP", "OUT", !c.getString(3).contains("block"), !c
+									.getString(4).contains("block"));
 				}
+
+				//Log.d("test", "============" + script);
+				Intent scriptIntent = new Intent();
+				scriptIntent.setClass(context, Scripts.class);
+				scriptIntent.putExtra("script", script);
+				context.startService(scriptIntent);
+				script = "";
 			}
-			script += context.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
+			// script += context.getDir("bin", 0) +
+			// "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
 		}
 		else
 		{
-			script += context.getDir("bin", 0) + "/iptables -D OUTPUT -j DROPOUT" + "\n";
+			// script += context.getDir("bin", 0) +
+			// "/iptables -D OUTPUT -j DROPOUT" + "\n";
 			while (c.getPosition() < c.getCount() - 1)
 			{
 				c.moveToNext();
 				uid = c.getInt(0);
-				if (!c.getString(2).contains("block"))
+				if (!c.getString(3).contains("block") || !c.getString(4).contains("block"))
 				{
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
 							false, "DROP", "OUT", appAdapter.checkBlockW(uid),
@@ -99,14 +119,22 @@ public class AppBlocker extends Service
 				else
 				{
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							false, "ACCEPT", "OUT", appAdapter.checkBlockW(uid),
-							appAdapter.checkBlockC(uid));
+							false, "ACCEPT", "OUT", !appAdapter.checkBlockW(uid),
+							!appAdapter.checkBlockC(uid));
 				}
+
+				Log.d("test", "============" + script);
+				Intent scriptIntent = new Intent();
+				scriptIntent.setClass(context, Scripts.class);
+				scriptIntent.putExtra("script", script);
+				context.startService(scriptIntent);
+				script = "";
 			}
-			script += context.getDir("bin", 0) + "/iptables -A OUTPUT -j DROPOUT" + "\n";
+			// script += context.getDir("bin", 0) +
+			// "/iptables -A OUTPUT -j DROPOUT" + "\n";
 		}
 		appAdapter.close();
-
+		//Log.d("test", "============" + script);
 		Intent scriptIntent = new Intent();
 		scriptIntent.setClass(context, Scripts.class);
 		scriptIntent.putExtra("script", script);

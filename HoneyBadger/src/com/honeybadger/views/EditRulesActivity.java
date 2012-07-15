@@ -383,6 +383,8 @@ public class EditRulesActivity extends Activity
 
 		CheckIn = (CheckBox) findViewById(R.id.checkIn);
 		CheckOut = (CheckBox) findViewById(R.id.checkOut);
+		CheckWifi = (CheckBox) findViewById(R.id.checkWifi);
+		CheckCell = (CheckBox) findViewById(R.id.checkCell);
 
 		urlEdit.setText("");
 		ipEdit.setText("");
@@ -390,6 +392,10 @@ public class EditRulesActivity extends Activity
 		in = false;
 		((CompoundButton) CheckOut).setChecked(false);
 		out = false;
+		((CompoundButton) CheckWifi).setChecked(false);
+		wifi = false;
+		((CompoundButton) CheckCell).setChecked(false);
+		cell = false;
 	}
 
 }

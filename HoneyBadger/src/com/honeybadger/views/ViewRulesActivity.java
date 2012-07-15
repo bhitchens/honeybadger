@@ -71,7 +71,7 @@ public class ViewRulesActivity extends ListActivity
 		{
 			c.moveToNext();
 			RULES.add(c.getString(3) + " " + c.getString(2) + "bound traffic from "
-					+ c.getString(0) + " over the" + c.getString(4) + " interface.");
+					+ c.getString(0) + " over the " + c.getString(4) + " interface.");
 		}
 
 		ruleAdapter.close();
@@ -134,7 +134,7 @@ public class ViewRulesActivity extends ListActivity
 								String netInt = tokens[7];
 
 								ruleAdapter.open();
-								ruleAdapter.deleteEntry(tokens[4], direction);
+								ruleAdapter.deleteEntry(tokens[4], direction, netInt);
 								ruleAdapter.close();
 
 								deleteRule(tokens[4], direction, dropAllow, netInt);
@@ -240,17 +240,9 @@ public class ViewRulesActivity extends ListActivity
 			case R.id.refresh:
 				display();
 				return true;
-			case R.id.addRule:
-				Intent addRuleIntent = new Intent(this, EditRulesActivity.class);
-				startActivity(addRuleIntent);
-				return true;
 			case R.id.settingsFromViewRules:
 				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
 				startActivity(prefIntent);
-				return true;
-			case R.id.viewLog:
-				Intent viewLogIntent = new Intent(this, ViewLogActivity.class);
-				startActivity(viewLogIntent);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

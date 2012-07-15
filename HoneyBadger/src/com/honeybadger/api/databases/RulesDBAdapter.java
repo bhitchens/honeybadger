@@ -29,7 +29,7 @@ public class RulesDBAdapter
 	public static final String KEY_ROWID = "_id";
 	public static final String KEY_DOMAIN = "Domain";
 	public static final String KEY_INTERFACE = "Interface";
-		public static final String KEY_SAVED = "Saved";
+	public static final String KEY_SAVED = "Saved";
 
 	private static final String TAG = "RulesDBAdapter";
 	private DatabaseHelper mDbHelper;
@@ -41,12 +41,12 @@ public class RulesDBAdapter
 	 */
 	private static final String DATABASE_CREATE = "create table rules (_id integer, "
 			+ "IPAddress text not null, " + "Port text, " + "Direction text not null, "
-			+ "Action text not null, " + "Domain text not null, " + "Interface text not null" + "Saved text not null, "
-			+ "PRIMARY KEY (IPAddress, Direction));";
+			+ "Action text not null, " + "Domain text not null, " + "Interface text not null, "
+			+ "Saved text not null, " + "PRIMARY KEY (IPAddress, Direction, Interface));";
 
 	private static final String DATABASE_NAME = "ruleDB";
 	private static final String DATABASE_TABLE = "rules";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	private final Context mCtx;
 
@@ -61,7 +61,6 @@ public class RulesDBAdapter
 		@Override
 		public void onCreate(SQLiteDatabase db)
 		{
-
 			db.execSQL(DATABASE_CREATE);
 		}
 
@@ -70,8 +69,15 @@ public class RulesDBAdapter
 		{
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
 					+ ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS logs");
-			onCreate(db);
+			/*
+			 * Cursor c = db.query(DATABASE_TABLE, new String[] {
+			 * KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_DOMAIN,
+			 * KEY_SAVED }, null, null, null, null, null);
+			 */
+
+			// db.execSQL("DROP TABLE IF EXISTS rules");
+			// onCreate(db);
+			// db.execSQL(DATABASE_CREATE_OLD);
 		}
 	}
 
@@ -88,7 +94,7 @@ public class RulesDBAdapter
 	}
 
 	/**
-	 * Open the Log database. If it cannot be opened, try to create a new
+	 * Open the Rules database. If it cannot be opened, try to create a new
 	 * instance of the database. If it cannot be created, throw an exception to
 	 * signal the failure
 	 * 
@@ -105,6 +111,12 @@ public class RulesDBAdapter
 		return this;
 	}
 
+	/*
+	 * public RulesDBAdapter openOld() throws SQLException { mDbHelper = new
+	 * DatabaseHelper(mCtx); mDb = mDbHelper.getWritableDatabase(); check =
+	 * mDb.getPath(); return this; }
+	 */
+
 	public void close()
 	{
 		mDbHelper.close();
@@ -119,7 +131,8 @@ public class RulesDBAdapter
 	 *            the body of the note
 	 * @return rowId or -1 if failed
 	 */
-	public long createEntry(String ip, String port, String direction, String action, String domain, String netInt)
+	public long createEntry(String ip, String port, String direction, String action, String domain,
+			String netInt)
 	{
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_IP_ADDRESS, ip);
@@ -151,11 +164,10 @@ public class RulesDBAdapter
 	 *            id of note to delete
 	 * @return true if deleted, false otherwise
 	 */
-	public boolean deleteEntry(String ip, String direction)
+	public boolean deleteEntry(String ip, String direction, String netInt)
 	{
-
 		return mDb.delete(DATABASE_TABLE, KEY_IP_ADDRESS + "='" + ip + "' AND " + KEY_DIRECTION
-				+ "='" + direction + "'", null) > 0;
+				+ "='" + direction + "' AND " + KEY_INTERFACE + "='" + netInt + "'", null) > 0;
 	}
 
 	/**
@@ -169,12 +181,13 @@ public class RulesDBAdapter
 		{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_DOMAIN, KEY_SAVED }, null, null,
 				null, null, null);
 	}
-	
+
 	public Cursor fetchAllEntriesNew()
 	{
-		return mDb.query(DATABASE_TABLE, new String[]
-		{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN, KEY_SAVED }, null, null,
-				null, null, null);
+		return mDb.query(DATABASE_TABLE,
+				new String[]
+				{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN,
+						KEY_SAVED }, null, null, null, null, null);
 	}
 
 	/**
@@ -196,6 +209,12 @@ public class RulesDBAdapter
 			mCursor.moveToFirst();
 		}
 		return mCursor;
+	}
+
+	public void clear()
+	{
+		mDb.execSQL("DROP TABLE rules");
+		mDb.execSQL(DATABASE_CREATE);
 	}
 
 }

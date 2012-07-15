@@ -31,7 +31,7 @@ public class AppsDBAdapter
 
 	private static final String DATABASE_NAME = "appDB";
 	private static final String DATABASE_TABLE = "apps";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	private final Context mCtx;
 
@@ -61,8 +61,6 @@ public class AppsDBAdapter
 		{
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
 					+ ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS apps");
-			onCreate(db);
 		}
 	}
 
@@ -135,8 +133,10 @@ public class AppsDBAdapter
 			c.moveToFirst();
 			if (!c.getString(0).contains(name))
 			{
-				mDb.execSQL("UPDATE apps SET NAME='" + c.getString(0) + ", " + name + "'"
-						+ "WHERE (UID='" + uid + "')");
+				String sql = "UPDATE apps SET NAME= ? WHERE UID= ? ";
+				Object[] bindArgs = new Object[]
+				{ c.getString(0) + ", " + name, uid };
+				mDb.execSQL(sql, bindArgs);
 			}
 		}
 
@@ -162,8 +162,28 @@ public class AppsDBAdapter
 		}
 		else
 		{
-			mDb.execSQL("UPDATE apps SET WSTATUS='" + wStatus + "'" + "WHERE (UID='" + uid + "')");
-			mDb.execSQL("UPDATE apps SET CSTATUS='" + cStatus + "'" + "WHERE (UID='" + uid + "')");
+			if (!(wStatus == "default"))
+			{
+				String sql = "UPDATE apps SET WSTATUS= ? WHERE UID= ? ";
+				Object[] bindArgs = new Object[]
+				{ wStatus, uid };
+				mDb.execSQL(sql, bindArgs);
+				/*
+				 * mDb.execSQL("UPDATE apps SET WSTATUS='" + wStatus + "' " +
+				 * "WHERE (UID='" + uid + "')");
+				 */
+			}
+			if (!(cStatus == "default"))
+			{
+				String sql = "UPDATE apps SET CSTATUS= ? WHERE UID= ? ";
+				Object[] bindArgs = new Object[]
+				{ cStatus, uid };
+				mDb.execSQL(sql, bindArgs);
+				/*
+				 * mDb.execSQL("UPDATE apps SET CSTATUS='" + cStatus + "' " +
+				 * "WHERE (UID='" + uid + "')");
+				 */
+			}
 		}
 
 	}
@@ -204,7 +224,9 @@ public class AppsDBAdapter
 	public Boolean checkBlockW(int uid)
 	{
 		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "WSTATUS" }, "UID='" + uid + "'", null, null, null, null);
+		{ "WSTATUS" }, "UID= ? ", new String[]
+		{ Integer.toString(uid) }, null, null, null);
+
 		if (c != null && c.getCount() != 0)
 		{
 			c.moveToFirst();
@@ -226,7 +248,8 @@ public class AppsDBAdapter
 	public Boolean checkBlockC(int uid)
 	{
 		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "CSTATUS" }, "UID='" + uid + "'", null, null, null, null);
+		{ "CSTATUS" }, "UID= ? ", new String[]
+		{ Integer.toString(uid) }, null, null, null);
 		if (c != null && c.getCount() != 0)
 		{
 			c.moveToFirst();

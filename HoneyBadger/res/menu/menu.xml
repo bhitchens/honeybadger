@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
  _________________________________________________________________________________________________________________________________________________________
  * Author(s): Brad Hitchens
@@ -7,17 +6,13 @@
  * Date of last modification: 4 MAR 2012
  * Source Info:   
  _________________________________________________________________________________________________________________________________________________________ 
- --> 
- 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/settings"
-          android:icon="@drawable/ic_menu_manage"
-          android:title="Settings" />
-    <item android:id="@+id/clearLog"
-          android:icon="@drawable/ic_menu_clear_playlist"
-          android:title="Clear Log" />
-    <item android:id="@+id/addRule"
-          android:icon="@drawable/ic_menu_add"
-          android:title="Add Rule" />
-    
+-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_menu_manage"
+        android:title="Settings"/>
+
 </menu>

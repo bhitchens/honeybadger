@@ -172,17 +172,9 @@ public class ShowAppsActivity extends Activity
 				SharedMethods.loadApps(this, settings, appAdapter);
 				display();
 				return true;
-			case R.id.go_to_rules:
-				Intent addRuleIntent = new Intent(this, EditRulesActivity.class);
-				startActivity(addRuleIntent);
-				return true;
 			case R.id.settings_from_apps:
 				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
 				startActivity(prefIntent);
-				return true;
-			case R.id.view_log:
-				Intent viewLogIntent = new Intent(this, ViewLogActivity.class);
-				startActivity(viewLogIntent);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

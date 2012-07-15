@@ -38,7 +38,7 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="5dip"
                 android:background="@android:color/white"
-                android:src="@drawable/wifi2" />
+                android:src="@drawable/wifi" />
 
             <ImageView
                 android:id="@+id/imageCell"
@@ -46,7 +46,7 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="7dip"
                 android:background="@android:color/white"
-                android:src="@drawable/cell2" />
+                android:src="@drawable/cell" />
 
             <LinearLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"

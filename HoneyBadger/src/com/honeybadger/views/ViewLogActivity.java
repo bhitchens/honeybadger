@@ -65,7 +65,7 @@ public class ViewLogActivity extends ListActivity
 
 		setData(c);
 		dbAdapter.close();
-		
+
 		setListAdapter(new ArrayAdapter<String>(this, R.layout.log_viewer, DATA));
 
 		ListView lv = getListView();
@@ -81,7 +81,7 @@ public class ViewLogActivity extends ListActivity
 	 */
 	private void setData(Cursor c)
 	{
-		
+
 		while (c.getPosition() < c.getCount() - 1)
 		{
 			c.moveToNext();
@@ -138,20 +138,12 @@ public class ViewLogActivity extends ListActivity
 			case R.id.refresh:
 				display();
 				return true;
-			case R.id.addRule:
-				Intent addRuleIntent = new Intent(this, EditRulesActivity.class);
-				startActivity(addRuleIntent);
-				return true;
 			case R.id.clearLog:
 				LogDBAdapter logDB = new LogDBAdapter(this);
 				logDB.open();
 				logDB.clearLog();
 				logDB.close();
 				display();
-				return true;
-			case R.id.viewRules:
-				Intent viewLogIntent = new Intent(this, ViewRulesActivity.class);
-				startActivity(viewLogIntent);
 				return true;
 			case R.id.settingsFromLog:
 				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
