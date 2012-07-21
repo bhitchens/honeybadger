@@ -176,19 +176,16 @@ public final class SharedMethods
 				+ "/iptables -D DROPOUT -j DROP"
 				+ "\n"
 				+ ctx.getDir("bin", 0)
-				+ "/iptables -A DROPOUT -j DROP"
+				+ "/iptables -D DROPIN -j REJECT --reject-with icmp-admin-prohibited"
 				+ "\n"
 				+ ctx.getDir("bin", 0)
-				+ "/iptables -A DROPIN -j DROP"
-				+ "\n"
-
-				// these two commands are meant to clear out incorrect entries
-				// in a previous version
-				+ ctx.getDir("bin", 0)
-				+ "/iptables -D INPUT -m limit --limit 1/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - INPUT]\" --log-uid"
+				+ "/iptables -D DROPOUT -j REJECT --reject-with icmp-admin-prohibited"
 				+ "\n"
 				+ ctx.getDir("bin", 0)
-				+ "/iptables -D OUTPUT -m limit --limit 1/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - OUTPUT]\" --log-uid"
+				+ "/iptables -A DROPIN -j REJECT --reject-with icmp-admin-prohibited"
+				+ "\n"
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -A DROPOUT -j REJECT --reject-with icmp-admin-prohibited"
 				+ "\n"
 
 				// clears previous version
@@ -272,16 +269,12 @@ public final class SharedMethods
 	{
 		if (settings.getBoolean("block", false))
 		{
-			return input + ctx.getDir("bin", 0) + "/iptables -P INPUT DROP" + "\n"
-					+ ctx.getDir("bin", 0) + "/iptables -P OUTPUT DROP" + "\n"
-					+ ctx.getDir("bin", 0) + "/iptables -A INPUT -j DROPIN" + "\n"
+			return input + ctx.getDir("bin", 0) + "/iptables -A INPUT -j DROPIN" + "\n"
 					+ ctx.getDir("bin", 0) + "/iptables -A OUTPUT -j DROPOUT" + "\n";
 		}
 		else
 		{
-			return input + ctx.getDir("bin", 0) + "/iptables -P INPUT ACCEPT" + "\n"
-					+ ctx.getDir("bin", 0) + "/iptables -P OUTPUT ACCEPT" + "\n"
-					+ ctx.getDir("bin", 0) + "/iptables -A INPUT -j ACCEPTIN" + "\n"
+			return input + ctx.getDir("bin", 0) + "/iptables -A INPUT -j ACCEPTIN" + "\n"
 					+ ctx.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
 		}
 	}
