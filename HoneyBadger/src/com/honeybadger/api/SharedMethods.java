@@ -105,19 +105,6 @@ public final class SharedMethods
 		return input
 				+ "\n"
 				+ ctx.getDir("bin", 0)
-				+ "/iptables -D OUTPUT -p udp --dport 53 -j ACCEPT"
-				+ "\n"
-				+ ctx.getDir("bin", 0)
-				+ "/iptables -D INPUT -p udp --sport 53 -j ACCEPT"
-				+ "\n"
-				+ ctx.getDir("bin", 0)
-				+ "/iptables -I OUTPUT -p udp --dport 53 -j ACCEPT"
-				+ "\n"
-				+ ctx.getDir("bin", 0)
-				+ "/iptables -I INPUT -p udp --sport 53 -j ACCEPT"
-				+ "\n"
-
-				+ ctx.getDir("bin", 0)
 				+ "/iptables -N FETCH"
 				+ "\n"
 				+ ctx.getDir("bin", 0)
@@ -176,30 +163,16 @@ public final class SharedMethods
 				+ "/iptables -D DROPOUT -j DROP"
 				+ "\n"
 				+ ctx.getDir("bin", 0)
-				+ "/iptables -D DROPIN -j REJECT --reject-with icmp-admin-prohibited"
+				+ "/iptables -D DROPIN -j REJECT"
 				+ "\n"
 				+ ctx.getDir("bin", 0)
-				+ "/iptables -D DROPOUT -j REJECT --reject-with icmp-admin-prohibited"
+				+ "/iptables -D DROPOUT -j REJECT"
 				+ "\n"
 				+ ctx.getDir("bin", 0)
-				+ "/iptables -A DROPIN -j REJECT --reject-with icmp-admin-prohibited"
+				+ "/iptables -A DROPIN -j REJECT"
 				+ "\n"
 				+ ctx.getDir("bin", 0)
-				+ "/iptables -A DROPOUT -j REJECT --reject-with icmp-admin-prohibited"
-				+ "\n"
-
-				// clears previous version
-				+ ctx.getDir("bin", 0)
-				+ "/iptables -D ACCEPTOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTOUT]\" --log-uid"
-				+ "\n"
-				+ ctx.getDir("bin", 0)
-				+ "/iptables -D ACCEPTIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - ACCEPTIN]\" --log-uid"
-				+ "\n"
-				+ ctx.getDir("bin", 0)
-				+ "/iptables -D DROPOUT -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPOUT]\" --log-uid"
-				+ "\n"
-				+ ctx.getDir("bin", 0)
-				+ "/iptables -D DROPIN -m limit --limit 100/second -j LOG --log-level 7 --log-prefix \"[HoneyBadger - DROPIN]\" --log-uid"
+				+ "/iptables -A DROPOUT -j REJECT"
 				+ "\n"
 
 				+ ctx.getDir("bin", 0)
@@ -218,7 +191,8 @@ public final class SharedMethods
 				+ ctx.getDir("bin", 0) + "/iptables -D INPUT -j ACCEPTIN" + "\n"
 				+ ctx.getDir("bin", 0) + "/iptables -D INPUT -j DROPIN" + "\n"
 				+ ctx.getDir("bin", 0) + "/iptables -D OUTPUT -j ACCEPTOUT" + "\n"
-				+ ctx.getDir("bin", 0) + "/iptables -D OUTPUT -j DROPOUT" + "\n";
+				+ ctx.getDir("bin", 0)
+				+ "/iptables -D OUTPUT -m state --state NEW,RELATED,ESTABLISHED -j DROPOUT" + "\n";
 	}
 
 	/**
@@ -269,8 +243,29 @@ public final class SharedMethods
 	{
 		if (settings.getBoolean("block", false))
 		{
-			return input + ctx.getDir("bin", 0) + "/iptables -A INPUT -j DROPIN" + "\n"
-					+ ctx.getDir("bin", 0) + "/iptables -A OUTPUT -j DROPOUT" + "\n";
+			// add drop in jump
+			return input
+					+ ctx.getDir("bin", 0)
+					+ "/iptables -A INPUT -j DROPIN"
+					+ "\n"
+					// add drop out jump
+					+ ctx.getDir("bin", 0)
+					+ "/iptables -A OUTPUT -m state --state NEW,RELATED,ESTABLISHED -j DROPOUT"
+					+ "\n"
+					// make sure dns rule isn't duplicated outbound
+					+ ctx.getDir("bin", 0)
+					+ "/iptables -D OUTPUT -p udp --dport 53 -j RETURN"
+					+ "\n"
+					// make sure dns rule isn't duplicated inbound
+					+ ctx.getDir("bin", 0)
+					+ "/iptables -D INPUT -p udp --sport 53 -j RETURN"
+					+ "\n"
+					// add dns rule out
+					+ ctx.getDir("bin", 0) + "/iptables -I OUTPUT -p udp --dport 53 -j RETURN"
+					+ "\n"
+					// add dns rule in
+					+ ctx.getDir("bin", 0) + "/iptables -I INPUT -p udp --sport 53 -j RETURN"
+					+ "\n";
 		}
 		else
 		{

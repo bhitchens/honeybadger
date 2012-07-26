@@ -125,13 +125,46 @@ public class EditPreferencesActivity extends Activity
 		{
 			if (settings.getBoolean("block", false))
 			{
-				script += this.getDir("bin", 0) + "/iptables -P INPUT DROP" + "\n"
-						+ this.getDir("bin", 0) + "/iptables -P OUTPUT DROP" + "\n";
+				script += this.getDir("bin", 0) + "/iptables -D INPUT -j ACCEPTIN" + "\n"
+						+ this.getDir("bin", 0)
+						+ "/iptables -D OUTPUT -j ACCEPTOUT"
+						+ "\n"
+						+ this.getDir("bin", 0)
+						+ "/iptables -A INPUT -j DROPIN"
+						+ "\n"
+						+ this.getDir("bin", 0)
+						+ "/iptables -A OUTPUT -m state --state NEW,RELATED,ESTABLISHED -j DROPOUT"
+						+ "\n"
+						// make sure dns rule isn't duplicated outbound
+						+ this.getDir("bin", 0)
+						+ "/iptables -D OUTPUT -p udp --dport 53 -j RETURN"
+						+ "\n"
+						// make sure dns rule isn't duplicated inbound
+						+ this.getDir("bin", 0)
+						+ "/iptables -D INPUT -p udp --sport 53 -j RETURN"
+						+ "\n"
+						// add dns rule out
+						+ this.getDir("bin", 0) + "/iptables -I OUTPUT -p udp --dport 53 -j RETURN"
+						+ "\n"
+						// add dns rule in
+						+ this.getDir("bin", 0) + "/iptables -I INPUT -p udp --sport 53 -j RETURN"
+						+ "\n";
 			}
 			else
 			{
-				script += this.getDir("bin", 0) + "/iptables -P INPUT ACCEPT" + "\n"
-						+ this.getDir("bin", 0) + "/iptables -P OUTPUT ACCEPT" + "\n";
+				script += this.getDir("bin", 0) + "/iptables -D INPUT -j DROPIN" + "\n"
+						+ this.getDir("bin", 0)
+						+ "/iptables -D OUTPUT -m state --state NEW,RELATED,ESTABLISHED -j DROPOUT"
+						+ "\n"
+						+ this.getDir("bin", 0) + "/iptables -A INPUT -j ACCEPTIN" + "\n"
+						+ this.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT"
+						+ "\n"
+						// delete dns rule outbound
+						+ this.getDir("bin", 0) + "/iptables -D OUTPUT -p udp --dport 53 -j RETURN"
+						+ "\n"
+						// delete dns rule inbound
+						+ this.getDir("bin", 0) + "/iptables -D INPUT -p udp --sport 53 -j RETURN"
+						+ "\n";
 			}
 		}
 		return script;
