@@ -13,10 +13,10 @@ package com.honeybadger;
 
 import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.Blocker;
-import com.honeybadger.api.Scripts;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.AppsDBAdapter;
 import com.honeybadger.api.databases.RulesDBAdapter;
+import com.honeybadger.api.scripts.Scripts;
 
 import android.app.Activity;
 import android.app.Notification;

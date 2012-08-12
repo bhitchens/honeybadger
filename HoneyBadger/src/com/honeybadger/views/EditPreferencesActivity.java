@@ -13,7 +13,7 @@ import java.util.Calendar;
 
 import com.honeybadger.AlarmReceiver;
 import com.honeybadger.R;
-import com.honeybadger.api.Scripts;
+import com.honeybadger.api.scripts.Scripts;
 
 import android.app.Activity;
 import android.app.AlarmManager;

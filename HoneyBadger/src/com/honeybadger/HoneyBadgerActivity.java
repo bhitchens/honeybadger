@@ -13,13 +13,19 @@ package com.honeybadger;
  */
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.honeybadger.api.databases.LogDBAdapter;
+import com.honeybadger.api.scripts.RequirementsScript;
 import com.honeybadger.views.EditPreferencesActivity;
 import com.honeybadger.views.EditRulesActivity;
 import com.honeybadger.views.ViewLogActivity;
@@ -29,6 +35,7 @@ public class HoneyBadgerActivity extends Activity
 {
 
 	Menu optionsMenu = null;
+	public static Context stcCtx;
 
 	/**
 	 * Called when the activity is first created; it ensures that the IPTables
@@ -42,15 +49,17 @@ public class HoneyBadgerActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 
-		/*
-		 * settings = getSharedPreferences("main", 1); editor = settings.edit();
-		 */
-
 		// Set the view for the activity
 		setContentView(R.layout.home);
 
 		AppRater.app_launched(this);
 
+		IntentFilter filter = new IntentFilter("com.honeybadger.ERROR");
+		registerReceiver(new Receiver(), filter);
+
+		Intent checkRequirements = new Intent(this, RequirementsScript.class);
+		checkRequirements.putExtra("script", "iptables -L FORWARD\nbusybox wget -O - http://www.google.com");
+		startService(checkRequirements);		
 	}
 
 	/**
@@ -91,6 +100,72 @@ public class HoneyBadgerActivity extends Activity
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private class Receiver extends BroadcastReceiver
+	{
+
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			String error = intent.getExtras().getString("error");
+
+			if (error.contains("iptables"))
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+
+				builder.setMessage(
+						"Iptables is not compatible with your phone's kernel. The firewall will not work. You may be able to fix this by installing a new ROM.")
+						.setCancelable(true)
+						.setNeutralButton("OK", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								dialog.cancel();
+							}
+						});
+
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+			else if (error.contains("busybox"))
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+
+				builder.setMessage(
+						"Busybox was not found on your device. Logging and the option to automatically generate rules from an online database will not function. Please ensure that you have busybox properly installed.")
+						.setCancelable(true)
+						.setNeutralButton("OK", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								dialog.cancel();
+							}
+						});
+
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+			else if (error.contains("wget"))
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+
+				builder.setMessage(
+						"Wget exists but is not functioning properly. The option to automatically generate rules from an online database will not function. This occures when you either lack network connectivity or busybox was not configured to allow wget to properly use DNS.")
+						.setCancelable(true)
+						.setNeutralButton("OK", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								dialog.cancel();
+							}
+						});
+
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+
 		}
 	}
 

@@ -18,8 +18,8 @@ package com.honeybadger.views;
 import com.honeybadger.HoneyBadgerNotify;
 import com.honeybadger.R;
 import com.honeybadger.api.Blocker;
-import com.honeybadger.api.Fetcher;
 import com.honeybadger.api.databases.RulesDBAdapter;
+import com.honeybadger.api.scripts.Fetcher;
 
 import android.app.Activity;
 import android.app.AlertDialog;

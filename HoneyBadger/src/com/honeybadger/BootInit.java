@@ -12,10 +12,10 @@ package com.honeybadger;
 
 import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.Blocker;
-import com.honeybadger.api.Fetcher;
 import com.honeybadger.api.SharedMethods;
-import com.honeybadger.api.Scripts;
 import com.honeybadger.api.databases.AppsDBAdapter;
+import com.honeybadger.api.scripts.Fetcher;
+import com.honeybadger.api.scripts.Scripts;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

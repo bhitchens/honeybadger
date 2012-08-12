@@ -1,4 +1,4 @@
-package com.honeybadger.api;
+package com.honeybadger.api.scripts;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Brad Hitchens
@@ -14,16 +14,12 @@ package com.honeybadger.api;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-import android.app.Service;
+import android.app.IntentService;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Bundle;
-import android.os.IBinder;
 
-public class Scripts extends Service
+public class Scripts extends IntentService
 {
-	protected final IBinder mBinder = new MyBinder();
-
 	protected String scriptOutput = "";
 	protected String processName = "su"; // Name of process to be called
 	protected String processScript;
@@ -42,17 +38,15 @@ public class Scripts extends Service
 
 	protected Process process = null;
 
-	@Override
-	public IBinder onBind(Intent arg0)
+	public Scripts()
 	{
-		return mBinder;
+		super("Scripts");
 	}
-
+	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId)
+	protected void onHandleIntent(Intent intent)
 	{
 		handleStart(intent);
-		return START_STICKY;
 	}
 
 	/**
@@ -80,15 +74,7 @@ public class Scripts extends Service
 	{
 		super.onDestroy();
 	}
-
-	public class MyBinder extends Binder
-	{
-		Scripts getService()
-		{
-			return Scripts.this;
-		}
-	}
-
+	
 	/**
 	 * Handles each line of the standard output.
 	 * 
@@ -97,7 +83,6 @@ public class Scripts extends Service
 	 */
 	public void handleOut(String line)
 	{
-		scriptOutput += line + "\n";
 	}
 
 	/**
@@ -108,7 +93,6 @@ public class Scripts extends Service
 	 */
 	public void handleErr(String line)
 	{
-
 	}
 
 	/**
@@ -193,7 +177,7 @@ public class Scripts extends Service
 							while ((line = stderr.readLine()) != null)
 							{
 								super.sleep(10);
-								scriptOutput += "stderr: " + line + "\n";
+								handleErr(line);
 							}
 
 							stderrFinished = true;

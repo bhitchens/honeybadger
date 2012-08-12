@@ -1,4 +1,4 @@
-package com.honeybadger.api;
+package com.honeybadger.api.scripts;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Todd Berry Ann

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.honeybadger"
-    android:versionCode="13"
-    android:versionName="3.1" >
+    android:versionCode="14"
+    android:versionName="3.2" >
 
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="8" />
 
     <application
         android:icon="@drawable/icon"
@@ -23,11 +25,6 @@
         <activity
             android:name=".HoneyBadgerActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
         <activity android:name=".HBTabActivity" />
         <activity android:name="com.honeybadger.SplashScreen" >
@@ -46,28 +43,20 @@
         <!-- api package -->
 
         <service
-            android:name="com.honeybadger.api.Scripts"
+            android:name=".api.scripts.Scripts"
             android:process=":scriptProc" >
-            <intent-filter>
-                <action android:name="com.honeybadger.api.Scripts" />
-            </intent-filter>
         </service>
         <service
-            android:name="com.honeybadger.api.LogScript"
+            android:name=".api.scripts.LogScript"
             android:process=":logProc" >
-            <intent-filter>
-                <action android:name="com.honeybadger.LogScript" />
-            </intent-filter>
         </service>
         <service
-            android:name="com.honeybadger.api.Fetcher"
+            android:name=".api.scripts.Fetcher"
             android:process=":fetchProc" >
-            <intent-filter>
-                <action android:name="com.honeybadger.api.Fetcher" />
-            </intent-filter>
         </service>
         <service android:name="com.honeybadger.api.Blocker" />
         <service android:name="com.honeybadger.api.AppBlocker" />
+        <service android:name="com.honeybadger.api.scripts.RequirementsScript" />
 
         <!-- views package -->
 

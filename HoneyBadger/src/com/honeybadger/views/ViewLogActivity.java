@@ -15,8 +15,8 @@ package com.honeybadger.views;
 import java.util.ArrayList;
 
 import com.honeybadger.R;
-import com.honeybadger.api.LogScript;
 import com.honeybadger.api.databases.LogDBAdapter;
+import com.honeybadger.api.scripts.LogScript;
 
 import android.app.ListActivity;
 import android.content.Intent;

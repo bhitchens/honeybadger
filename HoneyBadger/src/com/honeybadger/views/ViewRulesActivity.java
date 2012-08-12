@@ -15,9 +15,9 @@ package com.honeybadger.views;
 import java.util.ArrayList;
 
 import com.honeybadger.R;
-import com.honeybadger.api.Scripts;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.RulesDBAdapter;
+import com.honeybadger.api.scripts.Scripts;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;

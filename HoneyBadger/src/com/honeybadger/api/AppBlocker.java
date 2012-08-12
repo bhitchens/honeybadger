@@ -12,6 +12,7 @@ package com.honeybadger.api;
  */
 
 import com.honeybadger.api.databases.AppsDBAdapter;
+import com.honeybadger.api.scripts.Scripts;
 
 import android.app.IntentService;
 import android.content.Context;

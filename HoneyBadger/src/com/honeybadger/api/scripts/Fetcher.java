@@ -1,4 +1,4 @@
-package com.honeybadger.api;
+package com.honeybadger.api.scripts;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Brad Hitchens, Todd Berry Ann
@@ -11,6 +11,7 @@ package com.honeybadger.api;
  |
  --------------------------------------------------------------------------------------------------------------------------------
  */
+
 
 import android.content.Intent;
 

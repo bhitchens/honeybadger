@@ -15,10 +15,12 @@ public class HBTabActivity extends TabActivity
 {
 	TabHost tabHost;
 	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.main);
 		TabHost tabHost = getTabHost();
 
