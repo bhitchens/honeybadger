@@ -14,11 +14,12 @@ package com.honeybadger.api.scripts;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.IBinder;
 
-public class Scripts extends IntentService
+public class Scripts extends Service
 {
 	protected String scriptOutput = "";
 	protected String processName = "su"; // Name of process to be called
@@ -37,16 +38,12 @@ public class Scripts extends IntentService
 	protected Thread stdinThread = null;
 
 	protected Process process = null;
-
-	public Scripts()
-	{
-		super("Scripts");
-	}
 	
 	@Override
-	protected void onHandleIntent(Intent intent)
+	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		handleStart(intent);
+		return START_STICKY;
 	}
 
 	/**
@@ -224,6 +221,12 @@ public class Scripts extends IntentService
 			}
 		}
 
+	}
+
+	@Override
+	public IBinder onBind(Intent intent)
+	{
+		return null;
 	}
 
 }

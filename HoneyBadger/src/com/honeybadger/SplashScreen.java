@@ -91,21 +91,11 @@ public class SplashScreen extends Activity
 				}
 
 				Intent intent = new Intent(SplashScreen.this, HBTabActivity.class);
-
 				startActivity(intent);
 			}
 		}, 100);
 
 	}
-
-	/**
-	 * Processes splash screen touch events
-	 */
-	/*
-	 * @Override public boolean onTouchEvent(MotionEvent evt) { if
-	 * (evt.getAction() == MotionEvent.ACTION_DOWN) { synchronized
-	 * (mSplashThread) { mSplashThread.notifyAll(); } } return true; }
-	 */
 
 	/**
 	 * Used to send system notification that the IPTables binary has been

@@ -3,6 +3,11 @@
 
     <string name="app_name">HoneyBadger</string>
     <string name="intro_header">Welcome to the HoneyBadger Firewall!</string>
+    <string name="supwarn_text">Supress Warnings</string>
+    <string name="set_pref_header">Set Preferences:</string>
+    <string name="def_rule">Default Rule:</string>
+    <string name="pref_note">*Note: This rule determines whether all network traffic will be initially blocked or allowed.</string>
+    
     <string name="intro_body"><lo>
             <li>To set rules for applications > \"Apps\" tab.\n</li>
             <li>To add a new IP or URL-based rule > \"Add Rules\" tab.\n</li>            
@@ -12,5 +17,6 @@
             <li>To set automatically created rules to be updated every 24 hours > menu button > \"Settings\" > check "Enable Auto Update".\n</li>
             <li>To switch between block/allow scheme and enable/disable logging > menu > \"Settings\".</li>
         </lo></string>
+    
 
 </resources>

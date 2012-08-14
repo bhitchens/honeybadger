@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 public class AppBlocker extends IntentService
 {
@@ -57,8 +56,6 @@ public class AppBlocker extends IntentService
 		Cursor c = appAdapter.fetchAllEntries();
 		if (!settings.getBoolean("block", false))
 		{
-			// script += context.getDir("bin", 0) +
-			// "/iptables -D OUTPUT -j ACCEPTOUT" + "\n";
 			while (c.getPosition() < c.getCount() - 1)
 			{
 				c.moveToNext();
@@ -68,17 +65,14 @@ public class AppBlocker extends IntentService
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
 							false, "ACCEPT", "OUT", c.getString(3).contains("block"), c
 									.getString(4).contains("block"));
+				
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
 							false, "DROP", "OUT", c.getString(3).contains("block"), c.getString(4)
 									.contains("block"));
+		
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
 							true, "DROP", "OUT", c.getString(3).contains("block"), c.getString(4)
-									.contains("block"));
-					/*
-					 * Log.d("test", Integer.toString(uid) + ", " +
-					 * appAdapter.checkBlockW(uid) + ", " +
-					 * appAdapter.checkBlockC(uid));
-					 */
+									.contains("block"));	
 				}
 				else
 				{
@@ -87,20 +81,15 @@ public class AppBlocker extends IntentService
 									.getString(4).contains("block"));
 				}
 
-				//Log.d("test", "============" + script);
 				Intent scriptIntent = new Intent();
 				scriptIntent.setClass(context, Scripts.class);
 				scriptIntent.putExtra("script", script);
 				context.startService(scriptIntent);
 				script = "";
 			}
-			// script += context.getDir("bin", 0) +
-			// "/iptables -A OUTPUT -j ACCEPTOUT" + "\n";
 		}
 		else
 		{
-			// script += context.getDir("bin", 0) +
-			// "/iptables -D OUTPUT -j DROPOUT" + "\n";
 			while (c.getPosition() < c.getCount() - 1)
 			{
 				c.moveToNext();
@@ -123,19 +112,16 @@ public class AppBlocker extends IntentService
 							false, "ACCEPT", "OUT", !appAdapter.checkBlockW(uid),
 							!appAdapter.checkBlockC(uid));
 				}
-
-				Log.d("test", "============" + script);
+				
 				Intent scriptIntent = new Intent();
 				scriptIntent.setClass(context, Scripts.class);
 				scriptIntent.putExtra("script", script);
 				context.startService(scriptIntent);
 				script = "";
 			}
-			// script += context.getDir("bin", 0) +
-			// "/iptables -A OUTPUT -j DROPOUT" + "\n";
 		}
+		
 		appAdapter.close();
-		//Log.d("test", "============" + script);
 		Intent scriptIntent = new Intent();
 		scriptIntent.setClass(context, Scripts.class);
 		scriptIntent.putExtra("script", script);

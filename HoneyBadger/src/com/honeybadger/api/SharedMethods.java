@@ -296,7 +296,6 @@ public final class SharedMethods
 			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "ccmni+");
 			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "usb+");
 		}
-
 		return newRule;
 	}
 
@@ -306,6 +305,7 @@ public final class SharedMethods
 		String newRule = rule;
 		if (type == "App")
 		{
+			
 			if (add)
 			{
 				newRule += ctx.getDir("bin", 0) + "/iptables -A APPS -m owner --uid-owner "
@@ -316,6 +316,7 @@ public final class SharedMethods
 				newRule += ctx.getDir("bin", 0) + "/iptables -D APPS -m owner --uid-owner "
 						+ target + " -o " + netInt + " -j " + block + in + "\n";
 			}
+			
 		}
 		else if (type == "Domain" || type == "domain")
 		{
@@ -465,6 +466,7 @@ public final class SharedMethods
 
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
+			editor.commit();
 		}
 	}
 

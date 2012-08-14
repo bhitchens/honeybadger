@@ -36,6 +36,7 @@ public class EditPreferencesActivity extends Activity
 	RadioButton RadioLogOff;
 
 	CheckBox CheckAutoUpdate;
+	CheckBox CheckSuppressWarn;
 
 	RadioButton RadioBlock;
 	RadioButton RadioAllow;
@@ -70,6 +71,8 @@ public class EditPreferencesActivity extends Activity
 		RadioAllow = (RadioButton) findViewById(R.id.radioAllow);
 
 		CheckAutoUpdate = (CheckBox) findViewById(R.id.checkAutoUpdate);
+		
+		CheckSuppressWarn = (CheckBox) findViewById(R.id.checkSuppressWarnings);
 
 		// make sure proper buttons are checked
 		checkBoxes();
@@ -256,6 +259,10 @@ public class EditPreferencesActivity extends Activity
 		{
 			CheckAutoUpdate.setChecked(true);
 		}
+		if (settings.getBoolean("suppressWarn", false))
+		{
+			CheckSuppressWarn.setChecked(true);
+		}
 	}
 
 	/**
@@ -334,6 +341,33 @@ public class EditPreferencesActivity extends Activity
 				{
 					editor.putBoolean("autoUpdate", false);
 					Toast.makeText(EditPreferencesActivity.this, "Auto-update Disabled",
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+		
+		//Listener for suppressing warnings
+		CheckSuppressWarn.setOnClickListener(new OnClickListener()
+		{
+			/**
+			 * if auto update is selected, call schedule update with time for 24
+			 * hours from now.
+			 */
+			public void onClick(View v)
+			{
+				// Perform action on clicks, depending on whether it's now
+				// checked
+				// if checked, schedule update
+				if (((CheckBox) v).isChecked())
+				{
+					editor.putBoolean("suppressWarn", true);
+					Toast.makeText(EditPreferencesActivity.this, "Warnings suppressed.",
+							Toast.LENGTH_SHORT).show();
+				}
+				else
+				{
+					editor.putBoolean("suppressWarn", false);
+					Toast.makeText(EditPreferencesActivity.this, "Warnings not suppressed.",
 							Toast.LENGTH_SHORT).show();
 				}
 			}

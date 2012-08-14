@@ -4,9 +4,6 @@ package com.honeybadger;
  * Author(s): Todd Berry Ann, Alex Harris, Brad Hitchens
  * Version: 2.1
  * Date of last modification: 19 June 2012
- * Source Info:    
- * The majority of the form code used in this activity is the adaptation of tutorials from the Android Developers Resource page  
- * located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
  *
  * Edit 2.1: Added method call to load apps; conformed to change from StartUp to SharedMethods
  *--------------------------------------------------------------------------------------------------------------------------------
@@ -14,11 +11,13 @@ package com.honeybadger;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,7 +34,8 @@ public class HoneyBadgerActivity extends Activity
 {
 
 	Menu optionsMenu = null;
-	public static Context stcCtx;
+	Intent rec;
+	SharedPreferences settings;
 
 	/**
 	 * Called when the activity is first created; it ensures that the IPTables
@@ -54,12 +54,18 @@ public class HoneyBadgerActivity extends Activity
 
 		AppRater.app_launched(this);
 
-		IntentFilter filter = new IntentFilter("com.honeybadger.ERROR");
-		registerReceiver(new Receiver(), filter);
+		settings = getSharedPreferences("main", 1);
 
-		Intent checkRequirements = new Intent(this, RequirementsScript.class);
-		checkRequirements.putExtra("script", "iptables -L FORWARD\nbusybox wget -O - http://www.google.com");
-		startService(checkRequirements);		
+		if (!settings.getBoolean("suppressWarn", false))
+		{
+			IntentFilter filter = new IntentFilter("com.honeybadger.ERROR");
+			rec = registerReceiver(new Receiver(), filter);
+
+			Intent checkRequirements = new Intent(this, RequirementsScript.class);
+			checkRequirements.putExtra("script",
+					"iptables -L FORWARD\nbusybox wget -O - http://www.google.com");
+			startService(checkRequirements);
+		}
 	}
 
 	/**
@@ -105,16 +111,36 @@ public class HoneyBadgerActivity extends Activity
 
 	private class Receiver extends BroadcastReceiver
 	{
-
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			String error = intent.getExtras().getString("error");
+			final String error = intent.getExtras().getString("error");
 
 			if (error.contains("iptables"))
 			{
-				AlertDialog.Builder builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+				showDialog(0);
+			}
+			else if (error.contains("busybox"))
+			{
+				showDialog(1);
+			}
+			else if (error.contains("wget"))
+			{
+				showDialog(2);
+			}
+			unregisterReceiver(this);
+		}
+	}
 
+	@Override
+	protected Dialog onCreateDialog(int error)
+	{
+		Dialog d;
+		AlertDialog.Builder builder;
+		switch (error)
+		{
+			case 0:
+				builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
 				builder.setMessage(
 						"Iptables is not compatible with your phone's kernel. The firewall will not work. You may be able to fix this by installing a new ROM.")
 						.setCancelable(true)
@@ -122,51 +148,44 @@ public class HoneyBadgerActivity extends Activity
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								dialog.cancel();
+								dialog.dismiss();
 							}
 						});
-
-				AlertDialog alert = builder.create();
-				alert.show();
-			}
-			else if (error.contains("busybox"))
-			{
-				AlertDialog.Builder builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+				d = builder.create();
+				break;
+			case 1:
+				builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
 
 				builder.setMessage(
-						"Busybox was not found on your device. Logging and the option to automatically generate rules from an online database will not function. Please ensure that you have busybox properly installed.")
+						"Busybox was not found on your device. Logging and the option to automatically generate rules from an online database will not function. Please ensure that you have busybox properly installed.\n\nThis warning may be suppressed in the application settings.")
 						.setCancelable(true)
 						.setNeutralButton("OK", new DialogInterface.OnClickListener()
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								dialog.cancel();
+								dialog.dismiss();
 							}
 						});
-
-				AlertDialog alert = builder.create();
-				alert.show();
-			}
-			else if (error.contains("wget"))
-			{
-				AlertDialog.Builder builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+				d = builder.create();
+				break;
+			case 2:
+				builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
 
 				builder.setMessage(
-						"Wget exists but is not functioning properly. The option to automatically generate rules from an online database will not function. This occures when you either lack network connectivity or busybox was not configured to allow wget to properly use DNS.")
+						"Wget exists but is not functioning properly. The option to automatically generate rules from an online database will not function. This occures when you either lack network connectivity or busybox was not configured to allow wget to properly use DNS.\n\nThis warning may be suppressed in the application settings.")
 						.setCancelable(true)
 						.setNeutralButton("OK", new DialogInterface.OnClickListener()
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								dialog.cancel();
+								dialog.dismiss();
 							}
 						});
-
-				AlertDialog alert = builder.create();
-				alert.show();
-			}
-
+				d = builder.create();
+				break;
+			default:
+				d = null;
 		}
+		return d;
 	}
-
 }
