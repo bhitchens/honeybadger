@@ -232,10 +232,6 @@ public class ViewRulesActivity extends ListActivity
 		return true;
 	}
 
-	/**
-	 * Handles selection of items from options menu. Basic structure of this
-	 * method from <i>Pro Android 2</i>.
-	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
