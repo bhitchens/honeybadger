@@ -17,5 +17,11 @@
         android:id="@+id/settingsFromViewRules"
         android:icon="@drawable/ic_menu_manage"
         android:title="Settings"/>
+    <item
+        android:id="@+id/exportIPRules"
+        android:title="Export Rules"/>
+    <item
+        android:id="@+id/importIPRules"
+        android:title="Import Rules"/>
 
 </menu>

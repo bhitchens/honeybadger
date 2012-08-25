@@ -12,7 +12,9 @@ package com.honeybadger.views;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 
@@ -247,14 +249,19 @@ public class ViewRulesActivity extends ListActivity
 			case R.id.settingsFromViewRules:
 				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
 				startActivity(prefIntent);
-				export();
+				return true;
+			case R.id.exportIPRules:
+				exportRules();
+				return true;
+			case R.id.importIPRules:
+				importRules();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
 	}
 
-	private void export()
+	private void exportRules()
 	{
 		String state = Environment.getExternalStorageState();
 
@@ -265,7 +272,7 @@ public class ViewRulesActivity extends ListActivity
 			{
 				// create new file
 				File expFile = new File(
-						Environment.getExternalStorageDirectory().getAbsolutePath(), "HBRules.csv");
+						Environment.getExternalStorageDirectory().getAbsolutePath(), "HBIPRules.csv");
 				FileWriter writer = new FileWriter(expFile);
 
 				// create header of file
@@ -280,13 +287,19 @@ public class ViewRulesActivity extends ListActivity
 				{
 					c.moveToNext();
 					writer.append(c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2)
-							+ ", " + c.getString(3) + ", " + c.getString(4) + ", " + c.getString(5)
+							+ ", " + c.getString(3) + ", " + c.getString(5) + ", " + c.getString(4)
 							+ "\n");
-					
+
 				}
 				writer.flush();
 				writer.close();
 				Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+				
+				//close cursor
+				c.close();
+				
+				//close db adapter
+				ruleAdapter.close();
 			}
 			catch (Exception e)
 			{
@@ -297,6 +310,58 @@ public class ViewRulesActivity extends ListActivity
 		else
 		{
 			Toast.makeText(this, "Unable to write to external storage", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	private void importRules()
+	{
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state))
+		{
+
+			try
+			{
+				//open file to be imported
+				File impFile = new File(
+						Environment.getExternalStorageDirectory().getAbsolutePath(), "HBIPRules.csv");
+
+				//get BufferedReader of file
+				BufferedReader br = new BufferedReader(new FileReader(impFile));
+				String line;
+				
+				//skip header
+				br.readLine();
+				
+				// open rule DB
+				ruleAdapter.open();
+				
+				//go through the rest of the lines and add them to the db
+				while ((line = br.readLine()) != null)
+				{
+					//split up line on commas
+					String[] tokens = line.split(", ");
+					//IP Address, Port, Direction, Action, Domain, Interface
+					//create entry in db
+					ruleAdapter.createEntry(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], tokens[5]);
+				}
+				
+				//close buffered reader
+				br.close();
+				
+				//close db
+				ruleAdapter.close();
+
+				Toast.makeText(this, "File imported.", Toast.LENGTH_LONG).show();				
+			}
+			catch (Exception e)
+			{
+				Toast.makeText(this, "File failed to save.", Toast.LENGTH_LONG).show();
+			}
+		}
+		else
+		{
+			Toast.makeText(this, "Unable to access file.", Toast.LENGTH_LONG).show();
 		}
 	}
 }
