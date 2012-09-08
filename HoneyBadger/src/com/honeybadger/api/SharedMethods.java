@@ -9,9 +9,12 @@ package com.honeybadger.api;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,14 +22,23 @@ import java.util.List;
 
 import com.honeybadger.R;
 import com.honeybadger.api.databases.AppsDBAdapter;
+import com.honeybadger.api.databases.RulesDBAdapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public final class SharedMethods
 {
@@ -305,7 +317,7 @@ public final class SharedMethods
 		String newRule = rule;
 		if (type == "App")
 		{
-			
+
 			if (add)
 			{
 				newRule += ctx.getDir("bin", 0) + "/iptables -A APPS -m owner --uid-owner "
@@ -316,7 +328,7 @@ public final class SharedMethods
 				newRule += ctx.getDir("bin", 0) + "/iptables -D APPS -m owner --uid-owner "
 						+ target + " -o " + netInt + " -j " + block + in + "\n";
 			}
-			
+
 		}
 		else if (type == "Domain" || type == "domain")
 		{
@@ -502,6 +514,219 @@ public final class SharedMethods
 		public String appname = "";
 		public Drawable icon;
 		public int uid = 0;
+	}
+
+	/****************************************************************
+	 * Importing and Exporting
+	 * *************************************************************/
+
+	/**
+	 * Exports rules to a csv file
+	 * 
+	 * @param ctx
+	 *            passed in Context (activity from which method is called)
+	 */
+	public static void exportRules(final Context ctx)
+	{
+		// create adapters for databases
+		final RulesDBAdapter ruleAdapter = new RulesDBAdapter(ctx);
+		final AppsDBAdapter appAdapter = new AppsDBAdapter(ctx);
+
+		// Create an edit text view for user input
+		final EditText filePrompt = new EditText(ctx);
+
+		// present an alert dialog to get name of file to be saved
+		AlertDialog.Builder prompt = new AlertDialog.Builder(ctx);
+
+		prompt.setMessage("Enter name for file to be saved.");
+		prompt.setView(filePrompt);
+		prompt.setNeutralButton("Save", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int whichButton)
+			{
+				String state = Environment.getExternalStorageState();
+				String fileName = filePrompt.getText().toString();
+
+				if (Environment.MEDIA_MOUNTED.equals(state)
+						&& !(Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)))
+				{
+					try
+					{
+						// create new file
+						File expFile = new File(Environment.getExternalStorageDirectory()
+								.getAbsolutePath(), fileName + ".csv");
+						FileWriter writer = new FileWriter(expFile);
+
+						// create header of file
+						writer.append("IP Address, Port, Direction, Action, Domain, Interface\n");
+
+						// open rule DB and fetch all entries
+						ruleAdapter.open();
+						Cursor c = ruleAdapter.fetchAllEntriesNew();
+
+						// loop through all the entries and add them to the file
+						while (c.getPosition() < c.getCount() - 1)
+						{
+							c.moveToNext();
+							writer.append(c.getString(0) + ", " + c.getString(1) + ", "
+									+ c.getString(2) + ", " + c.getString(3) + ", "
+									+ c.getString(5) + ", " + c.getString(4) + "\n");
+						}
+
+						// App Rules
+						// Insert barrier
+						writer.append("App Rules Start Here.\n");
+
+						// create header of section
+						writer.append("UID, App Name, Block WiFi, Block Cell Data\n");
+
+						// open rule DB and fetch all entries
+						appAdapter.open();
+						Cursor c2 = appAdapter.fetchAllEntries();
+
+						// loop through all the entries and add them to the file
+						while (c2.getPosition() < c2.getCount() - 1)
+						{
+							c2.moveToNext();
+							writer.append(c2.getString(0) + ", " + c2.getString(1) + ", "
+									+ c2.getString(3) + ", " + c2.getString(4) + "\n");
+						}
+
+						writer.flush();
+						writer.close();
+						Toast.makeText(ctx, "Saved", Toast.LENGTH_SHORT).show();
+
+						// close cursors
+						c.close();
+						c2.close();
+
+						// close db adapters
+						ruleAdapter.close();
+						appAdapter.close();
+					}
+					catch (Exception e)
+					{
+						Toast.makeText(ctx, "File failed to save.", Toast.LENGTH_LONG).show();
+					}
+
+				}
+				else
+				{
+					Toast.makeText(ctx, "Unable to write to external storage", Toast.LENGTH_SHORT)
+							.show();
+				}
+			}
+		});
+
+		prompt.show();
+	}
+
+	public static void importRules(final Context ctx)
+	{
+		final RulesDBAdapter ruleAdapter = new RulesDBAdapter(ctx);
+		final AppsDBAdapter appAdapter = new AppsDBAdapter(ctx);
+
+		// Create an edit text view for user input
+		final EditText filePrompt = new EditText(ctx);
+
+		// present an alert dialog to get name of file to be saved
+		AlertDialog.Builder prompt = new AlertDialog.Builder(ctx);
+
+		prompt.setMessage("Enter name for file to be imported (do not include \".csv\").");
+		prompt.setView(filePrompt);
+		prompt.setNeutralButton("Import", new DialogInterface.OnClickListener()
+		{
+			public void onClick(DialogInterface dialog, int whichButton)
+			{
+				String state = Environment.getExternalStorageState();
+				String fileName = filePrompt.getText().toString();
+
+				Boolean apps = false;
+
+				if (Environment.MEDIA_MOUNTED.equals(state))
+				{
+
+					try
+					{
+						// open file to be imported
+						File impFile = new File(Environment.getExternalStorageDirectory()
+								.getAbsolutePath(), fileName + ".csv");
+
+						// get BufferedReader of file
+						BufferedReader br = new BufferedReader(new FileReader(impFile));
+						String line;
+
+						// skip header
+						br.readLine();
+
+						// open rule DB
+						ruleAdapter.open();
+						appAdapter.open();
+
+						// go through the rest of the lines and add them to the
+						// db
+						while ((line = br.readLine()) != null)
+						{
+							// check to see if we have reached the app rules
+							if (line.contains("App Rules Start Here"))
+							{
+								// set apps bool to true
+								apps = true;
+
+								// skip header
+								br.readLine();
+							}
+							else
+							{
+								// split up line on commas
+								String[] tokens = line.split(", ");
+
+								if (!apps)
+								{
+									// create entry in db
+									ruleAdapter.createEntry(tokens[0], tokens[1], tokens[2],
+											tokens[3], tokens[4], tokens[5]);
+								}
+								else
+								{
+									Log.d("rules", "before");
+									appAdapter.changeStatus(Integer.parseInt((tokens[0])),
+											tokens[2], tokens[3]);
+									Log.d("rules", "after");
+								}
+							}
+						}
+
+						// close buffered reader
+						br.close();
+
+						// close db
+						ruleAdapter.close();
+						appAdapter.close();
+						
+						//apply rules
+						Intent loadIPRules = new Intent(ctx, Blocker.class);
+						loadIPRules.putExtra("reload", "false");
+						ctx.startService(loadIPRules);
+						
+						Intent loadRules = new Intent();
+						loadRules.setClass(ctx, AppBlocker.class);
+						ctx.startService(loadRules);
+
+						Toast.makeText(ctx, "File imported.", Toast.LENGTH_LONG).show();
+					}
+					catch (Exception e)
+					{
+						Toast.makeText(ctx, "File failed to save.", Toast.LENGTH_LONG).show();
+					}
+				}
+				else
+				{
+					Toast.makeText(ctx, "Unable to access file.", Toast.LENGTH_LONG).show();
+				}
+			}
+		});
+		prompt.show();
 	}
 
 }

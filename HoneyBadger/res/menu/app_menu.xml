@@ -9,5 +9,11 @@
         android:id="@+id/settings_from_apps"
         android:icon="@drawable/ic_menu_manage"
         android:title="Settings"/>
+    <item
+        android:id="@+id/export_rules_from_apps"
+        android:title="Export Rules"/>
+    <item
+        android:id="@+id/import_rules_from_apps"
+        android:title="Import Rules"/>
 
 </menu>

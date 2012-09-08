@@ -156,7 +156,7 @@ public class ShowAppsActivity extends Activity
 		inflater.inflate(R.menu.app_menu, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{

@@ -88,11 +88,11 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 				Boolean prevBlock = dba.checkBlockW(app.uid);
 				if (isChecked && !prevBlock)
 				{
-					dba.changeStatus(app.uid, app.appname, "block", "default");
+					dba.changeStatus(app.uid, "block", "default");
 				}
 				else if (!isChecked && prevBlock)
 				{
-					dba.changeStatus(app.uid, app.appname, "allow", "default");
+					dba.changeStatus(app.uid, "allow", "default");
 				}
 				dba.close();
 			}
@@ -107,11 +107,11 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 				Boolean prevBlock = dba.checkBlockC(app.uid);
 				if (isChecked && !prevBlock)
 				{
-					dba.changeStatus(app.uid, app.appname, "default", "block");
+					dba.changeStatus(app.uid, "default", "block");
 				}
 				else if (!isChecked && prevBlock)
 				{
-					dba.changeStatus(app.uid, app.appname, "default", "allow");
+					dba.changeStatus(app.uid, "default", "allow");
 				}
 				dba.close();
 			}

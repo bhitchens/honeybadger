@@ -12,10 +12,6 @@ package com.honeybadger.views;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.ArrayList;
 
 import com.honeybadger.R;
@@ -29,7 +25,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,7 +34,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ViewRulesActivity extends ListActivity
 {
@@ -51,6 +45,7 @@ public class ViewRulesActivity extends ListActivity
 	private ArrayList<String> RULES;
 
 	String ruleText;
+	String fileName;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -247,117 +242,15 @@ public class ViewRulesActivity extends ListActivity
 				startActivity(prefIntent);
 				return true;
 			case R.id.exportIPRules:
-				exportRules();
+				SharedMethods.exportRules(this);
 				return true;
 			case R.id.importIPRules:
-				importRules();
+				SharedMethods.importRules(this);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
 	}
 
-	private void exportRules()
-	{
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)
-				&& !(Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)))
-		{
-			try
-			{
-				// create new file
-				File expFile = new File(
-						Environment.getExternalStorageDirectory().getAbsolutePath(), "HBIPRules.csv");
-				FileWriter writer = new FileWriter(expFile);
-
-				// create header of file
-				writer.append("IP Address, Port, Direction, Action, Domain, Interface\n");
-
-				// open rule DB and fetch all entries
-				ruleAdapter.open();
-				c = ruleAdapter.fetchAllEntriesNew();
-
-				// loop through all the entries and add them to the file
-				while (c.getPosition() < c.getCount() - 1)
-				{
-					c.moveToNext();
-					writer.append(c.getString(0) + ", " + c.getString(1) + ", " + c.getString(2)
-							+ ", " + c.getString(3) + ", " + c.getString(5) + ", " + c.getString(4)
-							+ "\n");
-
-				}
-				writer.flush();
-				writer.close();
-				Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-				
-				//close cursor
-				c.close();
-				
-				//close db adapter
-				ruleAdapter.close();
-			}
-			catch (Exception e)
-			{
-				Toast.makeText(this, "File failed to save.", Toast.LENGTH_LONG).show();
-			}
-
-		}
-		else
-		{
-			Toast.makeText(this, "Unable to write to external storage", Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	private void importRules()
-	{
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state))
-		{
-
-			try
-			{
-				//open file to be imported
-				File impFile = new File(
-						Environment.getExternalStorageDirectory().getAbsolutePath(), "HBIPRules.csv");
-
-				//get BufferedReader of file
-				BufferedReader br = new BufferedReader(new FileReader(impFile));
-				String line;
-				
-				//skip header
-				br.readLine();
-				
-				// open rule DB
-				ruleAdapter.open();
-				
-				//go through the rest of the lines and add them to the db
-				while ((line = br.readLine()) != null)
-				{
-					//split up line on commas
-					String[] tokens = line.split(", ");
-					//IP Address, Port, Direction, Action, Domain, Interface
-					//create entry in db
-					ruleAdapter.createEntry(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], tokens[5]);
-				}
-				
-				//close buffered reader
-				br.close();
-				
-				//close db
-				ruleAdapter.close();
-
-				Toast.makeText(this, "File imported.", Toast.LENGTH_LONG).show();				
-			}
-			catch (Exception e)
-			{
-				Toast.makeText(this, "File failed to save.", Toast.LENGTH_LONG).show();
-			}
-		}
-		else
-		{
-			Toast.makeText(this, "Unable to access file.", Toast.LENGTH_LONG).show();
-		}
-	}
+	
 }

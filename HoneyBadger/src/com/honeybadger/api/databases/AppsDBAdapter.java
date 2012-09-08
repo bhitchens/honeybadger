@@ -135,7 +135,7 @@ public class AppsDBAdapter
 			{
 				String sql = "UPDATE apps SET NAME= ? WHERE UID= ? ";
 				Object[] bindArgs = new Object[]
-				{ c.getString(0) + ", " + name, uid };
+				{ c.getString(0) + "; " + name, uid };
 				mDb.execSQL(sql, bindArgs);
 			}
 		}
@@ -150,41 +150,40 @@ public class AppsDBAdapter
 	 * @param status
 	 *            whether app is blocked or allowed
 	 */
-	public void changeStatus(int uid, String name, String wStatus, String cStatus)
+	public void changeStatus(int uid, String wStatus, String cStatus)
 	{
+		Log.d("rules", "inside");
+		Log.d("rules", uid + " " + wStatus + " " + cStatus);
+
 		// Check to see if entry already exists
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "ICON" }, "UID='" + uid + "'", null, null, null, null);
+		/*
+		 * Cursor c = mDb.query(DATABASE_TABLE, new String[] { "ICON" }, "UID='"
+		 * + uid + "'", null, null, null, null);
+		 */
+
 		// if there is no entry
-		if (c == null || c.getCount() == 0)
+		/*
+		 * if (c == null || c.getCount() == 0) { // this.createEntry(uid, name,
+		 * c.getBlob(0), wStatus, cStatus); } else {
+		 */
+		if (!(wStatus == "default"))
 		{
-			this.createEntry(uid, name, c.getBlob(0), wStatus, cStatus);
+			String sql = "UPDATE apps SET WSTATUS= ? WHERE UID= ? ";
+			Object[] bindArgs = new Object[]
+			{ wStatus, uid };
+			Log.d("rules", "inside1.5");
+			mDb.execSQL(sql, bindArgs);
+			Log.d("rules", "inside2");
 		}
-		else
+		if (!(cStatus == "default"))
 		{
-			if (!(wStatus == "default"))
-			{
-				String sql = "UPDATE apps SET WSTATUS= ? WHERE UID= ? ";
-				Object[] bindArgs = new Object[]
-				{ wStatus, uid };
-				mDb.execSQL(sql, bindArgs);
-				/*
-				 * mDb.execSQL("UPDATE apps SET WSTATUS='" + wStatus + "' " +
-				 * "WHERE (UID='" + uid + "')");
-				 */
-			}
-			if (!(cStatus == "default"))
-			{
-				String sql = "UPDATE apps SET CSTATUS= ? WHERE UID= ? ";
-				Object[] bindArgs = new Object[]
-				{ cStatus, uid };
-				mDb.execSQL(sql, bindArgs);
-				/*
-				 * mDb.execSQL("UPDATE apps SET CSTATUS='" + cStatus + "' " +
-				 * "WHERE (UID='" + uid + "')");
-				 */
-			}
+			String sql = "UPDATE apps SET CSTATUS= ? WHERE UID= ? ";
+			Object[] bindArgs = new Object[]
+			{ cStatus, uid };
+			mDb.execSQL(sql, bindArgs);
+			Log.d("rules", "inside3");
 		}
+		// }
 
 	}
 
@@ -207,7 +206,7 @@ public class AppsDBAdapter
 		while (c.getPosition() < c.getCount() - 1)
 		{
 			c.moveToNext();
-			this.changeStatus(c.getInt(0), c.getString(1), block, block);
+			this.changeStatus(c.getInt(0), block, block);
 		}
 	}
 
