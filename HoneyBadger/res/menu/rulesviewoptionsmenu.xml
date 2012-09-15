@@ -12,16 +12,22 @@
     <item
         android:id="@+id/refresh"
         android:icon="@drawable/ic_menu_refresh"
-        android:title="Refresh"/>
+        android:title="Refresh"/>    
+    <item
+        android:id="@+id/exportIPRules"
+        android:icon="@drawable/upload"
+        android:title="Export Rules"/>
+    <item
+        android:id="@+id/importIPRules"
+        android:icon="@drawable/download"    
+        android:title="Import Rules"/>
     <item
         android:id="@+id/settingsFromViewRules"
         android:icon="@drawable/ic_menu_manage"
         android:title="Settings"/>
     <item
-        android:id="@+id/exportIPRules"
-        android:title="Export Rules"/>
-    <item
-        android:id="@+id/importIPRules"
-        android:title="Import Rules"/>
+        android:id="@+id/rv_raw_rules"
+        android:icon="@drawable/ic_menu_show_list"    
+        android:title="Raw IPTables Rules"/>
 
 </menu>

@@ -3,8 +3,8 @@
  * Author(s): Alex Harris
  * Version: 1.1
  * Date of last modification: 4 MAR 2012
- *   
--->
+ * -->
+ 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -84,17 +84,46 @@
                 android:text="Disable Logging" />
         </RadioGroup>
 
+        <TextView
+            android:id="@+id/pref_dl_rules_hdr"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_downloaded_rules" 
+            android:textStyle="bold" />
+        
         <CheckBox
             android:id="@+id/checkAutoUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Enable Auto Update" />
         
+        <TextView
+            android:id="@+id/pref_warn_hdr"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_warnings"
+            android:textStyle="bold" />
+        
         <CheckBox
             android:id="@+id/checkSuppressWarnings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/supwarn_text" />
+        
+        <TextView
+            android:id="@+id/pref_raw_rules_hdr"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pref_raw_iptables_rules"
+            android:textStyle="bold" />
+        
+        <Button
+            android:id="@+id/pref_raw_rule_button"
+            android:layout_width="120dp"
+            android:layout_height="35dp"
+            android:layout_gravity="left"
+            android:layout_marginTop="10dip"
+            android:text="View Rules" />
     </LinearLayout>
 
 </ScrollView>

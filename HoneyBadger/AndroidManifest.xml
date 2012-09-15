@@ -7,7 +7,7 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="8" />
-    
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -29,7 +29,9 @@
             android:label="@string/app_name" >
         </activity>
         <activity android:name=".HBTabActivity" />
-        <activity android:name="com.honeybadger.SplashScreen" >
+        <activity
+            android:name="com.honeybadger.SplashScreen"
+            android:noHistory="true" >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
 
@@ -59,13 +61,20 @@
         <service android:name="com.honeybadger.api.Blocker" />
         <service android:name="com.honeybadger.api.AppBlocker" />
         <service android:name="com.honeybadger.api.scripts.RequirementsScript" />
+        <service android:name="com.honeybadger.api.scripts.ReturnOutput" />
 
         <!-- views package -->
 
         <activity android:name="com.honeybadger.views.ViewRulesActivity" />
         <activity android:name=".views.ViewLogActivity" />
         <activity android:name=".views.EditRulesActivity" />
-        <activity android:name=".views.EditPreferencesActivity" />
+        <activity
+            android:name=".views.EditPreferencesActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".views.ViewRawRulesActivity"
+            android:noHistory="true" 
+            android:configChanges="orientation"/>
         <activity android:name=".views.ShowAppsActivity" />
     </application>
 

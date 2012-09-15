@@ -2,11 +2,7 @@
 <!--
  * Author(s): Alex Harris
  * Version: 1.1
- * Date of last modification: 4 MAR 2012
- * Source Info:    
- |The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
- |located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
- |Background image obtained from: http://www.slashphone.com/wallpaper/detail.php?photo=33152
+ * Date of last modification: 9 SEP 2012
 -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,7 +13,7 @@
     <LinearLayout
         android:id="@+id/linLayHome"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/red"
         android:orientation="vertical" >
 

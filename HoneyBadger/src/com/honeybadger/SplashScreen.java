@@ -28,7 +28,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 
 import java.lang.Runnable;
@@ -55,7 +54,6 @@ public class SplashScreen extends Activity
 		{
 			public void run()
 			{
-				SystemClock.sleep(2000);
 				settings = getSharedPreferences("main", 1);
 				editor = settings.edit();
 

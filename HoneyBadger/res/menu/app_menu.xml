@@ -11,9 +11,11 @@
         android:title="Settings"/>
     <item
         android:id="@+id/export_rules_from_apps"
+        android:icon="@drawable/upload"
         android:title="Export Rules"/>
     <item
-        android:id="@+id/import_rules_from_apps"
+        android:id="@+id/import_rules_from_apps"    
+        android:icon="@drawable/download"    
         android:title="Import Rules"/>
 
 </menu>

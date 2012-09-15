@@ -247,6 +247,10 @@ public class ViewRulesActivity extends ListActivity
 			case R.id.importIPRules:
 				SharedMethods.importRules(this);
 				return true;
+			case R.id.rv_raw_rules:
+				Intent rawRulesIntent = new Intent(this, ViewRawRulesActivity.class);
+				startActivity(rawRulesIntent);
+				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}

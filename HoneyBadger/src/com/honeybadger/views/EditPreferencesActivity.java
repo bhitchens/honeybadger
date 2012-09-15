@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 
@@ -41,11 +42,15 @@ public class EditPreferencesActivity extends Activity
 	RadioButton RadioBlock;
 	RadioButton RadioAllow;
 
+	Button ButtonViewRules;
+
 	SharedPreferences settings;
 	SharedPreferences.Editor editor;
 
 	Boolean logChange = false;
 	Boolean blockChange = false;
+
+	// Intent prefIntent = new Intent(this, ViewRawRulesActivity.class);
 
 	/**
 	 * Called when the activity is first created; allows for modification of
@@ -73,6 +78,8 @@ public class EditPreferencesActivity extends Activity
 		CheckAutoUpdate = (CheckBox) findViewById(R.id.checkAutoUpdate);
 		
 		CheckSuppressWarn = (CheckBox) findViewById(R.id.checkSuppressWarnings);
+		
+		ButtonViewRules = (Button) findViewById(R.id.pref_raw_rule_button);
 
 		// make sure proper buttons are checked
 		checkBoxes();
@@ -158,8 +165,7 @@ public class EditPreferencesActivity extends Activity
 				script += this.getDir("bin", 0) + "/iptables -D INPUT -j DROPIN" + "\n"
 						+ this.getDir("bin", 0)
 						+ "/iptables -D OUTPUT -m state --state NEW,RELATED,ESTABLISHED -j DROPOUT"
-						+ "\n"
-						+ this.getDir("bin", 0) + "/iptables -A INPUT -j ACCEPTIN" + "\n"
+						+ "\n" + this.getDir("bin", 0) + "/iptables -A INPUT -j ACCEPTIN" + "\n"
 						+ this.getDir("bin", 0) + "/iptables -A OUTPUT -j ACCEPTOUT"
 						+ "\n"
 						// delete dns rule outbound
@@ -345,8 +351,8 @@ public class EditPreferencesActivity extends Activity
 				}
 			}
 		});
-		
-		//Listener for suppressing warnings
+
+		// Listener for suppressing warnings
 		CheckSuppressWarn.setOnClickListener(new OnClickListener()
 		{
 			/**
@@ -370,6 +376,15 @@ public class EditPreferencesActivity extends Activity
 					Toast.makeText(EditPreferencesActivity.this, "Warnings not suppressed.",
 							Toast.LENGTH_SHORT).show();
 				}
+			}
+		});
+		
+		ButtonViewRules.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				Intent rawRulesIntent = new Intent(EditPreferencesActivity.this, ViewRawRulesActivity.class);
+				startActivity(rawRulesIntent);
 			}
 		});
 	}

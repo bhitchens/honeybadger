@@ -80,6 +80,7 @@ public class Scripts extends Service
 	 */
 	public void handleOut(String line)
 	{
+		scriptOutput += line + "\n";
 	}
 
 	/**
@@ -90,6 +91,11 @@ public class Scripts extends Service
 	 */
 	public void handleErr(String line)
 	{
+	}
+	
+	public void handleComplete()
+	{
+		
 	}
 
 	/**
@@ -128,9 +134,7 @@ public class Scripts extends Service
 						{
 							try
 							{
-
 								super.sleep(200);
-
 							}
 							catch (Exception e)
 							{
@@ -202,6 +206,7 @@ public class Scripts extends Service
 				while (!stdoutFinished || !stderrFinished)
 				{
 				}
+				handleComplete();
 
 				stderr.close();
 				stdout.close();
