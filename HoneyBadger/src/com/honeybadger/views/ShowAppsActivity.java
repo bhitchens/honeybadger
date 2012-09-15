@@ -18,13 +18,16 @@ import com.honeybadger.api.SharedMethods.AppInfo;
 import com.honeybadger.api.databases.AppsDBAdapter;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,6 +48,10 @@ public class ShowAppsActivity extends Activity
 
 	SharedPreferences settings;
 
+	ProgressDialog dialog;
+
+	ArrayList<AppInfo> list;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -126,27 +133,64 @@ public class ShowAppsActivity extends Activity
 	 */
 	public void setLV()
 	{
-		ArrayList<AppInfo> list = new ArrayList<AppInfo>();
-		appAdapter.open();
-		Cursor c = appAdapter.fetchAllEntries();
-		while (c.getPosition() < c.getCount() - 1)
+		class GetLV extends AsyncTask<Integer, Integer, Integer>
 		{
-			c.moveToNext();
-			AppInfo app = (new SharedMethods()).new AppInfo();
-			app.uid = c.getInt(0);
-			app.appname = c.getString(1);
-			app.icon = new BitmapDrawable(BitmapFactory.decodeByteArray(c.getBlob(2), 0,
-					c.getBlob(2).length));
-			list.add(app);
+			protected Integer doInBackground(Integer... integers)
+			{
+				/*ArrayList<AppInfo> */list = new ArrayList<AppInfo>();
+				appAdapter.open();
+				Cursor c = appAdapter.fetchAllEntries();
+				while (c.getPosition() < c.getCount() - 1)
+				{
+					c.moveToNext();
+					AppInfo app = (new SharedMethods()).new AppInfo();
+					app.uid = c.getInt(0);
+					app.appname = c.getString(1);
+					app.icon = new BitmapDrawable(BitmapFactory.decodeByteArray(c.getBlob(2), 0,
+							c.getBlob(2).length));
+					list.add(app);
+				}
+				c.close();
+				appAdapter.close();
+
+				ShowAppsActivity.this.runOnUiThread(new Runnable()
+				{
+					public void run()
+					{
+						new Handler().postDelayed(new Runnable()
+						{
+							public void run()
+							{
+
+								AppAdapter adapter = new AppAdapter(ShowAppsActivity.this,
+										R.layout.app_item_row, list);
+
+								lv = (ListView) ShowAppsActivity.this.findViewById(R.id.listView1);
+								lv.setAdapter(adapter);
+								lv.setItemsCanFocus(false);
+
+							}
+						}, 100);
+					}
+
+				});
+
+				return 0;
+			}
+
+			protected void onPreExecute()
+			{
+				dialog = ProgressDialog.show(ShowAppsActivity.this, "", "Loading");
+			}
+
+			protected void onPostExecute(Integer result)
+			{
+				dialog.dismiss();
+			}
+
 		}
-		c.close();
-		appAdapter.close();
 
-		AppAdapter adapter = new AppAdapter(this, R.layout.app_item_row, list);
-
-		lv = (ListView) this.findViewById(R.id.listView1);
-		lv.setAdapter(adapter);
-		lv.setItemsCanFocus(false);
+		new GetLV().execute();
 	}
 
 	@Override

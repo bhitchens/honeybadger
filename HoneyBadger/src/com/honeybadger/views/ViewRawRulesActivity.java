@@ -4,12 +4,12 @@ import com.honeybadger.R;
 import com.honeybadger.api.scripts.ReturnOutput;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Window;
 import android.widget.TextView;
 
 public class ViewRawRulesActivity extends Activity
@@ -20,15 +20,13 @@ public class ViewRawRulesActivity extends Activity
 	String ruleText;
 
 	TextView rules;
+	
+	ProgressDialog dialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setContentView(R.layout.raw_rules);
-		rules = (TextView) findViewById(R.id.ruleText);
-		rules.setText("Loading");
 
 		settings = getSharedPreferences("main", 0);
 		editor = settings.edit();
@@ -63,6 +61,8 @@ public class ViewRawRulesActivity extends Activity
 						{
 							public void run()
 							{
+								setContentView(R.layout.raw_rules);
+								rules = (TextView) findViewById(R.id.ruleText);
 								rules.setText(ruleText);
 							}
 						}, 100);
@@ -75,12 +75,12 @@ public class ViewRawRulesActivity extends Activity
 
 			protected void onPreExecute()
 			{
-				setProgressBarIndeterminateVisibility(true);
+				dialog = ProgressDialog.show(ViewRawRulesActivity.this, "", "Loading");
 			}
 
 			protected void onPostExecute(Integer result)
 			{
-				setProgressBarIndeterminateVisibility(false);
+				dialog.dismiss();
 			}
 
 		}

@@ -22,10 +22,11 @@
             <li>To view current rule > \"View Rules\" tab.\n</li>
             <li>To view logged network traffic > \"Log\" tab.\n</li>
             <li>To automatically generare rules blocking known malicious sites > \"Add Rules\" tab > \"Download IPs\" button.\n</li>
-            <li>To set automatically created rules to be updated every 24 hours > menu > \"Settings\" > check "Enable Auto Update".\n</li>
-            <li>To switch between block/allow scheme and enable/disable logging > menu > \"Settings\".\n</li>
             <li>To export rules > go to Apps or View Rules > menu > \"Export Rules\" > enter desired file name > press \"Save\".\n</li>
             <li>To import rules > go to Apps or View Rules > menu > \"Import Rules\" > enter name of file containing rules > press \"Import\".\n</li>
+            <li>To set automatically created rules to be updated every 24 hours > menu > \"Settings\" > check "Enable Auto Update".\n</li>
+            <li>To switch between block/allow scheme and enable/disable logging > menu > \"Settings\".\n</li>
+            <li>To view raw IPTables rules > menu > \"Settings\" > press \"View Rules\".\n</li>
         </lo></string>
     
 

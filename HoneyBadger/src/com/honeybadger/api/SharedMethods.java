@@ -36,7 +36,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -553,10 +552,12 @@ public final class SharedMethods
 					try
 					{
 						// create new file
+						File dir = new File(Environment.getExternalStorageDirectory()
+								.getAbsolutePath() + "/HoneyBadger");
+						dir.mkdirs();
 						File expFile = new File(Environment.getExternalStorageDirectory()
-								.getAbsolutePath(), fileName + ".csv");
+								.getAbsolutePath() + "/HoneyBadger", fileName + ".csv");
 						FileWriter writer = new FileWriter(expFile);
-
 						// create header of file
 						writer.append("IP Address, Port, Direction, Action, Domain, Interface\n");
 
@@ -649,8 +650,11 @@ public final class SharedMethods
 					try
 					{
 						// open file to be imported
+						File dir = new File(Environment.getExternalStorageDirectory()
+								.getAbsolutePath() + "/HoneyBadger");
+						dir.mkdirs();
 						File impFile = new File(Environment.getExternalStorageDirectory()
-								.getAbsolutePath(), fileName + ".csv");
+								.getAbsolutePath() + "/HoneyBadger", fileName + ".csv");
 
 						// get BufferedReader of file
 						BufferedReader br = new BufferedReader(new FileReader(impFile));
@@ -689,10 +693,8 @@ public final class SharedMethods
 								}
 								else
 								{
-									Log.d("rules", "before");
 									appAdapter.changeStatus(Integer.parseInt((tokens[0])),
 											tokens[2], tokens[3]);
-									Log.d("rules", "after");
 								}
 							}
 						}

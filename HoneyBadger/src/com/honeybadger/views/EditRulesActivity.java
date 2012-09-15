@@ -56,7 +56,7 @@ public class EditRulesActivity extends Activity
 	Boolean out = false;
 	Boolean wifi = false;
 	Boolean cell = false;
-	
+
 	String allow = "allow";
 	String ipAddress = "null";
 	String urlAddress = "null";
@@ -81,6 +81,15 @@ public class EditRulesActivity extends Activity
 		settings = getSharedPreferences("main", 0);
 
 		CommitButton = (Button) findViewById(R.id.buttonCommit);
+		if (settings.getBoolean("block", false))
+		{
+			CommitButton.setText("Allow");
+		}
+		else
+		{
+			CommitButton.setText("Block");
+		}
+
 		FetchButton = (Button) findViewById(R.id.buttonDownload);
 
 		urlEdit = (EditText) findViewById(R.id.urlEntry);
@@ -132,7 +141,7 @@ public class EditRulesActivity extends Activity
 				}
 			}
 		});
-		
+
 		CheckWifi.setOnClickListener(new OnClickListener()
 		{
 			public void onClick(View v)
@@ -149,7 +158,7 @@ public class EditRulesActivity extends Activity
 				}
 			}
 		});
-		
+
 		CheckCell.setOnClickListener(new OnClickListener()
 		{
 			public void onClick(View v)
@@ -289,7 +298,7 @@ public class EditRulesActivity extends Activity
 			{
 				direction = "out";
 			}
-			
+
 			if (wifi & cell)
 			{
 				netInt = "both";
@@ -337,12 +346,11 @@ public class EditRulesActivity extends Activity
 		{
 			Toast.makeText(
 					EditRulesActivity.this,
-					"You must enter either an IP Address or port number, and specify direction of traffic.",
+					"You must enter either an IP Address or Domain name, and specify direction and interface of traffic.",
 					Toast.LENGTH_LONG).show();
 		}
 		rulesDB.close();
 		ipAddress = "null";
-		// in = false;
 	}
 
 	/**
@@ -353,9 +361,9 @@ public class EditRulesActivity extends Activity
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(EditRulesActivity.this);
 		builder.setMessage(
-				"The rule has been saved but has not been applied to the firewall.  Would you like to apply it now?")
+				"The rule has been applied.")
 				.setCancelable(false)
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+				.setNeutralButton("OK", new DialogInterface.OnClickListener()
 				{
 					public void onClick(DialogInterface dialog, int id)
 					{
@@ -363,12 +371,6 @@ public class EditRulesActivity extends Activity
 						myIntent.putExtra("reload", "false");
 						startService(myIntent);
 						clear();
-					}
-				}).setNegativeButton("No", new DialogInterface.OnClickListener()
-				{
-					public void onClick(DialogInterface dialog, int id)
-					{
-						dialog.cancel();
 					}
 				});
 
