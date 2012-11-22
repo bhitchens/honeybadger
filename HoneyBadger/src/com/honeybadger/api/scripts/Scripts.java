@@ -18,6 +18,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 public class Scripts extends Service
 {
@@ -55,6 +56,8 @@ public class Scripts extends Service
 	{
 		Bundle extras = intent.getExtras();
 		processScript = extras.getString("script");
+		Log.d("script", processScript);
+		
 		ExecuteThread script = new ExecuteThread(); // creates new script thread
 		script.run(); // runs thread
 

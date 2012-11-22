@@ -7,6 +7,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
 public class ReturnOutput extends IntentService
 {
@@ -30,6 +31,8 @@ public class ReturnOutput extends IntentService
 
 	SharedPreferences settings;
 	SharedPreferences.Editor editor;
+	
+	int count = 0;
 
 	public ReturnOutput()
 	{
@@ -70,6 +73,8 @@ public class ReturnOutput extends IntentService
 
 	public void handleOut(String line)
 	{
+		Log.d("test3", Integer.toString(count));
+		count++;
 		scriptOutput += line + "\n";
 	}
 

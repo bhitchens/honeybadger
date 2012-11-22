@@ -22,9 +22,17 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.honeybadger.R.id;
+import com.honeybadger.api.AppBlocker;
+import com.honeybadger.api.Blocker;
+import com.honeybadger.api.SharedMethods;
+import com.honeybadger.api.databases.AppsDBAdapter;
 import com.honeybadger.api.databases.LogDBAdapter;
+import com.honeybadger.api.scripts.Fetcher;
 import com.honeybadger.api.scripts.RequirementsScript;
+import com.honeybadger.api.scripts.Scripts;
 import com.honeybadger.views.EditPreferencesActivity;
 import com.honeybadger.views.EditRulesActivity;
 import com.honeybadger.views.ViewLogActivity;
@@ -33,9 +41,13 @@ import com.honeybadger.views.ViewRulesActivity;
 public class HoneyBadgerActivity extends Activity
 {
 
-	Menu optionsMenu = null;
+	Menu optionsMenu;
+	MenuItem fwEnabledItem;
+	
 	Intent rec;
+	
 	SharedPreferences settings;
+	SharedPreferences.Editor editor;
 
 	/**
 	 * Called when the activity is first created; it ensures that the IPTables
@@ -55,6 +67,7 @@ public class HoneyBadgerActivity extends Activity
 		AppRater.app_launched(this);
 
 		settings = getSharedPreferences("main", 1);
+		editor = settings.edit();
 
 		if (!settings.getBoolean("suppressWarn", false))
 		{
@@ -77,6 +90,19 @@ public class HoneyBadgerActivity extends Activity
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu, menu);
+		
+		this.optionsMenu = menu;
+		fwEnabledItem = optionsMenu.findItem(id.fw_enabled);
+		
+		if (settings.getBoolean("fwEnabled", true))
+		{
+			fwEnabledItem.setTitle("Disable HB");
+		}
+		else
+		{
+			fwEnabledItem.setTitle("Enable HB");
+		}
+		
 		return true;
 	}
 
@@ -90,19 +116,79 @@ public class HoneyBadgerActivity extends Activity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-
 		// Handle item selection
 		switch (item.getItemId())
 		{
+			case R.id.fw_enabled:
+				if (settings.getBoolean("fwEnabled", true))
+				{
+					String disableScript = this.getDir("bin", 0) + "/iptables -F\n" + this.getDir("bin", 0) + "/iptables -X\n"; 
+					Intent scriptIntent = new Intent(this, Scripts.class);
+					scriptIntent.putExtra("script", disableScript);
+					this.startService(scriptIntent);
+					
+					editor.putBoolean("fwEnabled", false);
+					this.fwEnabledItem.setTitle("Enable HB");
+					
+					Toast.makeText(this, "HoneyBadger Firewall Disabled", Toast.LENGTH_SHORT).show();
+				}
+				else
+				{
+					String startScript = "";
+
+					settings = this.getSharedPreferences("main", 1);
+
+					startScript = SharedMethods.initialString(startScript, this);
+
+					startScript = SharedMethods.setLogging(startScript, settings, this);
+
+					startScript = SharedMethods.setBlock(startScript, settings, this);
+
+					// Launch Script
+					Intent script = new Intent(this, Scripts.class);
+					//script.setClass();
+					script.putExtra("script", startScript);
+					this.startService(script);
+
+					// reload rules
+					Intent reload = new Intent(this, Blocker.class);
+					//reload.setClass(this, Blocker.class);
+					reload.putExtra("reload", "true");
+					this.startService(reload);
+
+					// reload app rules
+					Intent reloadApps = new Intent(this, AppBlocker.class);
+					//reloadApps.setClass(this, AppBlocker.class);
+					this.startService(reloadApps);
+
+					// reload auto-generated rules if specified
+					if (settings.getBoolean("generate", false) | settings.getBoolean("autoUpdate", false))
+					{
+						Intent generate = new Intent(this, Fetcher.class);
+						//generate.setClass(this, Fetcher.class);
+						generate.putExtra(
+								"script",
+								this.getDir("bin", 0)
+										+ "/iptables -F FETCH"
+										+ "\n"
+										+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
+										+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'");
+						this.startService(generate);
+					}
+
+					AppsDBAdapter appAdapter = new AppsDBAdapter(this);;
+					SharedMethods.loadApps(this, settings, appAdapter);				
+					
+					editor.putBoolean("fwEnabled", true);
+					this.fwEnabledItem.setTitle("Disable HB");
+				}
+				editor.commit();
+				editor.clear();				
+				
+				return true;
 			case R.id.settings:
 				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
 				startActivity(prefIntent);
-				return true;
-			case R.id.clearLog:
-				LogDBAdapter logDB = new LogDBAdapter(this);
-				logDB.open();
-				logDB.clearLog();
-				logDB.close();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

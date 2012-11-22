@@ -65,7 +65,7 @@ public class ViewRawRulesActivity extends Activity
 								rules = (TextView) findViewById(R.id.ruleText);
 								rules.setText(ruleText);
 							}
-						}, 100);
+						}, 1);
 					}
 
 				});

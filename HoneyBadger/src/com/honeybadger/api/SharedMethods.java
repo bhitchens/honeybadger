@@ -36,6 +36,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -289,6 +290,7 @@ public final class SharedMethods
 			Boolean add, String block, String in, Boolean wifi, Boolean cell)
 	{
 		String newRule = rule;
+		Log.d("test2", rule);
 		if (wifi)
 		{
 			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "tiwlan+");
@@ -313,12 +315,14 @@ public final class SharedMethods
 	private static String ruleBuilderF(Context ctx, String rule, String type, String target,
 			Boolean add, String block, String in, String netInt)
 	{
+		
 		String newRule = rule;
 		if (type == "App")
 		{
-
+			Log.d("test2", rule + " 1");
 			if (add)
 			{
+				Log.d("test2", rule + " 2");
 				newRule += ctx.getDir("bin", 0) + "/iptables -A APPS -m owner --uid-owner "
 						+ target + " -o " + netInt + " -j " + block + in + "\n";
 			}
@@ -477,8 +481,9 @@ public final class SharedMethods
 
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
-			editor.commit();
-		}
+			editor.commit();		
+		}		
+		//appAdapter.close();
 	}
 
 	/**
