@@ -18,8 +18,10 @@ import com.honeybadger.api.SharedMethods.AppInfo;
 import com.honeybadger.api.databases.AppsDBAdapter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -34,6 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -46,12 +49,15 @@ public class ShowAppsActivity extends Activity
 	Button ClearAllButton;
 	Button ApplyButton;
 
+	ImageView wifi;
+	ImageView cell;
+
 	SharedPreferences settings;
 
 	ProgressDialog dialog;
 
 	ArrayList<AppInfo> list;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -62,6 +68,10 @@ public class ShowAppsActivity extends Activity
 		CheckAllButton = (Button) findViewById(R.id.check_all);
 		ClearAllButton = (Button) findViewById(R.id.clear_all);
 		ApplyButton = (Button) findViewById(R.id.apply);
+
+		wifi = (ImageView) findViewById(R.id.imageWifi);
+		cell = (ImageView) findViewById(R.id.imageCell);
+
 		createListeners(this);
 	}
 
@@ -106,6 +116,66 @@ public class ShowAppsActivity extends Activity
 						.show();
 			}
 		});
+
+		wifi.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(ShowAppsActivity.this);
+				builder.setMessage("Check or clear all wifi rules.").setCancelable(true)
+						.setPositiveButton("Check All", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								appAdapter.open();
+								appAdapter.checkWifi(true);
+								appAdapter.close();
+								setLV();
+							}
+						}).setNegativeButton("Clear All", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								appAdapter.open();
+								appAdapter.checkWifi(false);
+								appAdapter.close();
+								setLV();
+							}
+						});
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+		});
+
+		cell.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(ShowAppsActivity.this);
+				builder.setMessage("Check or clear all cell rules.").setCancelable(true)
+						.setPositiveButton("Check All", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								appAdapter.open();
+								appAdapter.checkCell(true);
+								appAdapter.close();
+								setLV();
+							}
+						}).setNegativeButton("Clear All", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								appAdapter.open();
+								appAdapter.checkCell(false);
+								appAdapter.close();
+								setLV();
+							}
+						});
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+		});
 	}
 
 	/**
@@ -137,7 +207,7 @@ public class ShowAppsActivity extends Activity
 		{
 			protected Integer doInBackground(Integer... integers)
 			{
-				/*ArrayList<AppInfo> */list = new ArrayList<AppInfo>();
+				/* ArrayList<AppInfo> */list = new ArrayList<AppInfo>();
 				appAdapter.open();
 				Cursor c = appAdapter.fetchAllEntries();
 				while (c.getPosition() < c.getCount() - 1)

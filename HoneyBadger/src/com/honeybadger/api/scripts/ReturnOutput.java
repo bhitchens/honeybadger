@@ -73,14 +73,12 @@ public class ReturnOutput extends IntentService
 
 	public void handleOut(String line)
 	{
-		Log.d("test3", Integer.toString(count));
-		count++;
 		scriptOutput += line + "\n";
 	}
 
 	public void handleErr(String line)
 	{
-
+		Log.d("test", line);
 	}
 
 	public void handleComplete()
@@ -144,7 +142,7 @@ public class ReturnOutput extends IntentService
 							String line;
 							while ((line = stdout.readLine()) != null)
 							{
-								super.sleep(10);
+								//super.sleep(10);
 								handleOut(line);
 							}
 							stdoutFinished = true;

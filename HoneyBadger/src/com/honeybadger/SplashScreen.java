@@ -63,11 +63,15 @@ public class SplashScreen extends Activity
 					sendNotification();
 				}
 
-				startScript = SharedMethods.initialString(startScript, SplashScreen.this);
+				if (settings.getBoolean("fwEnabled", true))
+				{
+					startScript = SharedMethods.initialString(startScript, SplashScreen.this);
 
-				startScript = SharedMethods.setLogging(startScript, settings, SplashScreen.this);
+					startScript = SharedMethods
+							.setLogging(startScript, settings, SplashScreen.this);
 
-				startScript = SharedMethods.setBlock(startScript, settings, SplashScreen.this);
+					startScript = SharedMethods.setBlock(startScript, settings, SplashScreen.this);
+				}
 
 				// Launch Script
 				Intent script = new Intent(SplashScreen.this, Scripts.class);

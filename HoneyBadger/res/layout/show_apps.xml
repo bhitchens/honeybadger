@@ -34,6 +34,7 @@
 
             <ImageView
                 android:id="@+id/imageWifi"
+                android:clickable="true"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginLeft="5dip"
@@ -42,6 +43,7 @@
 
             <ImageView
                 android:id="@+id/imageCell"
+                android:clickable="true"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginLeft="7dip"

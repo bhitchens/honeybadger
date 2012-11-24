@@ -10,6 +10,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class ViewRawRulesActivity extends Activity
@@ -20,7 +23,11 @@ public class ViewRawRulesActivity extends Activity
 	String ruleText;
 
 	TextView rules;
-	
+	Button showMoreButton;
+	Button goBackButton;
+
+	int lineNum = 0;
+
 	ProgressDialog dialog;
 
 	@Override
@@ -31,61 +38,85 @@ public class ViewRawRulesActivity extends Activity
 		settings = getSharedPreferences("main", 0);
 		editor = settings.edit();
 
-		class GetRules extends AsyncTask<Integer, Integer, Integer>
+		new GetRules().execute();
+	}
+
+	class GetRules extends AsyncTask<Integer, Integer, Integer>
+	{
+		protected Integer doInBackground(Integer... integers)
 		{
-			protected Integer doInBackground(Integer... integers)
+			String scriptText = ViewRawRulesActivity.this.getDir("bin", 0)
+					+ "/iptables -L -n -v | cut -d \"\n\" -f" + lineNum + "-" + (lineNum + 12);
+
+			Intent script = new Intent(ViewRawRulesActivity.this, ReturnOutput.class);
+			script.putExtra("script", scriptText);
+			startService(script);
+
+			ruleText = "";
+			ruleText = settings.getString("tempText", "not ready");
+
+			while (ruleText.contains("not ready"))
 			{
-				String scriptText = ViewRawRulesActivity.this.getDir("bin", 0)
-						+ "/iptables -L -n -v";
-
-				Intent script = new Intent(ViewRawRulesActivity.this, ReturnOutput.class);
-				script.putExtra("script", scriptText);
-				startService(script);
-
-				ruleText = "";
 				ruleText = settings.getString("tempText", "not ready");
+			}
 
-				while (ruleText.contains("not ready"))
+			editor.remove("tempText");
+			editor.commit();
+
+			ViewRawRulesActivity.this.runOnUiThread(new Runnable()
+			{
+				public void run()
 				{
-					ruleText = settings.getString("tempText", "not ready");
-				}
-
-				editor.remove("tempText");
-				editor.commit();
-
-				ViewRawRulesActivity.this.runOnUiThread(new Runnable()
-				{
-					public void run()
+					new Handler().postDelayed(new Runnable()
 					{
-						new Handler().postDelayed(new Runnable()
+						public void run()
 						{
-							public void run()
+							setContentView(R.layout.raw_rules);
+
+							goBackButton = (Button) findViewById(R.id.go_back);
+							if (lineNum == 0)
 							{
-								setContentView(R.layout.raw_rules);
-								rules = (TextView) findViewById(R.id.ruleText);
-								rules.setText(ruleText);
+								goBackButton.setVisibility(View.GONE);
 							}
-						}, 1);
-					}
+							goBackButton.setOnClickListener(new OnClickListener()
+							{
+								public void onClick(View v)
+								{
+									lineNum -= 13;
+									new GetRules().execute();
+								}
+							});
 
-				});
+							showMoreButton = (Button) findViewById(R.id.show_more);
+							showMoreButton.setOnClickListener(new OnClickListener()
+							{
+								public void onClick(View v)
+								{
+									lineNum += 13;
+									goBackButton.setVisibility(View.VISIBLE);
+									new GetRules().execute();
+								}
+							});
 
-				return 0;
-			}
+							rules = (TextView) findViewById(R.id.ruleText);
+							rules.setText(ruleText);
+						}
+					}, 1);
+				}
+			});
 
-			protected void onPreExecute()
-			{
-				dialog = ProgressDialog.show(ViewRawRulesActivity.this, "", "Loading");
-			}
-
-			protected void onPostExecute(Integer result)
-			{
-				dialog.dismiss();
-			}
-
+			return 0;
 		}
 
-		new GetRules().execute();
+		protected void onPreExecute()
+		{
+			dialog = ProgressDialog.show(ViewRawRulesActivity.this, "", "Loading");
+		}
+
+		protected void onPostExecute(Integer result)
+		{
+			dialog.dismiss();
+		}
 
 	}
 }

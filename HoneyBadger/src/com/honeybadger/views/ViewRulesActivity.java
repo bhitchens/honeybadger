@@ -76,6 +76,11 @@ public class ViewRulesActivity extends ListActivity
 		}
 
 		ruleAdapter.close();
+		
+		if (RULES.isEmpty())
+		{
+			RULES.add("No current rules.");
+		}
 
 		setListAdapter(new ArrayAdapter<String>(this, R.layout.log_viewer, RULES));
 

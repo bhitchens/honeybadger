@@ -40,7 +40,6 @@ import com.honeybadger.views.ViewRulesActivity;
 
 public class HoneyBadgerActivity extends Activity
 {
-
 	Menu optionsMenu;
 	MenuItem fwEnabledItem;
 	

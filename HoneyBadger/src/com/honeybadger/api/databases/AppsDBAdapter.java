@@ -152,28 +152,12 @@ public class AppsDBAdapter
 	 */
 	public void changeStatus(int uid, String wStatus, String cStatus)
 	{
-		Log.d("rules", "inside");
-		Log.d("rules", uid + " " + wStatus + " " + cStatus);
-
-		// Check to see if entry already exists
-		/*
-		 * Cursor c = mDb.query(DATABASE_TABLE, new String[] { "ICON" }, "UID='"
-		 * + uid + "'", null, null, null, null);
-		 */
-
-		// if there is no entry
-		/*
-		 * if (c == null || c.getCount() == 0) { // this.createEntry(uid, name,
-		 * c.getBlob(0), wStatus, cStatus); } else {
-		 */
 		if (!(wStatus == "default"))
 		{
 			String sql = "UPDATE apps SET WSTATUS= ? WHERE UID= ? ";
 			Object[] bindArgs = new Object[]
 			{ wStatus, uid };
-			Log.d("rules", "inside1.5");
 			mDb.execSQL(sql, bindArgs);
-			Log.d("rules", "inside2");
 		}
 		if (!(cStatus == "default"))
 		{
@@ -181,10 +165,7 @@ public class AppsDBAdapter
 			Object[] bindArgs = new Object[]
 			{ cStatus, uid };
 			mDb.execSQL(sql, bindArgs);
-			Log.d("rules", "inside3");
 		}
-		// }
-
 	}
 
 	public void checkAll(Boolean check)
@@ -207,6 +188,52 @@ public class AppsDBAdapter
 		{
 			c.moveToNext();
 			this.changeStatus(c.getInt(0), block, block);
+		}
+	}
+	
+	public void checkWifi(Boolean check)
+	{
+		String block = "";
+		if (check)
+		{
+			block = "block";
+		}
+		else
+		{
+			block = "allow";
+		}
+
+		// fetch the table
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+		{ "UID", "NAME", "ICON" }, null, null, null, null, null);
+
+		while (c.getPosition() < c.getCount() - 1)
+		{
+			c.moveToNext();
+			this.changeStatus(c.getInt(0), block, "default");
+		}
+	}
+	
+	public void checkCell(Boolean check)
+	{
+		String block = "";
+		if (check)
+		{
+			block = "block";
+		}
+		else
+		{
+			block = "allow";
+		}
+
+		// fetch the table
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+		{ "UID", "NAME", "ICON" }, null, null, null, null, null);
+
+		while (c.getPosition() < c.getCount() - 1)
+		{
+			c.moveToNext();
+			this.changeStatus(c.getInt(0), "default", block);
 		}
 	}
 

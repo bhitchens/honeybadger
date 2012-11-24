@@ -21,7 +21,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
+//import android.util.Log;
 
 public class AppBlocker extends IntentService
 {
@@ -69,7 +69,6 @@ public class AppBlocker extends IntentService
 				}
 
 				Intent scriptIntent = new Intent(context, Scripts.class);
-				// scriptIntent.setClass();
 				scriptIntent.putExtra("script", script);
 				context.startService(scriptIntent);
 				script = "";
@@ -77,30 +76,16 @@ public class AppBlocker extends IntentService
 		}
 		else
 		{
-			Log.d("test", "1");
 			while (c.getPosition() < c.getCount() - 1)
 			{
 				c.moveToNext();
 				uid = c.getInt(0);
 				if (!c.getString(3).contains("block") || !c.getString(4).contains("block"))
 				{
-					/*script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							false, "DROP", "OUT", appAdapter.checkBlockW(uid),
-							appAdapter.checkBlockC(uid));
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							false, "ACCEPT", "OUT", appAdapter.checkBlockW(uid),
-							appAdapter.checkBlockC(uid));*/
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
 							true, "ACCEPT", "OUT", !appAdapter.checkBlockW(uid),
 							!appAdapter.checkBlockC(uid));
-					Log.d("test2", script);
 				}
-				/*else
-				{
-					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							false, "ACCEPT", "OUT", !appAdapter.checkBlockW(uid),
-							!appAdapter.checkBlockC(uid));
-				}*/
 
 				Intent scriptIntent = new Intent();
 				scriptIntent.setClass(context, Scripts.class);
@@ -110,7 +95,6 @@ public class AppBlocker extends IntentService
 			}
 		}
 
-		//appAdapter.close();
 		Intent scriptIntent = new Intent();
 		scriptIntent.setClass(context, Scripts.class);
 		scriptIntent.putExtra("script", script);
