@@ -136,6 +136,16 @@
             android:background="@drawable/cust_buttons"
             android:text="Download IPs"
             android:textColor="@android:color/white" />
+        
+        <Button
+            android:id="@+id/button_clear_download"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dip"
+            android:background="@drawable/cust_buttons"
+            android:text="Clear Downloaded IPs"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 </ScrollView>

@@ -20,6 +20,7 @@ import com.honeybadger.R;
 import com.honeybadger.api.Blocker;
 import com.honeybadger.api.databases.RulesDBAdapter;
 import com.honeybadger.api.scripts.Fetcher;
+import com.honeybadger.api.scripts.Scripts;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -44,6 +45,7 @@ public class EditRulesActivity extends Activity
 
 	Button CommitButton;
 	Button FetchButton;
+	Button ClearButton;
 
 	Button CheckIn;
 	Button CheckOut;
@@ -91,6 +93,7 @@ public class EditRulesActivity extends Activity
 		}
 
 		FetchButton = (Button) findViewById(R.id.buttonDownload);
+		ClearButton = (Button) findViewById(R.id.button_clear_download);
 
 		urlEdit = (EditText) findViewById(R.id.urlEntry);
 		ipEdit = (EditText) findViewById(R.id.ipEntry);
@@ -184,9 +187,6 @@ public class EditRulesActivity extends Activity
 				urlAddress = EditRulesActivity.this.urlEdit.getText().toString();
 
 				commitRule();
-
-				// http://stackoverflow.com/questions/4850493/open-a-dialog-when-i-click-a-button
-				// http://developer.android.com/guide/topics/ui/dialogs.html#AlertDialog
 			}
 		});
 
@@ -196,9 +196,20 @@ public class EditRulesActivity extends Activity
 			{
 				fetchIPs();
 				sendUpdateNotification();
+			}
+		});
 
-				// http://stackoverflow.com/questions/4850493/open-a-dialog-when-i-click-a-button
-				// http://developer.android.com/guide/topics/ui/dialogs.html#AlertDialog
+		ClearButton.setOnClickListener(new View.OnClickListener()
+		{
+			public void onClick(View view)
+			{
+				Intent clearScript = new Intent(EditRulesActivity.this, Scripts.class);
+				clearScript.putExtra("script", getDir("bin", 0) + "/iptables -F FETCH \n");
+				startService(clearScript);
+				Toast.makeText(
+						EditRulesActivity.this,
+						"Downloaded IPs have been cleared.",
+						Toast.LENGTH_LONG).show();
 			}
 		});
 
@@ -215,8 +226,7 @@ public class EditRulesActivity extends Activity
 		editor.putBoolean("generate", true);
 		editor.commit();
 
-		Intent start = new Intent();
-		start.setClass(this, Fetcher.class);
+		Intent start = new Intent(this, Fetcher.class);
 		start.putExtra(
 				"script",
 				getDir("bin", 0)
@@ -360,9 +370,7 @@ public class EditRulesActivity extends Activity
 	private void launchCommitDialog()
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(EditRulesActivity.this);
-		builder.setMessage(
-				"The rule has been applied.")
-				.setCancelable(false)
+		builder.setMessage("The rule has been applied.").setCancelable(false)
 				.setNeutralButton("OK", new DialogInterface.OnClickListener()
 				{
 					public void onClick(DialogInterface dialog, int id)
