@@ -1,6 +1,6 @@
 package com.honeybadger;
 
-import com.honeybadger.views.EditRulesActivity;
+import com.honeybadger.views.AddRulesActivity;
 import com.honeybadger.views.ShowAppsActivity;
 import com.honeybadger.views.ViewLogActivity;
 import com.honeybadger.views.ViewRulesActivity;
@@ -36,7 +36,7 @@ public class HBTabActivity extends TabActivity
 		
 		TabSpec addspec = tabHost.newTabSpec("Add Rules");
 		addspec.setIndicator("Add Rules", getResources().getDrawable(R.drawable.ic_menu_add));
-		Intent addIntent = new Intent(this, EditRulesActivity.class);
+		Intent addIntent = new Intent(this, AddRulesActivity.class);
 		addspec.setContent(addIntent);
 		
 		TabSpec appspec = tabHost.newTabSpec("Apps");

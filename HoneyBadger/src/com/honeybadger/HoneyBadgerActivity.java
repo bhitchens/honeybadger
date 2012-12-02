@@ -34,7 +34,7 @@ import com.honeybadger.api.scripts.Fetcher;
 import com.honeybadger.api.scripts.RequirementsScript;
 import com.honeybadger.api.scripts.Scripts;
 import com.honeybadger.views.EditPreferencesActivity;
-import com.honeybadger.views.EditRulesActivity;
+import com.honeybadger.views.AddRulesActivity;
 import com.honeybadger.views.ViewLogActivity;
 import com.honeybadger.views.ViewRulesActivity;
 
@@ -52,7 +52,7 @@ public class HoneyBadgerActivity extends Activity
 	 * Called when the activity is first created; it ensures that the IPTables
 	 * is installed, generates and launches a script string based on settings,
 	 * sets the view, and creates buttons for launching
-	 * {@link ViewRulesActivity}, {@link EditRulesActivity}, and
+	 * {@link ViewRulesActivity}, {@link AddRulesActivity}, and
 	 * {@link ViewLogActivity}.
 	 */
 	@Override
@@ -110,7 +110,7 @@ public class HoneyBadgerActivity extends Activity
 	 * selected item. If "Settings" is selected, then
 	 * {@link EditPreferencesActivity} is started. If "Clear Log" is selected,
 	 * then {@link LogDBAdapter} is used to clear the log. If "Add Rule" is
-	 * selected, then {@link EditRulesActivity} is started.
+	 * selected, then {@link AddRulesActivity} is started.
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)

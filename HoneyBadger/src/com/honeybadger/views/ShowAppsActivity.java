@@ -141,6 +141,11 @@ public class ShowAppsActivity extends Activity
 								appAdapter.close();
 								setLV();
 							}
+						}).setNeutralButton("Cancel", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+							}
 						});
 				AlertDialog alert = builder.create();
 				alert.show();
@@ -170,6 +175,11 @@ public class ShowAppsActivity extends Activity
 								appAdapter.checkCell(false);
 								appAdapter.close();
 								setLV();
+							}
+						}).setNeutralButton("Cancel", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
 							}
 						});
 				AlertDialog alert = builder.create();

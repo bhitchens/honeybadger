@@ -40,7 +40,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class EditRulesActivity extends Activity
+public class AddRulesActivity extends Activity
 {
 
 	Button CommitButton;
@@ -183,8 +183,8 @@ public class EditRulesActivity extends Activity
 		{
 			public void onClick(View view)
 			{
-				ipAddress = EditRulesActivity.this.ipEdit.getText().toString();
-				urlAddress = EditRulesActivity.this.urlEdit.getText().toString();
+				ipAddress = AddRulesActivity.this.ipEdit.getText().toString();
+				urlAddress = AddRulesActivity.this.urlEdit.getText().toString();
 
 				commitRule();
 			}
@@ -203,11 +203,11 @@ public class EditRulesActivity extends Activity
 		{
 			public void onClick(View view)
 			{
-				Intent clearScript = new Intent(EditRulesActivity.this, Scripts.class);
+				Intent clearScript = new Intent(AddRulesActivity.this, Scripts.class);
 				clearScript.putExtra("script", getDir("bin", 0) + "/iptables -F FETCH \n");
 				startService(clearScript);
 				Toast.makeText(
-						EditRulesActivity.this,
+						AddRulesActivity.this,
 						"Downloaded IPs have been cleared.",
 						Toast.LENGTH_LONG).show();
 			}
@@ -355,7 +355,7 @@ public class EditRulesActivity extends Activity
 		else
 		{
 			Toast.makeText(
-					EditRulesActivity.this,
+					AddRulesActivity.this,
 					"You must enter either an IP Address or Domain name, and specify direction and interface of traffic.",
 					Toast.LENGTH_LONG).show();
 		}
@@ -369,13 +369,13 @@ public class EditRulesActivity extends Activity
 	 */
 	private void launchCommitDialog()
 	{
-		AlertDialog.Builder builder = new AlertDialog.Builder(EditRulesActivity.this);
+		AlertDialog.Builder builder = new AlertDialog.Builder(AddRulesActivity.this);
 		builder.setMessage("The rule has been applied.").setCancelable(false)
 				.setNeutralButton("OK", new DialogInterface.OnClickListener()
 				{
 					public void onClick(DialogInterface dialog, int id)
 					{
-						Intent myIntent = new Intent(EditRulesActivity.this, Blocker.class);
+						Intent myIntent = new Intent(AddRulesActivity.this, Blocker.class);
 						myIntent.putExtra("reload", "false");
 						startService(myIntent);
 						clear();

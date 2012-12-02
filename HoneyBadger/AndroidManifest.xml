@@ -72,7 +72,7 @@
 
         <activity android:name="com.honeybadger.views.ViewRulesActivity" />
         <activity android:name=".views.ViewLogActivity" />
-        <activity android:name=".views.EditRulesActivity" />
+        <activity android:name=".views.AddRulesActivity" />
         <activity
             android:name=".views.EditPreferencesActivity"
             android:noHistory="true" />

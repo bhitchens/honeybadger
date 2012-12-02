@@ -18,11 +18,14 @@
     
     <string name="intro_body">
         <lo>
+            <li>To enable/disable firewall > menu > \"Enable/Disable HB\".\n</li>
             <li>To set rules for applications > \"Apps\" tab.\n</li>
+            <li>In Apps tab, press wifi/cell icons to select/deselect all in column.\n</li>
             <li>To add a new IP or URL-based rule > \"Add Rules\" tab.\n</li>            
             <li>To view current rule > \"View Rules\" tab.\n</li>
             <li>To view logged network traffic > \"Log\" tab.\n</li>
             <li>To automatically generare rules blocking known malicious sites > \"Add Rules\" tab > \"Download IPs\" button.\n</li>
+            <li>To clear automatically generared rules > \"Add Rules\" tab > \"Clear Downloaded IPs\" button.\n</li>
             <li>To export rules > go to Apps or View Rules > menu > \"Export Rules\" > enter desired file name > press \"Save\".\n</li>
             <li>To import rules > go to Apps or View Rules > menu > \"Import Rules\" > enter name of file containing rules > press \"Import\".\n</li>
             <li>To set automatically created rules to be updated every 24 hours > menu > \"Settings\" > check "Enable Auto Update".\n</li>
