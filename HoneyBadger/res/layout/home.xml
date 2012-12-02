@@ -19,6 +19,7 @@
 
         <ImageView
             android:id="@+id/imageView1"
+            android:contentDescription="@string/desc_banner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

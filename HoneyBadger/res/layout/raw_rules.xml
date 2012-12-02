@@ -35,7 +35,7 @@
                 android:layout_marginBottom="10dip"
                 android:layout_marginLeft="10dip"
                 android:layout_marginRight="10dip"
-                android:text="Go Back"
+                android:text="@string/go_back"
                 android:textSize="6pt" />            
             <Button
                 android:id="@+id/show_more"
@@ -44,7 +44,7 @@
                 android:layout_marginBottom="10dip"
                 android:layout_marginLeft="10dip"
                 android:layout_marginRight="10dip"
-                android:text="Show More"
+                android:text="@string/show_more"
                 android:textSize="6pt" />
 
         </LinearLayout>

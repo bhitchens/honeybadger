@@ -17,10 +17,9 @@
 
     <ImageView
         android:id="@+id/imgIcon"
+        android:contentDescription="@string/desc_app_icon"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentTop="true"
         android:layout_marginBottom="3dp"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="5dp"
@@ -31,8 +30,6 @@
         android:id="@+id/txtTitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentTop="true"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="0dp"
         android:gravity="center_vertical"

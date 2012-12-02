@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:theme="@style/Theme.NoBackground"
         android:icon="@drawable/icon"
         android:label="@string/app_name" >
 
@@ -28,7 +29,9 @@
             android:name=".HoneyBadgerActivity"
             android:label="@string/app_name" >
         </activity>
+        
         <activity android:name=".HBTabActivity" />
+        
         <activity
             android:name="com.honeybadger.SplashScreen"
             android:noHistory="true" >
@@ -38,6 +41,8 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+        
+        <activity android:name="com.honeybadger.HoneyBadgerNotify"/>
 
         <receiver
             android:name="AlarmReceiver"

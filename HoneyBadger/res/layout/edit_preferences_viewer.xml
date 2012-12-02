@@ -47,21 +47,21 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Block All" />
+                android:text="@string/block_all" />
 
             <RadioButton
                 android:id="@+id/radioAllow"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Allow All" />
+                android:text="@string/allow_all" />
         </RadioGroup>
 
         <TextView
             android:id="@+id/logRule"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Logging Rule"
+            android:text="@string/log_rule"
             android:textStyle="bold" />
 
         <RadioGroup
@@ -74,14 +74,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Enable Logging" />
+                android:text="@string/en_log" />
 
             <RadioButton
                 android:id="@+id/radioLogOff"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Disable Logging" />
+                android:text="@string/dis_log" />
         </RadioGroup>
 
         <TextView
@@ -95,7 +95,7 @@
             android:id="@+id/checkAutoUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enable Auto Update" />
+            android:text="@string/en_auto" />
         
         <TextView
             android:id="@+id/pref_warn_hdr"
@@ -123,7 +123,7 @@
             android:layout_height="35dp"
             android:layout_gravity="left"
             android:layout_marginTop="10dip"
-            android:text="View Rules" />
+            android:text="@string/view_rules" />
     </LinearLayout>
 
 </ScrollView>

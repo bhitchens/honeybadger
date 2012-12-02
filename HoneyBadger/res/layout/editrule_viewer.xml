@@ -18,7 +18,7 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/red"
         android:orientation="vertical" >
 
@@ -26,14 +26,14 @@
             android:id="@+id/enterUrllabel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Enter URL:"
+            android:text="@string/enter_url"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/notelabel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="*Note: This rule will apply only to the IP addresses available from resolving the domain at the time it is set." />
+            android:text="@string/note" />
 
         <EditText
             android:id="@+id/urlEntry"
@@ -47,14 +47,14 @@
             android:id="@+id/orlabel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="OR"
+            android:text="@string/or"
             android:textStyle="italic" />
 
         <TextView
             android:id="@+id/enterIPlabel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Enter IP Address:"
+            android:text="@string/enter_ip"
             android:textStyle="bold" />
 
         <EditText
@@ -70,7 +70,7 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Apply to:"
+            android:text="@string/apply_to"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -83,20 +83,20 @@
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Incoming Traffic" />
+                android:text="@string/in_traff" />
 
             <CheckBox
                 android:id="@+id/checkOut"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Outgoing Traffic" />
+                android:text="@string/out_traff" />
         </LinearLayout>
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="And:" />
+            android:text="@string/and" />
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -108,14 +108,14 @@
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Wi-Fi" />
+                android:text="@string/wi_fi" />
 
             <CheckBox
                 android:id="@+id/checkCell"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Cell Data" />
+                android:text="@string/cell_data" />
         </LinearLayout>
 
         <Button
@@ -134,7 +134,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dip"
             android:background="@drawable/cust_buttons"
-            android:text="Download IPs"
+            android:text="@string/down_ips"
             android:textColor="@android:color/white" />
         
         <Button
@@ -144,7 +144,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dip"
             android:background="@drawable/cust_buttons"
-            android:text="Clear Downloaded IPs"
+            android:text="@string/clear_down"
             android:textColor="@android:color/white" />
     </LinearLayout>
 

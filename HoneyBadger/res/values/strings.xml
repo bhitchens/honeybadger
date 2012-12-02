@@ -16,7 +16,8 @@
     <string name="pref_warnings">Warnings.</string>
     <string name="pref_raw_iptables_rules">Raw IPTables rules.</string>
     
-    <string name="intro_body"><lo>
+    <string name="intro_body">
+        <lo>
             <li>To set rules for applications > \"Apps\" tab.\n</li>
             <li>To add a new IP or URL-based rule > \"Add Rules\" tab.\n</li>            
             <li>To view current rule > \"View Rules\" tab.\n</li>
@@ -27,7 +28,49 @@
             <li>To set automatically created rules to be updated every 24 hours > menu > \"Settings\" > check "Enable Auto Update".\n</li>
             <li>To switch between block/allow scheme and enable/disable logging > menu > \"Settings\".\n</li>
             <li>To view raw IPTables rules > menu > \"Settings\" > press \"View Rules\".\n</li>
-        </lo></string>
+        </lo>
+    </string>
+    
+    <!-- Description Strings -->
+    <string name="desc_app_icon">App Icon</string>
+    <string name="desc_banner">Homescreen Banner</string>
+    <string name="desc_wifi_icon">Wifi Icon</string>
+    <string name="desc_cell_icon">Cell Icon</string>
+    <string name="desc_splash">Splash Screen</string>
+    
+    <string name="allow_all">Allow All</string>
+    <string name="and">And:</string>
+    <string name="apply">Apply</string>
+    <string name="apply_to">Apply to:</string>
+    <string name="block_all">Block All</string>    
+    <string name="cell_data">Cell Data</string>
+    <string name="check_all">Check All</string>
+    <string name="clear_all">Clear All</string>
+    <string name="clear_down">Clear Downloaded IPs</string>
+    <string name="dis_log">Diable Logging</string>
+    <string name="down_ips">Download IPs</string>
+    <string name="en_auto">Enable Auto Update</string>
+    <string name="en_log">Enable Logging</string>
+    <string name="enter_ip">Enter IP Address:</string>    
+    <string name="enter_url">Enter URL:</string>
+    <string name="go_back">Go Back</string>
+    <string name="in_traff">Incoming Traffic</string>
+    <string name="log_rule">Logging Rule</string> 
+    <string name="note">*Note: This rule will apply only to the IP addresses available from resolving the domain at the time it is set.</string>   
+    <string name="or">OR</string>
+    <string name="out_traff">Outgoing Traffic</string>
+    <string name="select_block">Select Applications to Block</string>
+    <string name="show_more">Show More</string>
+    <string name="view_rules">View Rules</string>
+    <string name="wi_fi">Wi-Fi</string>
+    
+    
+    
+    
+    
+   
+    
+    
     
 
 </resources>
