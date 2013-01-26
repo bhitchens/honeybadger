@@ -13,6 +13,7 @@ import java.util.Calendar;
 
 import com.honeybadger.AlarmReceiver;
 import com.honeybadger.R;
+import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.scripts.Scripts;
 
 import android.app.Activity;
@@ -176,6 +177,9 @@ public class EditPreferencesActivity extends Activity
 						+ "\n";
 			}
 		}
+		Intent loadRules = new Intent(this, AppBlocker.class);
+		this.startService(loadRules);
+		
 		return script;
 	}
 

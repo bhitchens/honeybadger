@@ -193,8 +193,7 @@ public class ShowAppsActivity extends Activity
 	 */
 	public void createRules()
 	{
-		Intent loadRules = new Intent();
-		loadRules.setClass(this, AppBlocker.class);
+		Intent loadRules = new Intent(this, AppBlocker.class);
 		this.startService(loadRules);
 	}
 
