@@ -145,19 +145,16 @@ public class HoneyBadgerActivity extends Activity
 
 					// Launch Script
 					Intent script = new Intent(this, Scripts.class);
-					//script.setClass();
 					script.putExtra("script", startScript);
 					this.startService(script);
 
 					// reload rules
 					Intent reload = new Intent(this, Blocker.class);
-					//reload.setClass(this, Blocker.class);
 					reload.putExtra("reload", "true");
 					this.startService(reload);
 
 					// reload app rules
 					Intent reloadApps = new Intent(this, AppBlocker.class);
-					//reloadApps.setClass(this, AppBlocker.class);
 					this.startService(reloadApps);
 
 					// reload auto-generated rules if specified

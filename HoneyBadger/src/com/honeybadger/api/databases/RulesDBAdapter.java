@@ -39,10 +39,7 @@ public class RulesDBAdapter
 	/**
 	 * Database creation sql statement
 	 */
-	private static final String DATABASE_CREATE = "create table rules (_id integer, "
-			+ "IPAddress text not null, " + "Port text, " + "Direction text not null, "
-			+ "Action text not null, " + "Domain text not null, " + "Interface text not null, "
-			+ "Saved text not null, " + "PRIMARY KEY (IPAddress, Direction, Interface));";
+	private static final String DATABASE_CREATE = "create table rules (_id integer, IPAddress text not null, Port text, Direction text not null, Action text not null, Domain text not null, Interface text not null, Saved text not null, PRIMARY KEY (IPAddress, Direction, Interface));";
 
 	private static final String DATABASE_NAME = "ruleDB";
 	private static final String DATABASE_TABLE = "rules";

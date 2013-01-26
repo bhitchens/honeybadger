@@ -217,7 +217,7 @@ public class ShowAppsActivity extends Activity
 		{
 			protected Integer doInBackground(Integer... integers)
 			{
-				/* ArrayList<AppInfo> */list = new ArrayList<AppInfo>();
+				list = new ArrayList<AppInfo>();
 				appAdapter.open();
 				Cursor c = appAdapter.fetchAllEntries();
 				while (c.getPosition() < c.getCount() - 1)
@@ -299,6 +299,12 @@ public class ShowAppsActivity extends Activity
 			case R.id.settings_from_apps:
 				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
 				startActivity(prefIntent);
+				return true;
+			case R.id.export_rules_from_apps:
+				SharedMethods.exportRules(this);
+				return true;
+			case R.id.import_rules_from_apps:
+				SharedMethods.importRules(this);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

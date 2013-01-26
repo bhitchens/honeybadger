@@ -64,9 +64,7 @@ public class LogScript extends Scripts
 		String gid = "";
 
 		String delims = "[ =]+";
-		//String inoutDelim = "[]]";
 		String[] tokens;
-		//String[] inoutToken;
 
 		scriptOutput += line + "\n";
 		tokens = line.split(delims);

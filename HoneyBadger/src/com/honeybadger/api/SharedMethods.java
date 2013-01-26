@@ -59,7 +59,7 @@ public final class SharedMethods
 	{
 		boolean ret = false;
 		File file = new File(ctx.getDir("bin", 0), "iptables");
-		if (!file.exists())// || !settings.getBoolean("newIPT", false))
+		if (!file.exists())
 		{
 			try
 			{
