@@ -14,63 +14,64 @@ package com.honeybadger.views;
 
 import java.util.ArrayList;
 
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.honeybadger.R;
 import com.honeybadger.api.databases.LogDBAdapter;
 import com.honeybadger.api.scripts.LogScript;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
-public class ViewLogActivity extends ListActivity
+public class ViewLogFragment extends SherlockListFragment
 {
 
 	private Cursor c;
 	private LogDBAdapter dbAdapter;
 	private ArrayList<String> DATA;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+	LayoutInflater mInflater;
 
-		display();
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		setHasOptionsMenu(true);
+		mInflater = inflater;
+		display(mInflater);
+		return super.onCreateView(mInflater, container, savedInstanceState);
 	}
 
 	/**
 	 * Uses {@link LogScript} to parse raw log data into database and displays
 	 * this data as a list.
 	 */
-	public void display()
+	@SuppressWarnings("deprecation")
+	public void display(LayoutInflater inflater)
 	{
 
-		Intent logIntent = new Intent();
-		logIntent.setClass(this, LogScript.class);
+		Intent logIntent = new Intent(getActivity(), LogScript.class);
 		logIntent.putExtra("script", "dmesg -c | busybox grep HoneyBadger");
-		startService(logIntent);
+		getActivity().startService(logIntent);
 
-		dbAdapter = new LogDBAdapter(this);
+		dbAdapter = new LogDBAdapter(getActivity());
 		dbAdapter.open();
 
 		c = dbAdapter.fetchAllEntries();
-		startManagingCursor(c);
+		getActivity().startManagingCursor(c);
 
 		DATA = new ArrayList<String>();
 
 		setData(c);
 		dbAdapter.close();
 
-		setListAdapter(new ArrayAdapter<String>(this, R.layout.log_viewer, DATA));
-
-		ListView lv = getListView();
-		lv.setTextFilterEnabled(true);
-
+		setListAdapter(new ArrayAdapter<String>(inflater.getContext(), R.layout.log_viewer, DATA));
 	}
 
 	/**
@@ -114,15 +115,12 @@ public class ViewLogActivity extends ListActivity
 	}
 
 	/**
-	 * Initializes options menu. Basic structure of this method from <i>Pro
-	 * Android 2</i>.
+	 * Initializes options menu.
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.logviewoptionsmenu, menu);
-		return true;
+		inflater.inflate(R.menu.rulesviewoptionsmenu, menu);
 	}
 
 	/**
@@ -136,17 +134,17 @@ public class ViewLogActivity extends ListActivity
 		switch (item.getItemId())
 		{
 			case R.id.refresh:
-				display();
+				display(mInflater);
 				return true;
 			case R.id.clearLog:
-				LogDBAdapter logDB = new LogDBAdapter(this);
+				LogDBAdapter logDB = new LogDBAdapter(getActivity());
 				logDB.open();
 				logDB.clearLog();
 				logDB.close();
-				display();
+				display(mInflater);
 				return true;
 			case R.id.settingsFromLog:
-				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
+				Intent prefIntent = new Intent(getActivity(), EditPreferencesActivity.class);
 				startActivity(prefIntent);
 				return true;
 			default:

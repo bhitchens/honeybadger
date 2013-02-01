@@ -11,6 +11,11 @@ package com.honeybadger.views;
  */
 
 import java.util.ArrayList;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.honeybadger.R;
 import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.SharedMethods;
@@ -30,20 +35,19 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class ShowAppsActivity extends Activity
+public class ShowAppsFragment extends SherlockFragment
 {
 	private ListView lv;
-	private AppsDBAdapter appAdapter = new AppsDBAdapter(this);
+	private AppsDBAdapter appAdapter;
 
 	Button CheckAllButton;
 	Button ClearAllButton;
@@ -57,24 +61,31 @@ public class ShowAppsActivity extends Activity
 	ProgressDialog dialog;
 
 	ArrayList<AppInfo> list;
-
+	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-
-		display();
-
-		CheckAllButton = (Button) findViewById(R.id.check_all);
-		ClearAllButton = (Button) findViewById(R.id.clear_all);
-		ApplyButton = (Button) findViewById(R.id.apply);
-
-		wifi = (ImageView) findViewById(R.id.imageWifi);
-		cell = (ImageView) findViewById(R.id.imageCell);
-
-		createListeners(this);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        appAdapter = new AppsDBAdapter(activity);
 	}
 
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		setHasOptionsMenu(true);
+		final View v = inflater.inflate(R.layout.show_apps, container, false);
+		display();
+		CheckAllButton = (Button) v.findViewById(R.id.check_all);
+		ClearAllButton = (Button) v.findViewById(R.id.clear_all);
+		ApplyButton = (Button) v.findViewById(R.id.apply);
+
+		wifi = (ImageView) v.findViewById(R.id.imageWifi);
+		cell = (ImageView) v.findViewById(R.id.imageCell);
+		createListeners(getActivity());
+		
+		return v;
+	}
+	
+	
 	/**
 	 * Declares click listeners for all of the buttons.
 	 * 
@@ -112,7 +123,7 @@ public class ShowAppsActivity extends Activity
 			public void onClick(View v)
 			{
 				createRules();
-				Toast.makeText(ShowAppsActivity.this, "Rules have been applied.", Toast.LENGTH_LONG)
+				Toast.makeText(getActivity(), "Rules have been applied.", Toast.LENGTH_LONG)
 						.show();
 			}
 		});
@@ -121,7 +132,7 @@ public class ShowAppsActivity extends Activity
 		{
 			public void onClick(View v)
 			{
-				AlertDialog.Builder builder = new AlertDialog.Builder(ShowAppsActivity.this);
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setMessage("Check or clear all wifi rules.").setCancelable(true)
 						.setPositiveButton("Check All", new DialogInterface.OnClickListener()
 						{
@@ -156,7 +167,7 @@ public class ShowAppsActivity extends Activity
 		{
 			public void onClick(View v)
 			{
-				AlertDialog.Builder builder = new AlertDialog.Builder(ShowAppsActivity.this);
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setMessage("Check or clear all cell rules.").setCancelable(true)
 						.setPositiveButton("Check All", new DialogInterface.OnClickListener()
 						{
@@ -193,8 +204,8 @@ public class ShowAppsActivity extends Activity
 	 */
 	public void createRules()
 	{
-		Intent loadRules = new Intent(this, AppBlocker.class);
-		this.startService(loadRules);
+		Intent loadRules = new Intent(getActivity(), AppBlocker.class);
+		getActivity().startService(loadRules);
 	}
 
 	/**
@@ -202,7 +213,7 @@ public class ShowAppsActivity extends Activity
 	 */
 	public void display()
 	{
-		setContentView(R.layout.show_apps);
+		//setContentView(R.layout.show_apps);
 		setLV();
 	}
 
@@ -225,14 +236,14 @@ public class ShowAppsActivity extends Activity
 					AppInfo app = (new SharedMethods()).new AppInfo();
 					app.uid = c.getInt(0);
 					app.appname = c.getString(1);
-					app.icon = new BitmapDrawable(BitmapFactory.decodeByteArray(c.getBlob(2), 0,
+					app.icon = new BitmapDrawable(getActivity().getResources(), BitmapFactory.decodeByteArray(c.getBlob(2), 0,
 							c.getBlob(2).length));
 					list.add(app);
 				}
 				c.close();
 				appAdapter.close();
 
-				ShowAppsActivity.this.runOnUiThread(new Runnable()
+				getActivity().runOnUiThread(new Runnable()
 				{
 					public void run()
 					{
@@ -241,10 +252,10 @@ public class ShowAppsActivity extends Activity
 							public void run()
 							{
 
-								AppAdapter adapter = new AppAdapter(ShowAppsActivity.this,
+								AppAdapter adapter = new AppAdapter(getActivity(),
 										R.layout.app_item_row, list);
 
-								lv = (ListView) ShowAppsActivity.this.findViewById(R.id.listView1);
+								lv = (ListView) getActivity().findViewById(R.id.listView1);
 								lv.setAdapter(adapter);
 								lv.setItemsCanFocus(false);
 
@@ -259,7 +270,7 @@ public class ShowAppsActivity extends Activity
 
 			protected void onPreExecute()
 			{
-				dialog = ProgressDialog.show(ShowAppsActivity.this, "", "Loading");
+				dialog = ProgressDialog.show(getActivity(), "", "Loading");
 			}
 
 			protected void onPostExecute(Integer result)
@@ -273,11 +284,9 @@ public class ShowAppsActivity extends Activity
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.app_menu, menu);
-		return true;
 	}
 
 	@Override
@@ -288,22 +297,22 @@ public class ShowAppsActivity extends Activity
 		{
 
 			case R.id.refresh_apps:
-				settings = getSharedPreferences("main", 1);
+				settings = getActivity().getSharedPreferences("main", 1);
 				SharedPreferences.Editor editor = settings.edit();
 				editor.putBoolean("loaded", false);
 				editor.commit();
-				SharedMethods.loadApps(this, settings, appAdapter);
+				SharedMethods.loadApps(getActivity(), settings, appAdapter);
 				display();
 				return true;
 			case R.id.settings_from_apps:
-				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
+				Intent prefIntent = new Intent(getActivity(), EditPreferencesActivity.class);
 				startActivity(prefIntent);
 				return true;
 			case R.id.export_rules_from_apps:
-				SharedMethods.exportRules(this);
+				SharedMethods.exportRules(getActivity());
 				return true;
 			case R.id.import_rules_from_apps:
-				SharedMethods.importRules(this);
+				SharedMethods.importRules(getActivity());
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

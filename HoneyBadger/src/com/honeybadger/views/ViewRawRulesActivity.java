@@ -1,9 +1,9 @@
 package com.honeybadger.views;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.honeybadger.R;
 import com.honeybadger.api.scripts.ReturnOutput;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class ViewRawRulesActivity extends Activity
+public class ViewRawRulesActivity extends SherlockFragmentActivity
 {
 	SharedPreferences settings;
 	SharedPreferences.Editor editor;

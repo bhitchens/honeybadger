@@ -15,6 +15,7 @@ package com.honeybadger.views;
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.honeybadger.HoneyBadgerNotify;
 import com.honeybadger.R;
 import com.honeybadger.api.Blocker;
@@ -32,7 +33,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -40,7 +43,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class AddRulesActivity extends Activity
+public class AddRulesFragment extends SherlockFragment
 {
 
 	Button CommitButton;
@@ -71,10 +74,51 @@ public class AddRulesActivity extends Activity
 	SharedPreferences settings;
 	SharedPreferences.Editor editor;
 
-	RulesDBAdapter rulesDB = new RulesDBAdapter(this);
+	RulesDBAdapter rulesDB;
 
-	/** Called when the activity is first created. */
 	@Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        rulesDB = new RulesDBAdapter(activity);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		setHasOptionsMenu(true);
+
+		final View v = inflater.inflate(R.layout.editrule_viewer, container, false);
+		
+		settings = getActivity().getSharedPreferences("main", 0);
+
+		CommitButton = (Button) v.findViewById(R.id.buttonCommit);
+		if (settings.getBoolean("block", false))
+		{
+			CommitButton.setText("Allow");
+		}
+		else
+		{
+			CommitButton.setText("Block");
+		}
+
+		FetchButton = (Button) v.findViewById(R.id.buttonDownload);
+		ClearButton = (Button) v.findViewById(R.id.button_clear_download);
+
+		urlEdit = (EditText) v.findViewById(R.id.urlEntry);
+		ipEdit = (EditText) v.findViewById(R.id.ipEntry);
+
+		CheckIn = (CheckBox) v.findViewById(R.id.checkIn);
+		CheckOut = (CheckBox) v.findViewById(R.id.checkOut);
+		CheckWifi = (CheckBox) v.findViewById(R.id.checkWifi);
+		CheckCell = (CheckBox) v.findViewById(R.id.checkCell);
+
+		createListeners();
+		
+		return v;
+	}
+	
+	/** Called when the activity is first created. */
+/*	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -104,7 +148,7 @@ public class AddRulesActivity extends Activity
 		CheckCell = (CheckBox) findViewById(R.id.checkCell);
 
 		createListeners();
-	}
+	}*/
 
 	/**
 	 * Creates listeners for the various buttons
@@ -183,8 +227,8 @@ public class AddRulesActivity extends Activity
 		{
 			public void onClick(View view)
 			{
-				ipAddress = AddRulesActivity.this.ipEdit.getText().toString();
-				urlAddress = AddRulesActivity.this.urlEdit.getText().toString();
+				ipAddress = AddRulesFragment.this.ipEdit.getText().toString();
+				urlAddress = AddRulesFragment.this.urlEdit.getText().toString();
 
 				commitRule();
 			}
@@ -203,11 +247,11 @@ public class AddRulesActivity extends Activity
 		{
 			public void onClick(View view)
 			{
-				Intent clearScript = new Intent(AddRulesActivity.this, Scripts.class);
-				clearScript.putExtra("script", getDir("bin", 0) + "/iptables -F FETCH \n");
-				startService(clearScript);
+				Intent clearScript = new Intent(getActivity(), Scripts.class);
+				clearScript.putExtra("script", getActivity().getDir("bin", 0) + "/iptables -F FETCH \n");
+				getActivity().startService(clearScript);
 				Toast.makeText(
-						AddRulesActivity.this,
+						getActivity(),
 						"Downloaded IPs have been cleared.",
 						Toast.LENGTH_LONG).show();
 			}
@@ -226,32 +270,33 @@ public class AddRulesActivity extends Activity
 		editor.putBoolean("generate", true);
 		editor.commit();
 
-		Intent start = new Intent(this, Fetcher.class);
+		Intent start = new Intent(getActivity(), Fetcher.class);
 		start.putExtra(
 				"script",
-				getDir("bin", 0)
+				getActivity().getDir("bin", 0)
 						+ "/iptables -F FETCH"
 						+ "\n"
 						+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
 						+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'");
-		startService(start);
+		getActivity().startService(start);
 	}
 
 	/**
 	 * Sends Android notification to user that the malicious IP address database
 	 * has been updated.
 	 */
+	@SuppressWarnings("deprecation")
 	public void sendUpdateNotification()
 	{
-		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
 		Notification notification = new Notification(R.drawable.icon,
 				"Malicious Domains have been successfully updated.", System.currentTimeMillis());
 
-		PendingIntent contentI = PendingIntent.getActivity(this, 1, new Intent(this,
+		PendingIntent contentI = PendingIntent.getActivity(getActivity(), 1, new Intent(getActivity(),
 				HoneyBadgerNotify.class), 0);
 
-		notification.setLatestEventInfo(this, "Malicious Domains",
+		notification.setLatestEventInfo(getActivity(), "Malicious Domains",
 				"Known malicious domains are blocked.", contentI);
 
 		manager.notify(2, notification);
@@ -355,7 +400,7 @@ public class AddRulesActivity extends Activity
 		else
 		{
 			Toast.makeText(
-					AddRulesActivity.this,
+					getActivity(),
 					"You must enter either an IP Address or Domain name, and specify direction and interface of traffic.",
 					Toast.LENGTH_LONG).show();
 		}
@@ -369,15 +414,15 @@ public class AddRulesActivity extends Activity
 	 */
 	private void launchCommitDialog()
 	{
-		AlertDialog.Builder builder = new AlertDialog.Builder(AddRulesActivity.this);
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage("The rule has been applied.").setCancelable(false)
 				.setNeutralButton("OK", new DialogInterface.OnClickListener()
 				{
 					public void onClick(DialogInterface dialog, int id)
 					{
-						Intent myIntent = new Intent(AddRulesActivity.this, Blocker.class);
+						Intent myIntent = new Intent(getActivity(), Blocker.class);
 						myIntent.putExtra("reload", "false");
-						startService(myIntent);
+						getActivity().startService(myIntent);
 						clear();
 					}
 				});
@@ -388,13 +433,13 @@ public class AddRulesActivity extends Activity
 
 	private void clear()
 	{
-		urlEdit = (EditText) findViewById(R.id.urlEntry);
-		ipEdit = (EditText) findViewById(R.id.ipEntry);
+		urlEdit = (EditText) getActivity().findViewById(R.id.urlEntry);
+		ipEdit = (EditText) getActivity().findViewById(R.id.ipEntry);
 
-		CheckIn = (CheckBox) findViewById(R.id.checkIn);
-		CheckOut = (CheckBox) findViewById(R.id.checkOut);
-		CheckWifi = (CheckBox) findViewById(R.id.checkWifi);
-		CheckCell = (CheckBox) findViewById(R.id.checkCell);
+		CheckIn = (CheckBox) getActivity().findViewById(R.id.checkIn);
+		CheckOut = (CheckBox) getActivity().findViewById(R.id.checkOut);
+		CheckWifi = (CheckBox) getActivity().findViewById(R.id.checkWifi);
+		CheckCell = (CheckBox) getActivity().findViewById(R.id.checkCell);
 
 		urlEdit.setText("");
 		ipEdit.setText("");

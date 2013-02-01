@@ -133,6 +133,7 @@ public class ReturnOutput extends IntentService
 
 				stdoutThread = new Thread()
 				{
+					@SuppressWarnings("deprecation")
 					public void run()
 					{
 						super.setPriority(MIN_PRIORITY);
@@ -155,6 +156,7 @@ public class ReturnOutput extends IntentService
 
 				stderrThread = new Thread()
 				{
+					@SuppressWarnings("deprecation")
 					public void run()
 					{
 						super.setPriority(MIN_PRIORITY);

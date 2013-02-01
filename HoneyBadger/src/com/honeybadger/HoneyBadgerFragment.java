@@ -9,7 +9,6 @@ package com.honeybadger;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -19,11 +18,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.honeybadger.R.id;
 import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.Blocker;
@@ -34,65 +37,63 @@ import com.honeybadger.api.scripts.Fetcher;
 import com.honeybadger.api.scripts.RequirementsScript;
 import com.honeybadger.api.scripts.Scripts;
 import com.honeybadger.views.EditPreferencesActivity;
-import com.honeybadger.views.AddRulesActivity;
-import com.honeybadger.views.ViewLogActivity;
-import com.honeybadger.views.ViewRulesActivity;
+import com.honeybadger.views.AddRulesFragment;
 
-public class HoneyBadgerActivity extends Activity
+public class HoneyBadgerFragment extends SherlockFragment
 {
 	Menu optionsMenu;
 	MenuItem fwEnabledItem;
-	
+
 	Intent rec;
-	
+
 	SharedPreferences settings;
 	SharedPreferences.Editor editor;
 
-	/**
-	 * Called when the activity is first created; it ensures that the IPTables
-	 * is installed, generates and launches a script string based on settings,
-	 * sets the view, and creates buttons for launching
-	 * {@link ViewRulesActivity}, {@link AddRulesActivity}, and
-	 * {@link ViewLogActivity}.
-	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		// Set the view for the activity
-		setContentView(R.layout.home);
-
-		AppRater.app_launched(this);
-
-		settings = getSharedPreferences("main", 1);
+		
+		settings = getActivity().getSharedPreferences("main", 1);
 		editor = settings.edit();
 
 		if (!settings.getBoolean("suppressWarn", false))
 		{
 			IntentFilter filter = new IntentFilter("com.honeybadger.ERROR");
-			rec = registerReceiver(new Receiver(), filter);
+			rec = getActivity().registerReceiver(new Receiver(), filter);
 
-			Intent checkRequirements = new Intent(this, RequirementsScript.class);
+			Intent checkRequirements = new Intent(getActivity(), RequirementsScript.class);
 			checkRequirements.putExtra("script",
 					"iptables -L FORWARD\nbusybox wget -O - http://www.google.com");
-			startService(checkRequirements);
+			getActivity().startService(checkRequirements);
 		}
+		
+		setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		
+
+		final View v = inflater.inflate(R.layout.home, container, false);
+
+		AppRater.app_launched(getActivity());
+
+		
+
+		return v;
 	}
 
-	/**
-	 * Launches an options menu when the device options button is selected. The
-	 * basic structure of this method is from the book <i>Pro Android 2</i>.
-	 */
+	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.menu, menu);
-		
-		this.optionsMenu = menu;
+
+		optionsMenu = menu;
 		fwEnabledItem = optionsMenu.findItem(id.fw_enabled);
-		
+
 		if (settings.getBoolean("fwEnabled", true))
 		{
 			fwEnabledItem.setTitle("Disable HB");
@@ -101,8 +102,6 @@ public class HoneyBadgerActivity extends Activity
 		{
 			fwEnabledItem.setTitle("Enable HB");
 		}
-		
-		return true;
 	}
 
 	/**
@@ -110,7 +109,7 @@ public class HoneyBadgerActivity extends Activity
 	 * selected item. If "Settings" is selected, then
 	 * {@link EditPreferencesActivity} is started. If "Clear Log" is selected,
 	 * then {@link LogDBAdapter} is used to clear the log. If "Add Rule" is
-	 * selected, then {@link AddRulesActivity} is started.
+	 * selected, then {@link AddRulesFragment} is started.
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -121,69 +120,73 @@ public class HoneyBadgerActivity extends Activity
 			case R.id.fw_enabled:
 				if (settings.getBoolean("fwEnabled", true))
 				{
-					String disableScript = this.getDir("bin", 0) + "/iptables -F\n" + this.getDir("bin", 0) + "/iptables -X\n"; 
-					Intent scriptIntent = new Intent(this, Scripts.class);
+					String disableScript = getActivity().getDir("bin", 0) + "/iptables -F\n"
+							+ getActivity().getDir("bin", 0) + "/iptables -X\n";
+					Intent scriptIntent = new Intent(getActivity(), Scripts.class);
 					scriptIntent.putExtra("script", disableScript);
-					this.startService(scriptIntent);
-					
+					getActivity().startService(scriptIntent);
+
 					editor.putBoolean("fwEnabled", false);
 					this.fwEnabledItem.setTitle("Enable HB");
-					
-					Toast.makeText(this, "HoneyBadger Firewall Disabled", Toast.LENGTH_SHORT).show();
+
+					Toast.makeText(getActivity(), "HoneyBadger Firewall Disabled",
+							Toast.LENGTH_SHORT).show();
 				}
 				else
 				{
 					String startScript = "";
 
-					settings = this.getSharedPreferences("main", 1);
+					settings = getActivity().getSharedPreferences("main", 1);
 
-					startScript = SharedMethods.initialString(startScript, this);
+					startScript = SharedMethods.initialString(startScript, getActivity());
 
-					startScript = SharedMethods.setLogging(startScript, settings, this);
+					startScript = SharedMethods.setLogging(startScript, settings, getActivity());
 
-					startScript = SharedMethods.setBlock(startScript, settings, this);
+					startScript = SharedMethods.setBlock(startScript, settings, getActivity());
 
 					// Launch Script
-					Intent script = new Intent(this, Scripts.class);
+					Intent script = new Intent(getActivity(), Scripts.class);
 					script.putExtra("script", startScript);
-					this.startService(script);
+					getActivity().startService(script);
 
 					// reload rules
-					Intent reload = new Intent(this, Blocker.class);
+					Intent reload = new Intent(getActivity(), Blocker.class);
 					reload.putExtra("reload", "true");
-					this.startService(reload);
+					getActivity().startService(reload);
 
 					// reload app rules
-					Intent reloadApps = new Intent(this, AppBlocker.class);
-					this.startService(reloadApps);
+					Intent reloadApps = new Intent(getActivity(), AppBlocker.class);
+					getActivity().startService(reloadApps);
 
 					// reload auto-generated rules if specified
-					if (settings.getBoolean("generate", false) | settings.getBoolean("autoUpdate", false))
+					if (settings.getBoolean("generate", false)
+							| settings.getBoolean("autoUpdate", false))
 					{
-						Intent generate = new Intent(this, Fetcher.class);
-						//generate.setClass(this, Fetcher.class);
+						Intent generate = new Intent(getActivity(), Fetcher.class);
+						// generate.setClass(this, Fetcher.class);
 						generate.putExtra(
 								"script",
-								this.getDir("bin", 0)
+								getActivity().getDir("bin", 0)
 										+ "/iptables -F FETCH"
 										+ "\n"
 										+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
 										+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'");
-						this.startService(generate);
+						getActivity().startService(generate);
 					}
 
-					AppsDBAdapter appAdapter = new AppsDBAdapter(this);;
-					SharedMethods.loadApps(this, settings, appAdapter);				
-					
+					AppsDBAdapter appAdapter = new AppsDBAdapter(getActivity());
+					;
+					SharedMethods.loadApps(getActivity(), settings, appAdapter);
+
 					editor.putBoolean("fwEnabled", true);
 					this.fwEnabledItem.setTitle("Disable HB");
 				}
 				editor.commit();
-				editor.clear();				
-				
+				editor.clear();
+
 				return true;
 			case R.id.settings:
-				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
+				Intent prefIntent = new Intent(getActivity(), EditPreferencesActivity.class);
 				startActivity(prefIntent);
 				return true;
 			default:
@@ -200,29 +203,27 @@ public class HoneyBadgerActivity extends Activity
 
 			if (error.contains("iptables"))
 			{
-				showDialog(0);
+				createDialog(0);
 			}
 			else if (error.contains("busybox"))
 			{
-				showDialog(1);
+				createDialog(1);
 			}
 			else if (error.contains("wget"))
 			{
-				showDialog(2);
+				createDialog(2);
 			}
-			unregisterReceiver(this);
 		}
 	}
 
-	@Override
-	protected Dialog onCreateDialog(int error)
+	protected Dialog createDialog(int error)
 	{
 		Dialog d;
 		AlertDialog.Builder builder;
 		switch (error)
 		{
 			case 0:
-				builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+				builder = new AlertDialog.Builder(getActivity());
 				builder.setMessage(
 						"Iptables is not compatible with your phone's kernel. The firewall will not work. You may be able to fix this by installing a new ROM.")
 						.setCancelable(true)
@@ -236,7 +237,7 @@ public class HoneyBadgerActivity extends Activity
 				d = builder.create();
 				break;
 			case 1:
-				builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+				builder = new AlertDialog.Builder(getActivity());
 
 				builder.setMessage(
 						"Busybox was not found on your device. Logging and the option to automatically generate rules from an online database will not function. Please ensure that you have busybox properly installed.\n\nThis warning may be suppressed in the application settings.")
@@ -251,7 +252,7 @@ public class HoneyBadgerActivity extends Activity
 				d = builder.create();
 				break;
 			case 2:
-				builder = new AlertDialog.Builder(HoneyBadgerActivity.this);
+				builder = new AlertDialog.Builder(getActivity());
 
 				builder.setMessage(
 						"Wget exists but is not functioning properly. The option to automatically generate rules from an online database will not function. This occures when you either lack network connectivity or busybox was not configured to allow wget to properly use DNS.\n\nThis warning may be suppressed in the application settings.")

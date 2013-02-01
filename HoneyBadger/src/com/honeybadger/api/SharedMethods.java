@@ -206,6 +206,8 @@ public final class SharedMethods
 				+ ctx.getDir("bin", 0)
 				+ "/iptables -D OUTPUT -m state --state NEW,RELATED,ESTABLISHED -j DROPOUT" + "\n"
 				+ ctx.getDir("bin", 0)
+				+ "/iptables -D INPUT -m state --state RELATED,ESTABLISHED -j ACCEPTIN" + "\n"
+				+ ctx.getDir("bin", 0)
 				+ "/iptables -I INPUT -m state --state RELATED,ESTABLISHED -j ACCEPTIN" + "\n";
 	}
 

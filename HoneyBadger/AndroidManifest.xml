@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.honeybadger"
-    android:versionCode="17"
-    android:versionName="3.5" >
+    android:versionCode="18"
+    android:versionName="3.6" >
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="8" />
+        android:targetSdkVersion="15" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:theme="@style/Theme.NoBackground"
         android:icon="@drawable/icon"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Sherlock" >
 
         <!-- honeybadger package -->
 
@@ -29,9 +29,7 @@
             android:name=".HoneyBadgerActivity"
             android:label="@string/app_name" >
         </activity>
-        
         <activity android:name=".HBTabActivity" />
-        
         <activity
             android:name="com.honeybadger.SplashScreen"
             android:noHistory="true" >
@@ -41,8 +39,7 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        
-        <activity android:name="com.honeybadger.HoneyBadgerNotify"/>
+        <activity android:name="com.honeybadger.HoneyBadgerNotify" />
 
         <receiver
             android:name="AlarmReceiver"
@@ -70,17 +67,17 @@
 
         <!-- views package -->
 
-        <activity android:name="com.honeybadger.views.ViewRulesActivity" />
-        <activity android:name=".views.ViewLogActivity" />
-        <activity android:name=".views.AddRulesActivity" />
+        <activity android:name="com.honeybadger.views.ViewRulesFragmentctivity" />
+        <activity android:name=".views.ViewLogFragment" />
+        <activity android:name=".views.AddRulesFragment" />
         <activity
             android:name=".views.EditPreferencesActivity"
             android:noHistory="true" />
         <activity
             android:name=".views.ViewRawRulesActivity"
-            android:noHistory="true" 
-            android:configChanges="keyboardHidden|orientation"/>
-        <activity android:name=".views.ShowAppsActivity" />
+            android:configChanges="keyboardHidden|orientation"
+            android:noHistory="true" />
+        <activity android:name=".views.ShowAppsFragment" />
     </application>
 
 </manifest>

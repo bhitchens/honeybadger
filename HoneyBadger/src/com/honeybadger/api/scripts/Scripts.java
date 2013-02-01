@@ -148,6 +148,7 @@ public class Scripts extends Service
 
 				stdoutThread = new Thread()
 				{
+					@SuppressWarnings("deprecation")
 					public void run()
 					{
 						super.setPriority(MIN_PRIORITY);
@@ -171,6 +172,7 @@ public class Scripts extends Service
 
 				stderrThread = new Thread()
 				{
+					@SuppressWarnings("deprecation")
 					public void run()
 					{
 						super.setPriority(MIN_PRIORITY);

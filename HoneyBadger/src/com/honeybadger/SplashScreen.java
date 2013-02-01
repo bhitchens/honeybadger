@@ -104,6 +104,7 @@ public class SplashScreen extends Activity
 	 * installed. This is done by starting the {@link HoneyBadgerNotify}
 	 * activity.
 	 */
+	@SuppressWarnings("deprecation")
 	public void sendNotification()
 	{
 		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

@@ -11,12 +11,12 @@ package com.honeybadger.views;
 
 import java.util.Calendar;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.honeybadger.AlarmReceiver;
 import com.honeybadger.R;
 import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.scripts.Scripts;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -31,7 +31,7 @@ import android.widget.RadioButton;
 
 import android.widget.Toast;
 
-public class EditPreferencesActivity extends Activity
+public class EditPreferencesActivity extends SherlockFragmentActivity
 {
 
 	RadioButton RadioLogOn;

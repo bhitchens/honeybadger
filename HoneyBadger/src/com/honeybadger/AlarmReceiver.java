@@ -101,6 +101,7 @@ public class AlarmReceiver extends BroadcastReceiver
 	 * 
 	 * @param context
 	 */
+	@SuppressWarnings("deprecation")
 	public void sendNotification(Context context)
 	{
 		NotificationManager manager = (NotificationManager) context

@@ -14,28 +14,28 @@ package com.honeybadger.views;
 
 import java.util.ArrayList;
 
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.honeybadger.R;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.RulesDBAdapter;
 import com.honeybadger.api.scripts.Scripts;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ViewRulesActivity extends ListActivity
+public class ViewRulesFragment extends SherlockListFragment
 {
 
 	Menu optionsMenu = null;
@@ -46,25 +46,29 @@ public class ViewRulesActivity extends ListActivity
 
 	String ruleText;
 	String fileName;
-
+	
+	LayoutInflater mInflater;
+	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		super.onCreate(savedInstanceState);
-
-		display();
+		setHasOptionsMenu(true);
+		mInflater = inflater;
+		display(mInflater);
+		return super.onCreateView(mInflater, container, savedInstanceState);
 	}
 
 	/**
 	 * Creates list view based on data in rules database.
 	 */
-	private void display()
+	@SuppressWarnings("deprecation")
+	private void display(LayoutInflater inflater)
 	{
-		ruleAdapter = new RulesDBAdapter(this);
+		ruleAdapter = new RulesDBAdapter(getActivity());
 		ruleAdapter.open();
 
 		c = ruleAdapter.fetchAllEntriesNew();
-		startManagingCursor(c);
+		getActivity().startManagingCursor(c);
 
 		RULES = new ArrayList<String>();
 
@@ -82,83 +86,67 @@ public class ViewRulesActivity extends ListActivity
 			RULES.add("No current rules.");
 		}
 
-		setListAdapter(new ArrayAdapter<String>(this, R.layout.log_viewer, RULES));
-
-		ListView lv = getListView();
-		lv.setTextFilterEnabled(true);
-
-		createListener(lv);
+		setListAdapter(new ArrayAdapter<String>(inflater.getContext(), R.layout.log_viewer, RULES));
 	};
 
-	/**
-	 * Allows for selection of items in list view and gives option for deleting
-	 * rules.
-	 * 
-	 * @param lv
-	 */
-	private void createListener(ListView lv)
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id)
 	{
-		lv.setOnItemClickListener(new OnItemClickListener()
-		{
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-			{
-				ruleText = (String) ((TextView) view).getText();
+		ruleText = (String) ((TextView) v).getText();
 
-				AlertDialog.Builder builder = new AlertDialog.Builder(ViewRulesActivity.this);
-				builder.setMessage(
-						"This rule is currently enforced by Honeybadger.  Would you like to delete it?")
-						.setCancelable(true)
-						.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(
+				"This rule is currently enforced by Honeybadger.  Would you like to delete it?")
+				.setCancelable(true)
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int id)
+					{
+						String delims = " ";
+						String[] tokens = ruleText.split(delims);
+
+						String direction;
+
+						if (tokens[1].contains("inbound"))
 						{
-							public void onClick(DialogInterface dialog, int id)
-							{
-								String delims = " ";
-								String[] tokens = ruleText.split(delims);
-
-								String direction;
-
-								if (tokens[1].contains("inbound"))
-								{
-									direction = "in";
-								}
-								else
-								{
-									direction = "out";
-								}
-
-								String dropAllow;
-
-								if (tokens[0].contains("block"))
-								{
-									dropAllow = "DROP";
-								}
-								else
-								{
-									dropAllow = "ALLOW";
-								}
-
-								String netInt = tokens[7];
-
-								ruleAdapter.open();
-								ruleAdapter.deleteEntry(tokens[4], direction, netInt);
-								ruleAdapter.close();
-
-								deleteRule(tokens[4], direction, dropAllow, netInt);
-							}
-						}).setNegativeButton("No", new DialogInterface.OnClickListener()
+							direction = "in";
+						}
+						else
 						{
-							public void onClick(DialogInterface dialog, int id)
-							{
-								dialog.cancel();
-							}
-						});
-				AlertDialog alert = builder.create();
-				alert.show();
-			}
-		});
+							direction = "out";
+						}
 
+						String dropAllow;
+
+						if (tokens[0].contains("block"))
+						{
+							dropAllow = "DROP";
+						}
+						else
+						{
+							dropAllow = "ALLOW";
+						}
+
+						String netInt = tokens[7];
+
+						ruleAdapter.open();
+						ruleAdapter.deleteEntry(tokens[4], direction, netInt);
+						ruleAdapter.close();
+
+						deleteRule(tokens[4], direction, dropAllow, netInt);
+					}
+				}).setNegativeButton("No", new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int id)
+					{
+						dialog.cancel();
+					}
+				});
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
-
+	
 	/**
 	 * Allows deletion of rules
 	 * 
@@ -188,12 +176,12 @@ public class ViewRulesActivity extends ListActivity
 		{
 			if (netInt.contains("wifi"))
 			{
-				rule = SharedMethods.ruleBuilder(this, rule, "IP", ip, false, dropAllow, inOut,
+				rule = SharedMethods.ruleBuilder(getActivity(), rule, "IP", ip, false, dropAllow, inOut,
 						true, false);
 			}
 			else
 			{
-				rule = SharedMethods.ruleBuilder(this, rule, "IP", ip, false, dropAllow, inOut,
+				rule = SharedMethods.ruleBuilder(getActivity(), rule, "IP", ip, false, dropAllow, inOut,
 						false, true);
 			}
 		}
@@ -201,23 +189,22 @@ public class ViewRulesActivity extends ListActivity
 		{
 			if (netInt.contains("wifi"))
 			{
-				rule = SharedMethods.ruleBuilder(this, rule, "Domain", ip, false, "", inOut, true,
+				rule = SharedMethods.ruleBuilder(getActivity(), rule, "Domain", ip, false, "", inOut, true,
 						false);
 			}
 			else
 			{
-				rule = SharedMethods.ruleBuilder(this, rule, "Domain", ip, false, "", inOut, false,
+				rule = SharedMethods.ruleBuilder(getActivity(), rule, "Domain", ip, false, "", inOut, false,
 						true);
 			}
 		}
 
-		Intent intent2 = new Intent();
-		intent2.setClass(this, Scripts.class);
+		Intent intent2 = new Intent(getActivity(), Scripts.class);
 		intent2.putExtra("script", rule);
-		startService(intent2);
+		getActivity().startService(intent2);
 
 		// refresh rule list
-		display();
+		display(mInflater);
 	}
 
 	/**
@@ -225,11 +212,9 @@ public class ViewRulesActivity extends ListActivity
 	 * Android 2</i>.
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.rulesviewoptionsmenu, menu);
-		return true;
 	}
 
 	@Override
@@ -238,28 +223,25 @@ public class ViewRulesActivity extends ListActivity
 		// Handle item selection
 		switch (item.getItemId())
 		{
-
 			case R.id.refresh:
-				display();
+				display(mInflater);
 				return true;
 			case R.id.settingsFromViewRules:
-				Intent prefIntent = new Intent(this, EditPreferencesActivity.class);
+				Intent prefIntent = new Intent(getActivity(), EditPreferencesActivity.class);
 				startActivity(prefIntent);
 				return true;
 			case R.id.exportIPRules:
-				SharedMethods.exportRules(this);
+				SharedMethods.exportRules(getActivity());
 				return true;
 			case R.id.importIPRules:
-				SharedMethods.importRules(this);
+				SharedMethods.importRules(getActivity());
 				return true;
 			case R.id.rv_raw_rules:
-				Intent rawRulesIntent = new Intent(this, ViewRawRulesActivity.class);
+				Intent rawRulesIntent = new Intent(getActivity(), ViewRawRulesActivity.class);
 				startActivity(rawRulesIntent);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
-	}
-
-	
+	}	
 }
