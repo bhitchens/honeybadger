@@ -120,7 +120,7 @@ public class ViewLogFragment extends SherlockListFragment
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.rulesviewoptionsmenu, menu);
+		inflater.inflate(R.menu.logviewoptionsmenu, menu);
 	}
 
 	/**

@@ -11,15 +11,17 @@
 
     <item
         android:id="@+id/refresh"
-        android:icon="@drawable/ic_menu_refresh"
-        android:title="Refresh"/>
+        android:icon="@drawable/navigation_refresh"
+        android:title="Refresh"
+        android:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/clearLog"
         android:icon="@drawable/ic_menu_clear_playlist"
         android:title="Clear Log"/>
     <item
         android:id="@+id/settingsFromLog"
-        android:icon="@drawable/ic_menu_manage"
-        android:title="Settings"/>
+        android:icon="@drawable/ic_menu_settings_holo_light"
+        android:title="Settings"
+        android:showAsAction="ifRoom|withText"/>
 
 </menu>

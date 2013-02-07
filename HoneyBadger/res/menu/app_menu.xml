@@ -3,19 +3,21 @@
 
     <item
         android:id="@+id/refresh_apps"
-        android:icon="@drawable/ic_menu_refresh"
-        android:title="Refresh Apps List"/>
+        android:icon="@drawable/navigation_refresh"
+        android:title="Refresh Apps List"
+        android:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/settings_from_apps"
-        android:icon="@drawable/ic_menu_manage"
-        android:title="Settings"/>
+        android:icon="@drawable/ic_menu_settings_holo_light"
+        android:title="Settings"
+        android:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/export_rules_from_apps"
-        android:icon="@drawable/upload"
+        android:icon="@drawable/av_upload"
         android:title="Export Rules"/>
     <item
         android:id="@+id/import_rules_from_apps"    
-        android:icon="@drawable/download"    
+        android:icon="@drawable/av_download"    
         android:title="Import Rules"/>
 
 </menu>

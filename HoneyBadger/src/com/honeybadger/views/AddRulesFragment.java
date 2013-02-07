@@ -116,39 +116,7 @@ public class AddRulesFragment extends SherlockFragment
 		
 		return v;
 	}
-	
-	/** Called when the activity is first created. */
-/*	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.editrule_viewer);
 
-		settings = getSharedPreferences("main", 0);
-
-		CommitButton = (Button) findViewById(R.id.buttonCommit);
-		if (settings.getBoolean("block", false))
-		{
-			CommitButton.setText("Allow");
-		}
-		else
-		{
-			CommitButton.setText("Block");
-		}
-
-		FetchButton = (Button) findViewById(R.id.buttonDownload);
-		ClearButton = (Button) findViewById(R.id.button_clear_download);
-
-		urlEdit = (EditText) findViewById(R.id.urlEntry);
-		ipEdit = (EditText) findViewById(R.id.ipEntry);
-
-		CheckIn = (CheckBox) findViewById(R.id.checkIn);
-		CheckOut = (CheckBox) findViewById(R.id.checkOut);
-		CheckWifi = (CheckBox) findViewById(R.id.checkWifi);
-		CheckCell = (CheckBox) findViewById(R.id.checkCell);
-
-		createListeners();
-	}*/
 
 	/**
 	 * Creates listeners for the various buttons

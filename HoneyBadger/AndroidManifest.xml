@@ -29,7 +29,9 @@
             android:name=".HoneyBadgerActivity"
             android:label="@string/app_name" >
         </activity>
-        <activity android:name=".HBTabActivity" />
+        <activity
+            android:name=".HBTabActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name="com.honeybadger.SplashScreen"
             android:noHistory="true" >

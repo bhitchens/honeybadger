@@ -1,33 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- _________________________________________________________________________________________________________________________________________________________
- * Author(s): Brad Hitchens
- * Version: 3.4
- * Date of last modification: 24 AUG 2012
- * Source Info:    
--->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
         android:id="@+id/refresh"
-        android:icon="@drawable/ic_menu_refresh"
-        android:title="Refresh"/>    
+        android:icon="@drawable/navigation_refresh"
+        android:title="Refresh"
+        android:showAsAction="ifRoom|withText"/>    
     <item
         android:id="@+id/exportIPRules"
-        android:icon="@drawable/upload"
+        android:icon="@drawable/av_upload"
         android:title="Export Rules"/>
     <item
         android:id="@+id/importIPRules"
-        android:icon="@drawable/download"    
+        android:icon="@drawable/av_download"    
         android:title="Import Rules"/>
     <item
         android:id="@+id/settingsFromViewRules"
-        android:icon="@drawable/ic_menu_manage"
-        android:title="Settings"/>
+        android:icon="@drawable/ic_menu_settings_holo_light"
+        android:title="Settings"
+        android:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/rv_raw_rules"
-        android:icon="@drawable/ic_menu_show_list"    
+        android:icon="@drawable/collections_view_as_list"    
         android:title="Raw IPTables Rules"/>
 
 </menu>

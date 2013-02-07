@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  _________________________________________________________________________________________________________________________________________________________
- * Author(s): Alex Harris
- * Version: 1.1
- * Date of last modification: 4 MAR 2012
- * Source Info:
- |Background image obtained from: http://www.slashphone.com/wallpaper/detail.php?photo=33152    
-   _________________________________________________________________________________________________________________________________________________________
- -->
  
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
