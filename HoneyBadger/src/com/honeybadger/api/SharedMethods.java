@@ -36,6 +36,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -572,7 +573,8 @@ public final class SharedMethods
 
 						// open rule DB and fetch all entries
 						ruleAdapter.open();
-						Cursor c = ruleAdapter.fetchAllEntriesNew();
+						SimpleCursorAdapter ca = ruleAdapter.fetchAllEntriesNew();
+						Cursor c = ca.getCursor();
 
 						// loop through all the entries and add them to the file
 						while (c.getPosition() < c.getCount() - 1)

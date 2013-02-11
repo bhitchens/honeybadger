@@ -28,6 +28,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,20 +36,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ViewRulesFragment extends SherlockListFragment
+public class ViewRulesFragment extends SherlockListFragment// implements LoaderManager.LoaderCallbacks<Cursor>
 {
 
 	Menu optionsMenu = null;
 
-	private Cursor c;
+	private SimpleCursorAdapter c;
 	private RulesDBAdapter ruleAdapter;
 	private ArrayList<String> RULES;
 
 	String ruleText;
 	String fileName;
-	
+
 	LayoutInflater mInflater;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -61,26 +62,25 @@ public class ViewRulesFragment extends SherlockListFragment
 	/**
 	 * Creates list view based on data in rules database.
 	 */
-	@SuppressWarnings("deprecation")
 	private void display(LayoutInflater inflater)
 	{
 		ruleAdapter = new RulesDBAdapter(getActivity());
 		ruleAdapter.open();
 
 		c = ruleAdapter.fetchAllEntriesNew();
-		getActivity().startManagingCursor(c);
-
+		
 		RULES = new ArrayList<String>();
 
-		while (c.getPosition() < c.getCount() - 1)
+		Cursor curs = c.getCursor();
+		while (curs.getPosition() < curs.getCount() - 1)
 		{
-			c.moveToNext();
-			RULES.add(c.getString(3) + " " + c.getString(2) + "bound traffic from "
-					+ c.getString(0) + " over the " + c.getString(4) + " interface.");
+			curs.moveToNext();
+			RULES.add(curs.getString(4) + " " + curs.getString(3) + "bound traffic from "
+					+ curs.getString(1) + " over the " + curs.getString(5) + " interface.");
 		}
 
 		ruleAdapter.close();
-		
+
 		if (RULES.isEmpty())
 		{
 			RULES.add("No current rules.");
@@ -89,7 +89,6 @@ public class ViewRulesFragment extends SherlockListFragment
 		setListAdapter(new ArrayAdapter<String>(inflater.getContext(), R.layout.log_viewer, RULES));
 	};
 
-	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
@@ -98,8 +97,7 @@ public class ViewRulesFragment extends SherlockListFragment
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage(
 				"This rule is currently enforced by Honeybadger.  Would you like to delete it?")
-				.setCancelable(true)
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+				.setCancelable(true).setPositiveButton("Yes", new DialogInterface.OnClickListener()
 				{
 					public void onClick(DialogInterface dialog, int id)
 					{
@@ -146,7 +144,7 @@ public class ViewRulesFragment extends SherlockListFragment
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
-	
+
 	/**
 	 * Allows deletion of rules
 	 * 
@@ -176,26 +174,26 @@ public class ViewRulesFragment extends SherlockListFragment
 		{
 			if (netInt.contains("wifi"))
 			{
-				rule = SharedMethods.ruleBuilder(getActivity(), rule, "IP", ip, false, dropAllow, inOut,
-						true, false);
+				rule = SharedMethods.ruleBuilder(getActivity(), rule, "IP", ip, false, dropAllow,
+						inOut, true, false);
 			}
 			else
 			{
-				rule = SharedMethods.ruleBuilder(getActivity(), rule, "IP", ip, false, dropAllow, inOut,
-						false, true);
+				rule = SharedMethods.ruleBuilder(getActivity(), rule, "IP", ip, false, dropAllow,
+						inOut, false, true);
 			}
 		}
 		else
 		{
 			if (netInt.contains("wifi"))
 			{
-				rule = SharedMethods.ruleBuilder(getActivity(), rule, "Domain", ip, false, "", inOut, true,
-						false);
+				rule = SharedMethods.ruleBuilder(getActivity(), rule, "Domain", ip, false, "",
+						inOut, true, false);
 			}
 			else
 			{
-				rule = SharedMethods.ruleBuilder(getActivity(), rule, "Domain", ip, false, "", inOut, false,
-						true);
+				rule = SharedMethods.ruleBuilder(getActivity(), rule, "Domain", ip, false, "",
+						inOut, false, true);
 			}
 		}
 
@@ -223,7 +221,7 @@ public class ViewRulesFragment extends SherlockListFragment
 		// Handle item selection
 		switch (item.getItemId())
 		{
-			case R.id.refresh:
+			case R.id.refresh_rules:
 				display(mInflater);
 				return true;
 			case R.id.settingsFromViewRules:
@@ -243,5 +241,5 @@ public class ViewRulesFragment extends SherlockListFragment
 			default:
 				return super.onOptionsItemSelected(item);
 		}
-	}	
+	}
 }

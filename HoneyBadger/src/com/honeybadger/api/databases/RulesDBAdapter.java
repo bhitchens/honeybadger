@@ -12,12 +12,15 @@ package com.honeybadger.api.databases;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
+import com.actionbarsherlock.R;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 
 public class RulesDBAdapter
@@ -179,12 +182,15 @@ public class RulesDBAdapter
 				null, null, null);
 	}
 
-	public Cursor fetchAllEntriesNew()
+	public SimpleCursorAdapter fetchAllEntriesNew()
 	{
-		return mDb.query(DATABASE_TABLE,
+		return new SimpleCursorAdapter(mCtx, R.layout.log_viewer, mDb.query(DATABASE_TABLE, new String[]{ "_id", KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN, KEY_SAVED }, null, null, null, null, null), new String[]{ "_id", KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN, KEY_SAVED }, null, 0);
+		/*return mDb.query(DATABASE_TABLE,
 				new String[]
 				{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN,
-						KEY_SAVED }, null, null, null, null, null);
+						KEY_SAVED }, null, null, null, null, null);*/
+		
+		//_id integer, IPAddress text not null, Port text, Direction text not null, Action text not null, Domain text not null, Interface text not null, Saved text not null
 	}
 
 	/**

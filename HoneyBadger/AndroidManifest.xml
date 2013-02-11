@@ -67,6 +67,12 @@
         <service android:name="com.honeybadger.api.scripts.RequirementsScript" />
         <service android:name="com.honeybadger.api.scripts.ReturnOutput" />
 
+        <provider
+            android:name=".api.databases.LogContentProvider"
+            android:authorities="com.honeybadger.api.databases" 
+            android:exported="false">
+        </provider>
+
         <!-- views package -->
 
         <activity android:name="com.honeybadger.views.ViewRulesFragmentctivity" />

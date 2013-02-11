@@ -34,7 +34,7 @@ public class LogDBAdapter
 	/**
 	 * Database creation sql statement
 	 */
-	private static final String DATABASE_CREATE = "create table logs (INOUT text not null, SRC text not null, DST text not null, TOS text not null, PREC text not null, ID text not null, Proto text not null, SPT text not null,"
+	private static final String DATABASE_CREATE = "create table logs (_id integer, INOUT text not null, SRC text not null, DST text not null, TOS text not null, PREC text not null, ID text not null, Proto text not null, SPT text not null,"
 			+ "DPT text not null, UID text not null, GID text not null, total integer not null)";
 
 	private static final String DATABASE_NAME = "logDB";
@@ -58,13 +58,14 @@ public class LogDBAdapter
 		{
 			db.execSQL(DATABASE_CREATE);
 		}
-
+		
 		@Override
 		/**
 		 * replaces database with new database
 		 */
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
-		{
+		{			
+			getWritableDatabase();
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
 					+ ", which will destroy all old data");
 			db.execSQL("DROP TABLE IF EXISTS logs");
@@ -84,6 +85,11 @@ public class LogDBAdapter
 		this.mCtx = ctx;
 	}
 
+	public SQLiteDatabase getWritableDatabase()
+	{
+		return mDb;
+	}
+	
 	/**
 	 * Open the Log database. If it cannot be opened, try to create a new
 	 * instance of the database. If it cannot be created, throw an exception to
@@ -173,9 +179,16 @@ public class LogDBAdapter
 	 * 
 	 * @return Cursor over all entries
 	 */
-	public Cursor fetchAllEntries()
+	public Cursor fetchAllEntries(String selection, String[] selectionArgs)
 	{
-		return mDb.query(DATABASE_TABLE, null, null, null, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+				{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, null, null, null, null, null);
+		Log.d("test", "1c:" + c.getCount());
+		Cursor c2 = mDb.query(DATABASE_TABLE, new String[]
+				{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, selection, selectionArgs, null, null, null);
+		Log.d("test", "2c:" + c.getCount());
+
+		return c2;
 	}
 
 	/**

@@ -19,6 +19,7 @@ import android.database.Cursor;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.widget.SimpleCursorAdapter;
 
 public class Blocker extends Service
 {
@@ -76,7 +77,8 @@ public class Blocker extends Service
 		// Opens rules database and creates cursor to iterate through all
 		// entries
 		ruleAdapter.open();
-		c = ruleAdapter.fetchAllEntriesNew();
+		SimpleCursorAdapter ca = ruleAdapter.fetchAllEntriesNew();
+		c = ca.getCursor();
 		String target;
 		String netInt;
 
