@@ -25,6 +25,7 @@ import com.honeybadger.api.databases.AppsDBAdapter;
 import com.honeybadger.api.databases.RulesDBAdapter;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,7 +37,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -320,7 +320,7 @@ public final class SharedMethods
 	private static String ruleBuilderF(Context ctx, String rule, String type, String target,
 			Boolean add, String block, String in, String netInt)
 	{
-		
+
 		String newRule = rule;
 		if (type == "App")
 		{
@@ -486,9 +486,9 @@ public final class SharedMethods
 
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
-			editor.commit();		
-		}		
-		//appAdapter.close();
+			editor.commit();
+		}
+		// appAdapter.close();
 	}
 
 	/**
@@ -573,16 +573,15 @@ public final class SharedMethods
 
 						// open rule DB and fetch all entries
 						ruleAdapter.open();
-						SimpleCursorAdapter ca = ruleAdapter.fetchAllEntriesNew();
-						Cursor c = ca.getCursor();
+						Cursor c = ruleAdapter.fetchAllEntries();
 
 						// loop through all the entries and add them to the file
 						while (c.getPosition() < c.getCount() - 1)
 						{
 							c.moveToNext();
-							writer.append(c.getString(0) + ", " + c.getString(1) + ", "
-									+ c.getString(2) + ", " + c.getString(3) + ", "
-									+ c.getString(5) + ", " + c.getString(4) + "\n");
+							writer.append(c.getString(1) + ", " + c.getString(2) + ", "
+									+ c.getString(3) + ", " + c.getString(4) + ", "
+									+ c.getString(6) + ", " + c.getString(5) + "\n");
 						}
 
 						// App Rules
@@ -699,8 +698,16 @@ public final class SharedMethods
 								if (!apps)
 								{
 									// create entry in db
-									ruleAdapter.createEntry(tokens[0], tokens[1], tokens[2],
-											tokens[3], tokens[4], tokens[5]);
+									ContentValues initialValues = new ContentValues();
+									initialValues.put(RulesDBAdapter.KEY_IP_ADDRESS, tokens[0]);
+									initialValues.put(RulesDBAdapter.KEY_PORT, tokens[1]);
+									initialValues.put(RulesDBAdapter.KEY_DIRECTION, tokens[2]);
+									initialValues.put(RulesDBAdapter.KEY_ACTION, tokens[3]);
+									initialValues.put(RulesDBAdapter.KEY_DOMAIN, tokens[4]);
+									initialValues.put(RulesDBAdapter.KEY_INTERFACE, tokens[5]);
+									initialValues.put(RulesDBAdapter.KEY_SAVED, "false");
+									
+									ruleAdapter.createEntry(initialValues);
 								}
 								else
 								{
@@ -716,12 +723,12 @@ public final class SharedMethods
 						// close db
 						ruleAdapter.close();
 						appAdapter.close();
-						
-						//apply rules
+
+						// apply rules
 						Intent loadIPRules = new Intent(ctx, Blocker.class);
 						loadIPRules.putExtra("reload", "false");
 						ctx.startService(loadIPRules);
-						
+
 						Intent loadRules = new Intent();
 						loadRules.setClass(ctx, AppBlocker.class);
 						ctx.startService(loadRules);

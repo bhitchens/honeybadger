@@ -5,17 +5,12 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.util.Log;
 
-public class LogContentProvider extends ContentProvider
+public class DBContentProvider extends ContentProvider
 {
-
-	private LogDBAdapter db;
-
-	private static final int LOGDB = 10;
-	private static final int LOGDB_ID = 20;
+	private RulesDBAdapter rulesDb;
+	private LogDBAdapter logDb;
 
 	private static final String AUTHORITY = "com.honeybadger.api.databases";
 
@@ -26,35 +21,66 @@ public class LogContentProvider extends ContentProvider
 	public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
 			+ "/logItem";
 
+	private static final int LOGDB = 10;
+	private static final int RULEDB = 20;
+
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static
 	{
-		sURIMatcher.addURI(AUTHORITY, BASE_PATH, LOGDB);
-		sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", LOGDB_ID);
+		sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/log", LOGDB);
+		sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/rules", RULEDB);
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs)
 	{
-		throw new UnsupportedOperationException();
+		int uriType = sURIMatcher.match(uri);
+		switch (uriType)
+		{
+			case LOGDB:
+				throw new UnsupportedOperationException();
+			case RULEDB:
+				rulesDb.open();
+				rulesDb.deleteEntry(selection, selectionArgs);
+				rulesDb.close();
+				return 1;
+			default:
+				throw new IllegalArgumentException("Unknown URI: " + uri);
+		}
+
 	}
 
 	@Override
 	public String getType(Uri uri)
 	{
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Uri insert(Uri uri, ContentValues values)
 	{
-		throw new UnsupportedOperationException();
+		int uriType = sURIMatcher.match(uri);
+		switch (uriType)
+		{
+			case LOGDB:
+				throw new UnsupportedOperationException();
+			case RULEDB:
+				rulesDb.open();
+				rulesDb.createEntry(values);
+				rulesDb.close();
+
+				return uri;
+			default:
+				throw new IllegalArgumentException("Unknown URI: " + uri);
+		}
 	}
 
 	@Override
 	public boolean onCreate()
 	{
-		db = new LogDBAdapter(getContext());
+		rulesDb = new RulesDBAdapter(getContext());
+		logDb = new LogDBAdapter(getContext());
+
 		return false;
 	}
 
@@ -62,33 +88,23 @@ public class LogContentProvider extends ContentProvider
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
 			String sortOrder)
 	{
-		// Uisng SQLiteQueryBuilder instead of query() method
-		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-
-		// Set the table
-		queryBuilder.setTables("logs");
-
 		int uriType = sURIMatcher.match(uri);
 		switch (uriType)
 		{
 			case LOGDB:
-				break;
-			case LOGDB_ID:
-				// Adding the ID to the original query
-				queryBuilder.appendWhere("_id" + "=" + uri.getLastPathSegment());
-				break;
+				logDb.open();
+				Cursor cursor = logDb.fetchAllEntries(selection, selectionArgs);
+
+				// Make sure that potential listeners are getting notified
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+				return cursor;
+			case RULEDB:
+				rulesDb.open();
+				return rulesDb.fetchAllEntries();
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
-
-		db.open();
-		Cursor cursor = db.fetchAllEntries(selection, selectionArgs);
-
-		Log.d("test", "1b:" + cursor.getCount());
-		// Make sure that potential listeners are getting notified
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-
-		return cursor;
 	}
 
 	@Override

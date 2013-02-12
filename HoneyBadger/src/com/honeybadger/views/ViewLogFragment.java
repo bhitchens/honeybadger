@@ -1,14 +1,11 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Todd Berry Ann, Alex Harris, Brad Hitchens
  * Version: 1.3
- * Date of last modification: 14 JUNE 2012
- * Source Info:    
- * The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
- * located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
+ * Date of last modification: 11FEB13
  *
  * Edit 1.3: Effected by move of database adapter
+ * Edit 4.0: Adapted to use loader manager and for search
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -21,7 +18,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.honeybadger.R;
-import com.honeybadger.api.databases.LogContentProvider;
+import com.honeybadger.api.databases.DBContentProvider;
 import com.honeybadger.api.databases.LogDBAdapter;
 import com.honeybadger.api.scripts.LogScript;
 
@@ -42,7 +39,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 
 public class ViewLogFragment extends SherlockListFragment implements
-		LoaderManager.LoaderCallbacks<Cursor>// , OnQueryTextListener
+		LoaderManager.LoaderCallbacks<Cursor>
 {
 	private static final int LOADER_ID = 20;
 	private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
@@ -147,8 +144,8 @@ public class ViewLogFragment extends SherlockListFragment implements
 			}
 			else
 			{
-				Toast.makeText(getActivity(), "Searching for \"" + currentQuery + "\"...", Toast.LENGTH_LONG)
-				.show();
+				Toast.makeText(getActivity(), "Searching for \"" + currentQuery + "\"...",
+						Toast.LENGTH_LONG).show();
 				arrayAdapter.getFilter().filter(currentQuery);
 				setListAdapter(arrayAdapter);
 			}
@@ -171,6 +168,40 @@ public class ViewLogFragment extends SherlockListFragment implements
 		}
 	};
 
+	
+
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1)
+	{
+		/*
+		 * String sort = "SortColumn ASC"; String grid_whereClause =
+		 * "INOUT LIKE ? OR SRC LIKE ? OR DST LIKE ? OR Proto LIKE ? OR SPT LIKE ? OR DPT LIKE ? OR UID LIKE ?"
+		 * ;
+		 * 
+		 * if (!TextUtils.isEmpty(grid_currentQuery)) { return new
+		 * CursorLoader(getActivity(), Uri.parse(DBContentProvider.CONTENT_URI
+		 * + "/20"), new String[] { "_id", "INOUT", "SRC", "DST", "Proto",
+		 * "SPT", "DPT", "UID", "total" }, grid_whereClause, new String[] {
+		 * grid_currentQuery + "%" }, sort); }
+		 */
+
+		return new CursorLoader(getActivity(), Uri.parse(DBContentProvider.CONTENT_URI + "/log"),
+				new String[]
+				{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, null,
+				null, null);
+	}
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
+	{
+		mAdapter.swapCursor(cursor);
+		display();
+	}
+
+	public void onLoaderReset(Loader<Cursor> arg0)
+	{
+		mAdapter.swapCursor(null);
+	}
+
+	
 	/**
 	 * Initializes options menu.
 	 */
@@ -208,36 +239,6 @@ public class ViewLogFragment extends SherlockListFragment implements
 				return super.onOptionsItemSelected(item);
 		}
 	}
-
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1)
-	{
-		/*
-		 * String sort = "SortColumn ASC"; String grid_whereClause =
-		 * "INOUT LIKE ? OR SRC LIKE ? OR DST LIKE ? OR Proto LIKE ? OR SPT LIKE ? OR DPT LIKE ? OR UID LIKE ?"
-		 * ;
-		 * 
-		 * if (!TextUtils.isEmpty(grid_currentQuery)) { return new
-		 * CursorLoader(getActivity(), Uri.parse(LogContentProvider.CONTENT_URI
-		 * + "/20"), new String[] { "_id", "INOUT", "SRC", "DST", "Proto",
-		 * "SPT", "DPT", "UID", "total" }, grid_whereClause, new String[] {
-		 * grid_currentQuery + "%" }, sort); }
-		 */
-
-		return new CursorLoader(getActivity(), Uri.parse(LogContentProvider.CONTENT_URI + "/10"),
-				new String[]
-				{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, null,
-				null, null);
-	}
-
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
-	{
-		mAdapter.swapCursor(cursor);
-		display();
-	}
-
-	public void onLoaderReset(Loader<Cursor> arg0)
-	{
-		mAdapter.swapCursor(null);
-	}
-
+	
+	
 }

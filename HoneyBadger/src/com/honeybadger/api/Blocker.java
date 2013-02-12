@@ -19,7 +19,7 @@ import android.database.Cursor;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 
 public class Blocker extends Service
 {
@@ -77,25 +77,24 @@ public class Blocker extends Service
 		// Opens rules database and creates cursor to iterate through all
 		// entries
 		ruleAdapter.open();
-		SimpleCursorAdapter ca = ruleAdapter.fetchAllEntriesNew();
-		c = ca.getCursor();
+		c = ruleAdapter.fetchAllEntries();
 		String target;
 		String netInt;
-
+Log.d("test", "2a" + c.getCount());
 		// Loop through rows of database
 		while (c.getPosition() < c.getCount() - 1)
 		{
 			c.moveToNext();
-			target = c.getString(0);
-			netInt = c.getString(4);
+			target = c.getString(1);
+			netInt = c.getString(5);
 			// If rule has not yet been applied to IPTables, add it to the
 			// script string. Generate its components based on the values in the
 			// cells.
-			if (c.getString(6).contains("false") | reload)
+			if (c.getString(7).contains("false") | reload)
 			{
 				String drop;
 				String inOut;
-				if (c.getString(3).contains("allow"))
+				if (c.getString(4).contains("allow"))
 				{
 					drop = "ACCEPT";
 				}
@@ -104,10 +103,10 @@ public class Blocker extends Service
 					drop = "DROP";
 				}
 
-				if (c.getString(2).contains("out"))
+				if (c.getString(3).contains("out"))
 				{
 					inOut = "OUT";
-					if (c.getString(5).contains("domain"))
+					if (c.getString(6).contains("domain"))
 					{
 						rule = SharedMethods.ruleBuilder(this, rule, "Domain", target, true, drop,
 								inOut, netInt.contains("wifi"), netInt.contains("cell"));
@@ -121,7 +120,7 @@ public class Blocker extends Service
 				else
 				{
 					inOut = "IN";
-					if (c.getString(5).contains("domain"))
+					if (c.getString(6).contains("domain"))
 					{
 						rule = SharedMethods.ruleBuilder(this, rule, "Domain", target, true, drop,
 								inOut, netInt.contains("wifi"), netInt.contains("cell"));
@@ -134,7 +133,7 @@ public class Blocker extends Service
 				}
 
 				// Mark rule as having been applied
-				ruleAdapter.changeSaved(c.getString(0));
+				ruleAdapter.changeSaved(c.getString(1));
 
 				// Create intent to start service which applies rules script.
 				Intent intent2 = new Intent();

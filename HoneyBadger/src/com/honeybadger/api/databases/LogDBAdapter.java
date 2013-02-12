@@ -2,13 +2,11 @@ package com.honeybadger.api.databases;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Author(s): Todd Berry Ann, Brad Hitchens
- * Version: 1.3
- * Date of last modification: 14 JUNE 2012
- * Source Info: n/a
- * Information regarding the creation of a database was obtained and adapted from the notepad tutorial on the official 
- * Android developers website.
+ * Version: 4.0
+ * Date of last modification: 11FEB13
  *
  * Edit 1.3: Moved to new package
+ * Edit 4.0: Clean up; better fetch all
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -18,7 +16,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class LogDBAdapter
 {
@@ -26,7 +23,6 @@ public class LogDBAdapter
 	public static final String KEY_BODY = "body";
 	public static final String KEY_ROWID = "_id";
 
-	private static final String TAG = "LogDBAdapter";
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 	public String check = "bad";
@@ -65,11 +61,6 @@ public class LogDBAdapter
 		 */
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 		{			
-			getWritableDatabase();
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
-					+ ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS logs");
-			onCreate(db);
 		}
 	}
 
@@ -85,10 +76,6 @@ public class LogDBAdapter
 		this.mCtx = ctx;
 	}
 
-	public SQLiteDatabase getWritableDatabase()
-	{
-		return mDb;
-	}
 	
 	/**
 	 * Open the Log database. If it cannot be opened, try to create a new
@@ -161,18 +148,6 @@ public class LogDBAdapter
 		}
 	}
 
-	/**
-	 * Delete the entry with the given rowId
-	 * 
-	 * @param rowId
-	 *            id of note to delete
-	 * @return true if deleted, false otherwise
-	 */
-	public boolean deleteEntry(long rowId)
-	{
-
-		return mDb.delete(DATABASE_TABLE, KEY_ROWID + "=" + rowId, null) > 0;
-	}
 
 	/**
 	 * Return a Cursor over the list of all entries in the database
@@ -181,36 +156,10 @@ public class LogDBAdapter
 	 */
 	public Cursor fetchAllEntries(String selection, String[] selectionArgs)
 	{
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-				{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, null, null, null, null, null);
-		Log.d("test", "1c:" + c.getCount());
-		Cursor c2 = mDb.query(DATABASE_TABLE, new String[]
+		return mDb.query(DATABASE_TABLE, new String[]
 				{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, selection, selectionArgs, null, null, null);
-		Log.d("test", "2c:" + c.getCount());
-
-		return c2;
 	}
 
-	/**
-	 * Fetches row specified by rowId parameter.
-	 * 
-	 * @param rowId
-	 *            Row to be returned.
-	 * @return Cursor over cells of returned row.
-	 * @throws SQLException
-	 */
-	public Cursor fetchEntry(long rowId) throws SQLException
-	{
-		Cursor mCursor =
-
-		mDb.query(true, DATABASE_TABLE, new String[]
-		{ KEY_BODY }, KEY_ROWID + "=" + rowId, null, null, null, null, null);
-		if (mCursor != null)
-		{
-			mCursor.moveToFirst();
-		}
-		return mCursor;
-	}
 
 	/**
 	 * Clears log data by dropping then recreating table.

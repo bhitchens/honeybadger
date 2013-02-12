@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.honeybadger"
-    android:versionCode="18"
-    android:versionName="3.6" >
+    android:versionCode="19"
+    android:versionName="4.0" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -68,7 +68,7 @@
         <service android:name="com.honeybadger.api.scripts.ReturnOutput" />
 
         <provider
-            android:name=".api.databases.LogContentProvider"
+            android:name=".api.databases.DBContentProvider"
             android:authorities="com.honeybadger.api.databases" 
             android:exported="false">
         </provider>

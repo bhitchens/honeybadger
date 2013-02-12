@@ -1,21 +1,14 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Alex Harris
  * Version: 1.1
  * Date of last modification: 4 MAR 2012
- * Source Info:    
- |Information regarding the creation of a splash screen was obtained and adapted from the following resource created by Igor Kushnarev:
- |http://www.codeproject.com/Articles/113831/An-Advanced-Splash-Screen-for-Android-App
- |
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
-import com.honeybadger.api.AppBlocker;
-import com.honeybadger.api.Blocker;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.AppsDBAdapter;
-import com.honeybadger.api.databases.RulesDBAdapter;
+import com.honeybadger.api.databases.LogDBAdapter;
 import com.honeybadger.api.scripts.Scripts;
 
 import android.app.Activity;
@@ -25,10 +18,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import java.lang.Runnable;
 
@@ -78,7 +69,7 @@ public class SplashScreen extends Activity
 				script.putExtra("script", startScript);
 				startService(script);
 
-				if (!settings.getBoolean("2_5", false))
+				if (!settings.getBoolean("4_0", false))
 				{
 					upgrade();
 				}
@@ -123,135 +114,11 @@ public class SplashScreen extends Activity
 
 	public void upgrade()
 	{
-		RulesDBAdapter rulesAdapter;
-		Cursor ruleC;
-		Cursor appC;
-
-		editor = settings.edit();
-		appAdapter = new AppsDBAdapter(this);
-		rulesAdapter = new RulesDBAdapter(this);
-
-		String script;
-
-		try
-		{
-			// transition app rules
-			appAdapter.open();
-			appC = appAdapter.fetchAllEntries();
-			Log.d("test", "test: " + appC.getCount());// for some reason this
-														// makes things work.
-			appAdapter.clear();
-			while (appC.getPosition() < appC.getCount() - 1)
-			{
-				appC.moveToNext();
-				if (appC.getString(3).contains("block"))
-				{
-					appAdapter.createEntry(appC.getInt(0), appC.getString(1), appC.getBlob(2),
-							"block", "block");
-					String rmApp = this.getDir("bin", 0)
-							+ "/iptables -D OUTPUT -m owner --uid-owner " + appC.getInt(0)
-							+ " -j DROPOUT\n";
-					Intent delApp = new Intent(this, Scripts.class);
-					delApp.putExtra("script", rmApp);
-					startService(delApp);
-				}
-				else
-				{
-					appAdapter.createEntry(appC.getInt(0), appC.getString(1), appC.getBlob(2),
-							"allow", "allow");
-				}
-			}
-			appC.close();
-			appAdapter.close();
-			// transition IP rules
-			rulesAdapter.open();
-			ruleC = rulesAdapter.fetchAllEntriesOld();
-			Log.d("test", Integer.toString(ruleC.getCount()));// for some reason
-																// this makes
-																// things work.
-			rulesAdapter.clear();
-			while (ruleC.getPosition() < ruleC.getCount() - 1)
-			{
-				ruleC.moveToNext();
-				if (ruleC.getString(4).contains("domain") && ruleC.getString(2).contains("in"))
-				{
-					// delete rule jumping to chain
-					script = this.getDir("bin", 0) + "/iptables -D " + "IN" + "PUT -j "
-							+ ruleC.getString(0) + "IN"
-							+ "\n"
-							// clear chain
-							+ this.getDir("bin", 0) + "/iptables -F " + ruleC.getString(0) + "IN"
-							+ "\n"
-							// delete chain
-							+ this.getDir("bin", 0) + "/iptables -X " + ruleC.getString(0) + "IN"
-							+ "\n";
-				}
-				else if (ruleC.getString(4).contains("domain")
-						&& ruleC.getString(2).contains("out"))
-				{
-					script = this.getDir("bin", 0) + "/iptables -D " + "OUT" + "PUT -j "
-							+ ruleC.getString(0) + "OUT"
-							+ "\n"
-							// clear chain
-							+ this.getDir("bin", 0) + "/iptables -F " + ruleC.getString(0) + "OUT"
-							+ "\n"
-							// delete chain
-							+ this.getDir("bin", 0) + "/iptables -X " + ruleC.getString(0) + "OUT"
-							+ "\n";
-				}
-				else if (ruleC.getString(2).contains("in"))
-				{
-					if (ruleC.getString(3).contains("block"))
-					{
-						script = this.getDir("bin", 0) + "/iptables -D INPUT -s "
-								+ ruleC.getString(0) + " -j DROPIN\n";
-					}
-					else
-					{
-						script = this.getDir("bin", 0) + "/iptables -D INPUT -s "
-								+ ruleC.getString(0) + " -j ALLOWIN\n";
-					}
-				}
-				else
-				{
-					if (ruleC.getString(3).contains("block"))
-					{
-						script = this.getDir("bin", 0) + "/iptables -D OUTPUT -d "
-								+ ruleC.getString(0)
-								+ " -m state --state NEW,RELATED,ESTABLISHED -j DROPOUT\n";
-					}
-					else
-					{
-						script = this.getDir("bin", 0) + "/iptables -D OUTPUT -d "
-								+ ruleC.getString(0)
-								+ " -m state --state NEW,RELATED,ESTABLISHED -j ALLOWOUT\n";
-					}
-				}
-
-				Log.d("test", script);
-				Intent delRule = new Intent(this, Scripts.class);
-				delRule.putExtra("script", script);
-				startService(delRule);
-
-				rulesAdapter.createEntry(ruleC.getString(0), ruleC.getString(1),
-						ruleC.getString(2), ruleC.getString(3), ruleC.getString(4), "wifi");
-				rulesAdapter.createEntry(ruleC.getString(0), ruleC.getString(1),
-						ruleC.getString(2), ruleC.getString(3), ruleC.getString(4), "cell");
-
-			}
-			ruleC.close();
-			rulesAdapter.close();
-			Intent bApps = new Intent(this, AppBlocker.class);
-			startService(bApps);
-			Intent bRules = new Intent(this, Blocker.class);
-			startService(bRules);
-
-			editor.putBoolean("2_5", true);
-			editor.commit();
-		}
-		catch (Exception e)
-		{
-
-		}
+		LogDBAdapter db = new LogDBAdapter(this);
+		db.open();
+		db.clearLog();
+		db.close();
+		
+		editor.putBoolean("4_0", true);
 	}
 }

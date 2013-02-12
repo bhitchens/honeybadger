@@ -28,11 +28,13 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -335,31 +337,58 @@ public class AddRulesFragment extends SherlockFragment
 				netInt = "cell";
 			}
 
+			ContentValues initialValues = new ContentValues();
+			initialValues.put(RulesDBAdapter.KEY_IP_ADDRESS, source);
+			initialValues.put(RulesDBAdapter.KEY_PORT, port);
+			initialValues.put(RulesDBAdapter.KEY_ACTION, allow);
+			initialValues.put(RulesDBAdapter.KEY_DOMAIN, domain);
+			initialValues.put(RulesDBAdapter.KEY_SAVED, "false");
+			
 			if (direction == "both")
 			{
 				if (netInt == "both")
 				{
-					rulesDB.createEntry(source, port, "in", allow, domain, "wifi");
-					rulesDB.createEntry(source, port, "out", allow, domain, "wifi");
-					rulesDB.createEntry(source, port, "in", allow, domain, "cell");
-					rulesDB.createEntry(source, port, "out", allow, domain, "cell");
+					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
+					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "wifi");
+					rulesDB.createEntry(initialValues);
+					
+					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
+					rulesDB.createEntry(initialValues);
+					
+					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
+					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "cell");
+					rulesDB.createEntry(initialValues);
+					
+					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
+					rulesDB.createEntry(initialValues);
 				}
 				else
 				{
-					rulesDB.createEntry(source, port, "in", allow, domain, netInt);
-					rulesDB.createEntry(source, port, "out", allow, domain, netInt);
+					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
+					initialValues.put(RulesDBAdapter.KEY_INTERFACE, netInt);
+					rulesDB.createEntry(initialValues);
+					
+					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
+					rulesDB.createEntry(initialValues);
 				}
 			}
 			else
 			{
+				initialValues.put(RulesDBAdapter.KEY_DIRECTION, direction);
+				
 				if (netInt == "both")
 				{
-					rulesDB.createEntry(source, port, direction, allow, domain, "wifi");
-					rulesDB.createEntry(source, port, direction, allow, domain, "cell");
+					
+					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "wifi");
+					rulesDB.createEntry(initialValues);
+					
+					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "cell");
+					rulesDB.createEntry(initialValues);
 				}
 				else
 				{
-					rulesDB.createEntry(source, port, direction, allow, domain, netInt);
+					initialValues.put(RulesDBAdapter.KEY_INTERFACE, netInt);
+					rulesDB.createEntry(initialValues);
 				}
 			}
 
@@ -388,6 +417,7 @@ public class AddRulesFragment extends SherlockFragment
 				{
 					public void onClick(DialogInterface dialog, int id)
 					{
+						Log.d("test", "1a");
 						Intent myIntent = new Intent(getActivity(), Blocker.class);
 						myIntent.putExtra("reload", "false");
 						getActivity().startService(myIntent);

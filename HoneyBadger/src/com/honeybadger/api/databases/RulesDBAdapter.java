@@ -1,18 +1,13 @@
 package com.honeybadger.api.databases;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Brad Hitchens
- * Version: 1.3
- * Date of last modification: 14 JUNE 2012
- * Source Info: n/a
- * Information regarding the creation of a database was obtained and adapted from the notepad tutorial on the official 
- * Android developers website
+ * Version: 4.0
+ * Date of last modification: 11FEB13
  * 
  * Edit 1.3: Moved to new package
+ * Edit 4.0: Clean up
  *--------------------------------------------------------------------------------------------------------------------------------
  */
-
-import com.actionbarsherlock.R;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,8 +15,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 
 public class RulesDBAdapter
 {
@@ -34,7 +27,6 @@ public class RulesDBAdapter
 	public static final String KEY_INTERFACE = "Interface";
 	public static final String KEY_SAVED = "Saved";
 
-	private static final String TAG = "RulesDBAdapter";
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 	public String check = "bad";
@@ -52,7 +44,6 @@ public class RulesDBAdapter
 
 	private static class DatabaseHelper extends SQLiteOpenHelper
 	{
-
 		DatabaseHelper(Context context)
 		{
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -67,17 +58,6 @@ public class RulesDBAdapter
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
 		{
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
-					+ ", which will destroy all old data");
-			/*
-			 * Cursor c = db.query(DATABASE_TABLE, new String[] {
-			 * KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_DOMAIN,
-			 * KEY_SAVED }, null, null, null, null, null);
-			 */
-
-			// db.execSQL("DROP TABLE IF EXISTS rules");
-			// onCreate(db);
-			// db.execSQL(DATABASE_CREATE_OLD);
 		}
 	}
 
@@ -111,12 +91,6 @@ public class RulesDBAdapter
 		return this;
 	}
 
-	/*
-	 * public RulesDBAdapter openOld() throws SQLException { mDbHelper = new
-	 * DatabaseHelper(mCtx); mDb = mDbHelper.getWritableDatabase(); check =
-	 * mDb.getPath(); return this; }
-	 */
-
 	public void close()
 	{
 		mDbHelper.close();
@@ -131,7 +105,7 @@ public class RulesDBAdapter
 	 *            the body of the note
 	 * @return rowId or -1 if failed
 	 */
-	public long createEntry(String ip, String port, String direction, String action, String domain,
+	/*public long createEntry(String ip, String port, String direction, String action, String domain,
 			String netInt)
 	{
 		ContentValues initialValues = new ContentValues();
@@ -144,6 +118,11 @@ public class RulesDBAdapter
 		initialValues.put(KEY_SAVED, "false");
 
 		return mDb.insert(DATABASE_TABLE, null, initialValues);
+	}*/
+	
+	public long createEntry(ContentValues values)
+	{
+		return mDb.insert(DATABASE_TABLE, null, values);
 	}
 
 	/**
@@ -158,16 +137,17 @@ public class RulesDBAdapter
 	}
 
 	/**
-	 * Delete the entry with the given rowId
+	 * Delete the entry with the given parameters
 	 * 
 	 * @param rowId
 	 *            id of note to delete
 	 * @return true if deleted, false otherwise
 	 */
-	public boolean deleteEntry(String ip, String direction, String netInt)
+	public void deleteEntry(String where, String[] args)
 	{
-		return mDb.delete(DATABASE_TABLE, KEY_IP_ADDRESS + "='" + ip + "' AND " + KEY_DIRECTION
-				+ "='" + direction + "' AND " + KEY_INTERFACE + "='" + netInt + "'", null) > 0;
+		mDb.delete(DATABASE_TABLE, where, args);
+		/*return mDb.delete(DATABASE_TABLE, KEY_IP_ADDRESS + "='" + ip + "' AND " + KEY_DIRECTION
+				+ "='" + direction + "' AND " + KEY_INTERFACE + "='" + netInt + "'", null) > 0;*/
 	}
 
 	/**
@@ -175,43 +155,12 @@ public class RulesDBAdapter
 	 * 
 	 * @return Cursor over all entries
 	 */
-	public Cursor fetchAllEntriesOld()
+	public Cursor fetchAllEntries()
 	{
-		return mDb.query(DATABASE_TABLE, new String[]
-		{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_DOMAIN, KEY_SAVED }, null, null,
-				null, null, null);
-	}
-
-	public SimpleCursorAdapter fetchAllEntriesNew()
-	{
-		return new SimpleCursorAdapter(mCtx, R.layout.log_viewer, mDb.query(DATABASE_TABLE, new String[]{ "_id", KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN, KEY_SAVED }, null, null, null, null, null), new String[]{ "_id", KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN, KEY_SAVED }, null, 0);
-		/*return mDb.query(DATABASE_TABLE,
+		return mDb.query(DATABASE_TABLE,
 				new String[]
-				{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN,
-						KEY_SAVED }, null, null, null, null, null);*/
-		
-		//_id integer, IPAddress text not null, Port text, Direction text not null, Action text not null, Domain text not null, Interface text not null, Saved text not null
-	}
-
-	/**
-	 * Fetches row specified by rowId parameter.
-	 * 
-	 * @param rowId
-	 * @return
-	 * @throws SQLException
-	 */
-	public Cursor fetchEntry(long rowId) throws SQLException
-	{
-		Cursor mCursor =
-
-		mDb.query(true, DATABASE_TABLE, new String[]
-		{ KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_DOMAIN, KEY_SAVED }, KEY_ROWID
-				+ "=" + rowId, null, null, null, null, null);
-		if (mCursor != null)
-		{
-			mCursor.moveToFirst();
-		}
-		return mCursor;
+				{ KEY_ROWID, KEY_IP_ADDRESS, KEY_PORT, KEY_DIRECTION, KEY_ACTION, KEY_INTERFACE, KEY_DOMAIN,
+						KEY_SAVED }, null, null, null, null, null);
 	}
 
 	public void clear()

@@ -1,28 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/search_rules"
+        android:actionViewClass="com.actionbarsherlock.widget.SearchView"
+        android:icon="@drawable/action_search"
+        android:showAsAction="always|collapseActionView"
+        android:title="Search"/>
+    <item
         android:id="@+id/refresh_rules"
         android:icon="@drawable/navigation_refresh"
-        android:title="Refresh"
-        android:showAsAction="ifRoom|withText"/>    
+        android:showAsAction="ifRoom|withText"
+        android:title="Refresh"/>
     <item
         android:id="@+id/exportIPRules"
         android:icon="@drawable/av_upload"
         android:title="Export Rules"/>
     <item
         android:id="@+id/importIPRules"
-        android:icon="@drawable/av_download"    
+        android:icon="@drawable/av_download"
         android:title="Import Rules"/>
     <item
         android:id="@+id/settingsFromViewRules"
         android:icon="@drawable/ic_menu_settings_holo_light"
-        android:title="Settings"
-        android:showAsAction="ifRoom|withText"/>
+        android:showAsAction="ifRoom|withText"
+        android:title="Settings"/>
     <item
         android:id="@+id/rv_raw_rules"
-        android:icon="@drawable/collections_view_as_list"    
+        android:icon="@drawable/collections_view_as_list"
         android:title="Raw IPTables Rules"/>
 
 </menu>
