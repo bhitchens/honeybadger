@@ -1,7 +1,6 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Brad Hitchens
  * Version: 2.1
  * Date of last modification: 14 JUNE 2012
  * Source Info: n/a
@@ -213,7 +212,6 @@ public class ShowAppsFragment extends SherlockFragment
 	 */
 	public void display()
 	{
-		//setContentView(R.layout.show_apps);
 		setLV();
 	}
 
@@ -251,20 +249,16 @@ public class ShowAppsFragment extends SherlockFragment
 						{
 							public void run()
 							{
-
 								AppAdapter adapter = new AppAdapter(getActivity(),
 										R.layout.app_item_row, list);
 
 								lv = (ListView) getActivity().findViewById(R.id.listView1);
 								lv.setAdapter(adapter);
 								lv.setItemsCanFocus(false);
-
 							}
 						}, 100);
 					}
-
 				});
-
 				return 0;
 			}
 
@@ -277,9 +271,7 @@ public class ShowAppsFragment extends SherlockFragment
 			{
 				dialog.dismiss();
 			}
-
 		}
-
 		new GetLV().execute();
 	}
 

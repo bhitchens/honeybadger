@@ -1,7 +1,6 @@
 package com.honeybadger.api.databases;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Todd Berry Ann, Brad Hitchens
  * Version: 4.0
  * Date of last modification: 11FEB13
  *

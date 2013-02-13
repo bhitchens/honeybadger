@@ -47,7 +47,6 @@ public class DBContentProvider extends ContentProvider
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
-
 	}
 
 	@Override
@@ -68,7 +67,6 @@ public class DBContentProvider extends ContentProvider
 				rulesDb.open();
 				rulesDb.createEntry(values);
 				rulesDb.close();
-
 				return uri;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);

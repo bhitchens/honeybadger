@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Binder;
 import android.os.IBinder;
-//import android.util.Log;
 
 public class AppBlocker extends IntentService
 {
@@ -87,16 +86,14 @@ public class AppBlocker extends IntentService
 							!appAdapter.checkBlockC(uid));
 				}
 
-				Intent scriptIntent = new Intent();
-				scriptIntent.setClass(context, Scripts.class);
+				Intent scriptIntent = new Intent(context, Scripts.class);
 				scriptIntent.putExtra("script", script);
 				context.startService(scriptIntent);
 				script = "";
 			}
 		}
 
-		Intent scriptIntent = new Intent();
-		scriptIntent.setClass(context, Scripts.class);
+		Intent scriptIntent = new Intent(context, Scripts.class);
 		scriptIntent.putExtra("script", script);
 		context.startService(scriptIntent);
 

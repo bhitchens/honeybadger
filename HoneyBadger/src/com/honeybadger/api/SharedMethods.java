@@ -37,7 +37,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -295,7 +294,6 @@ public final class SharedMethods
 			Boolean add, String block, String in, Boolean wifi, Boolean cell)
 	{
 		String newRule = rule;
-		Log.d("test2", rule);
 		if (wifi)
 		{
 			newRule = ruleBuilderF(ctx, newRule, type, target, add, block, in, "tiwlan+");
@@ -324,10 +322,8 @@ public final class SharedMethods
 		String newRule = rule;
 		if (type == "App")
 		{
-			Log.d("test2", rule + " 1");
 			if (add)
 			{
-				Log.d("test2", rule + " 2");
 				newRule += ctx.getDir("bin", 0) + "/iptables -A APPS -m owner --uid-owner "
 						+ target + " -o " + netInt + " -j " + block + in + "\n";
 			}
@@ -436,8 +432,6 @@ public final class SharedMethods
 			appAdapter = new AppsDBAdapter(ctx);
 			appAdapter.open();
 
-			// appAdapter.clear();
-
 			if (settings.getBoolean("block", false))
 			{
 				block = "block";
@@ -488,7 +482,6 @@ public final class SharedMethods
 			editor.putBoolean("loaded", true);
 			editor.commit();
 		}
-		// appAdapter.close();
 	}
 
 	/**
@@ -729,8 +722,7 @@ public final class SharedMethods
 						loadIPRules.putExtra("reload", "false");
 						ctx.startService(loadIPRules);
 
-						Intent loadRules = new Intent();
-						loadRules.setClass(ctx, AppBlocker.class);
+						Intent loadRules = new Intent(ctx, AppBlocker.class);
 						ctx.startService(loadRules);
 
 						Toast.makeText(ctx, "File imported.", Toast.LENGTH_LONG).show();

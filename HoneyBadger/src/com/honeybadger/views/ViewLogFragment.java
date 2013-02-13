@@ -62,7 +62,6 @@ public class ViewLogFragment extends SherlockListFragment implements
 		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.log_viewer, null, new String[]
 		{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, null, 0);
 
-		// display(mInflater);
 		setListAdapter(mAdapter);
 
 		mCallbacks = this;
@@ -167,23 +166,10 @@ public class ViewLogFragment extends SherlockListFragment implements
 			return false;
 		}
 	};
-
 	
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1)
 	{
-		/*
-		 * String sort = "SortColumn ASC"; String grid_whereClause =
-		 * "INOUT LIKE ? OR SRC LIKE ? OR DST LIKE ? OR Proto LIKE ? OR SPT LIKE ? OR DPT LIKE ? OR UID LIKE ?"
-		 * ;
-		 * 
-		 * if (!TextUtils.isEmpty(grid_currentQuery)) { return new
-		 * CursorLoader(getActivity(), Uri.parse(DBContentProvider.CONTENT_URI
-		 * + "/20"), new String[] { "_id", "INOUT", "SRC", "DST", "Proto",
-		 * "SPT", "DPT", "UID", "total" }, grid_whereClause, new String[] {
-		 * grid_currentQuery + "%" }, sort); }
-		 */
-
 		return new CursorLoader(getActivity(), Uri.parse(DBContentProvider.CONTENT_URI + "/log"),
 				new String[]
 				{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, null,

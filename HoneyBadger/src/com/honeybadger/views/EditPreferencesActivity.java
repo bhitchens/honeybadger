@@ -1,11 +1,10 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Alex Harris, Brad Hitchens, Todd Berry Ann
  * Version: 1.1
  * Date of last modification: 14 APRIL 2012
  * Source Info: 
- | 
+ *
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -51,8 +50,6 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 	Boolean logChange = false;
 	Boolean blockChange = false;
 
-	// Intent prefIntent = new Intent(this, ViewRawRulesActivity.class);
-
 	/**
 	 * Called when the activity is first created; allows for modification of
 	 * settings.
@@ -77,9 +74,9 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 		RadioAllow = (RadioButton) findViewById(R.id.radioAllow);
 
 		CheckAutoUpdate = (CheckBox) findViewById(R.id.checkAutoUpdate);
-		
+
 		CheckSuppressWarn = (CheckBox) findViewById(R.id.checkSuppressWarnings);
-		
+
 		ButtonViewRules = (Button) findViewById(R.id.pref_raw_rule_button);
 
 		// make sure proper buttons are checked
@@ -113,8 +110,7 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 		// send scripts to apply update
 		if (logChange | blockChange)
 		{
-			Intent updateScript = new Intent();
-			updateScript.setClass(this, Scripts.class);
+			Intent updateScript = new Intent(this, Scripts.class);
 			updateScript.putExtra("script", script);
 			startService(updateScript);
 		}
@@ -179,7 +175,7 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 		}
 		Intent loadRules = new Intent(this, AppBlocker.class);
 		this.startService(loadRules);
-		
+
 		return script;
 	}
 
@@ -214,7 +210,6 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 						+ "\n";
 			}
 		}
-
 		return script;
 	}
 
@@ -226,8 +221,7 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 	 */
 	public void scheduleUpdate(Calendar cal)
 	{
-		Intent intent = new Intent();
-		intent.setClass(this, AlarmReceiver.class);
+		Intent intent = new Intent(this, AlarmReceiver.class);
 
 		PendingIntent sender = PendingIntent.getBroadcast(this, 2, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
@@ -382,12 +376,13 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 				}
 			}
 		});
-		
+
 		ButtonViewRules.setOnClickListener(new OnClickListener()
 		{
 			public void onClick(View v)
 			{
-				Intent rawRulesIntent = new Intent(EditPreferencesActivity.this, ViewRawRulesActivity.class);
+				Intent rawRulesIntent = new Intent(EditPreferencesActivity.this,
+						ViewRawRulesActivity.class);
 				startActivity(rawRulesIntent);
 			}
 		});

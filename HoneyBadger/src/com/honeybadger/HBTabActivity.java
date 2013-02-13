@@ -44,8 +44,6 @@ public class HBTabActivity extends SherlockFragmentActivity
 		private final SherlockFragmentActivity mActivity;
 		private final String mTag;
 		private final Class<T> mClass;
-		@SuppressWarnings("unused")
-		private final Bundle mArgs;
 		private SherlockFragment mFragment;
 
 		public TabListener(SherlockFragmentActivity activity, String tag, Class<T> clz, Bundle args)
@@ -53,7 +51,6 @@ public class HBTabActivity extends SherlockFragmentActivity
 			mActivity = activity;
 			mTag = tag;
 			mClass = clz;
-			mArgs = args;
 			FragmentTransaction ft = mActivity.getSupportFragmentManager().beginTransaction();
 
 			// Check to see if we already have a fragment for this tab, probably

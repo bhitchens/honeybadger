@@ -1,13 +1,8 @@
 package com.honeybadger.api.scripts;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Brad Hitchens
  * Version: 1.1
  * Date of last modification: 4 MAR 2012
- * Source Info: n/a
- |  This file was based primarily on the Exec class of the GScript application.
- |  The source for this is located here:
- |  http://code.google.com/p/gscript-android/source/browse/trunk/GScript/src/nl/rogro/GScript/GScriptExec.java
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -18,7 +13,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 public class Scripts extends Service
 {
@@ -56,7 +50,6 @@ public class Scripts extends Service
 	{
 		Bundle extras = intent.getExtras();
 		processScript = extras.getString("script");
-		Log.d("script", processScript);
 		
 		ExecuteThread script = new ExecuteThread(); // creates new script thread
 		script.run(); // runs thread
@@ -117,10 +110,8 @@ public class Scripts extends Service
 
 		void Execute()
 		{
-
 			try
 			{
-
 				process = Runtime.getRuntime().exec(processName);
 
 				stdin = new DataOutputStream(process.getOutputStream());

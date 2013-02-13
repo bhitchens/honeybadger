@@ -108,14 +108,13 @@ public class AlarmReceiver extends BroadcastReceiver
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		Notification notification = new Notification(R.drawable.icon,
+				"Malicious IPs have been updated.", System.currentTimeMillis());
 
-		"Malicious IPs have been updated.", System.currentTimeMillis());
+		PendingIntent contentI = PendingIntent.getActivity(context, 1, new Intent(context,
+				HoneyBadgerNotify.class), 0);
 
-		PendingIntent contentI = PendingIntent.getActivity(context, 1,
-				new Intent(context, HoneyBadgerNotify.class), 0);
-
-		notification.setLatestEventInfo(context, "HoneyBadger",
-				"Malicious IPs have been updated.", contentI);
+		notification.setLatestEventInfo(context, "HoneyBadger", "Malicious IPs have been updated.",
+				contentI);
 
 		manager.notify(2, notification);
 	}

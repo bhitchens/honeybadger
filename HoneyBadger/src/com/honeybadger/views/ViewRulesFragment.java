@@ -33,7 +33,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,7 +92,6 @@ public class ViewRulesFragment extends SherlockListFragment implements
 		ruleAdapter = new RulesDBAdapter(getActivity());
 		ruleAdapter.open();
 
-		// c = ruleAdapter.fetchAllEntriesNew();
 		c = mAdapter.getCursor();
 
 		RULES = new ArrayList<String>();
@@ -231,8 +229,6 @@ public class ViewRulesFragment extends SherlockListFragment implements
 		intent2.putExtra("script", rule);
 		getActivity().startService(intent2);
 
-		// refresh rule list
-		// display(mInflater);
 		getLoaderManager().restartLoader(10, null, ViewRulesFragment.this);
 	}
 
@@ -248,7 +244,6 @@ public class ViewRulesFragment extends SherlockListFragment implements
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
 	{
-		Log.d("test", "---" + cursor.getColumnName(1));
 		mAdapter.swapCursor(cursor);
 		display();
 	}

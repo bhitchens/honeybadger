@@ -96,29 +96,6 @@ public class RulesDBAdapter
 		mDbHelper.close();
 	}
 
-	/**
-	 * Create a new entry using the body provided. If the entry is successfully
-	 * created return the new rowId for that entry, otherwise return a -1 to
-	 * indicate failure.
-	 * 
-	 * @param body
-	 *            the body of the note
-	 * @return rowId or -1 if failed
-	 */
-	/*public long createEntry(String ip, String port, String direction, String action, String domain,
-			String netInt)
-	{
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(KEY_IP_ADDRESS, ip);
-		initialValues.put(KEY_PORT, port);
-		initialValues.put(KEY_DIRECTION, direction);
-		initialValues.put(KEY_ACTION, action);
-		initialValues.put(KEY_DOMAIN, domain);
-		initialValues.put(KEY_INTERFACE, netInt);
-		initialValues.put(KEY_SAVED, "false");
-
-		return mDb.insert(DATABASE_TABLE, null, initialValues);
-	}*/
 	
 	public long createEntry(ContentValues values)
 	{
@@ -146,8 +123,6 @@ public class RulesDBAdapter
 	public void deleteEntry(String where, String[] args)
 	{
 		mDb.delete(DATABASE_TABLE, where, args);
-		/*return mDb.delete(DATABASE_TABLE, KEY_IP_ADDRESS + "='" + ip + "' AND " + KEY_DIRECTION
-				+ "='" + direction + "' AND " + KEY_INTERFACE + "='" + netInt + "'", null) > 0;*/
 	}
 
 	/**

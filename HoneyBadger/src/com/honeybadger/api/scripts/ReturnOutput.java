@@ -7,7 +7,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 public class ReturnOutput extends IntentService
 {
@@ -78,7 +77,6 @@ public class ReturnOutput extends IntentService
 
 	public void handleErr(String line)
 	{
-		Log.d("test", line);
 	}
 
 	public void handleComplete()
@@ -143,7 +141,6 @@ public class ReturnOutput extends IntentService
 							String line;
 							while ((line = stdout.readLine()) != null)
 							{
-								//super.sleep(10);
 								handleOut(line);
 							}
 							stdoutFinished = true;

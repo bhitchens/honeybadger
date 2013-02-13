@@ -1,7 +1,6 @@
 package com.honeybadger.api.scripts;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Todd Berry Ann
  * Version: 1.3
  * Date of last modification: 14 JUNE 2012
  * Source Info:    

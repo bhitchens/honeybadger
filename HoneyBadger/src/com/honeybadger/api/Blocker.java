@@ -19,7 +19,6 @@ import android.database.Cursor;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 public class Blocker extends Service
 {
@@ -80,7 +79,7 @@ public class Blocker extends Service
 		c = ruleAdapter.fetchAllEntries();
 		String target;
 		String netInt;
-Log.d("test", "2a" + c.getCount());
+		
 		// Loop through rows of database
 		while (c.getPosition() < c.getCount() - 1)
 		{
@@ -136,8 +135,7 @@ Log.d("test", "2a" + c.getCount());
 				ruleAdapter.changeSaved(c.getString(1));
 
 				// Create intent to start service which applies rules script.
-				Intent intent2 = new Intent();
-				intent2.setClass(this, Scripts.class);
+				Intent intent2 = new Intent(this, Scripts.class);
 				intent2.putExtra("script", rule);
 				startService(intent2);
 			}

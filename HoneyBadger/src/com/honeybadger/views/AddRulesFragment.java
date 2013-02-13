@@ -1,15 +1,8 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Alex Harris, Brad Hitchens, Todd Berry Ann
  * Version: 1.3
  * Date of last modification: 14 JUNE 2012
- * Source Info:    
- *The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
- *located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
- *Information regarding the creation of an Alert Dialog was obtained and adapted from the following two resources:
- *http://stackoverflow.com/questions/4850493/open-a-dialog-when-i-click-a-button
- *http://developer.android.com/guide/topics/ui/dialogs.html#AlertDialog
  *
  * Edit 1.3: Effected by move of database adapter.
  --------------------------------------------------------------------------------------------------------------------------------
@@ -79,18 +72,19 @@ public class AddRulesFragment extends SherlockFragment
 	RulesDBAdapter rulesDB;
 
 	@Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        rulesDB = new RulesDBAdapter(activity);
+	public void onAttach(Activity activity)
+	{
+		super.onAttach(activity);
+		rulesDB = new RulesDBAdapter(activity);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		setHasOptionsMenu(true);
 
 		final View v = inflater.inflate(R.layout.editrule_viewer, container, false);
-		
+
 		settings = getActivity().getSharedPreferences("main", 0);
 
 		CommitButton = (Button) v.findViewById(R.id.buttonCommit);
@@ -115,10 +109,9 @@ public class AddRulesFragment extends SherlockFragment
 		CheckCell = (CheckBox) v.findViewById(R.id.checkCell);
 
 		createListeners();
-		
+
 		return v;
 	}
-
 
 	/**
 	 * Creates listeners for the various buttons
@@ -218,11 +211,10 @@ public class AddRulesFragment extends SherlockFragment
 			public void onClick(View view)
 			{
 				Intent clearScript = new Intent(getActivity(), Scripts.class);
-				clearScript.putExtra("script", getActivity().getDir("bin", 0) + "/iptables -F FETCH \n");
+				clearScript.putExtra("script", getActivity().getDir("bin", 0)
+						+ "/iptables -F FETCH \n");
 				getActivity().startService(clearScript);
-				Toast.makeText(
-						getActivity(),
-						"Downloaded IPs have been cleared.",
+				Toast.makeText(getActivity(), "Downloaded IPs have been cleared.",
 						Toast.LENGTH_LONG).show();
 			}
 		});
@@ -258,13 +250,14 @@ public class AddRulesFragment extends SherlockFragment
 	@SuppressWarnings("deprecation")
 	public void sendUpdateNotification()
 	{
-		NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+		NotificationManager manager = (NotificationManager) getActivity().getSystemService(
+				Context.NOTIFICATION_SERVICE);
 
 		Notification notification = new Notification(R.drawable.icon,
 				"Malicious Domains have been successfully updated.", System.currentTimeMillis());
 
-		PendingIntent contentI = PendingIntent.getActivity(getActivity(), 1, new Intent(getActivity(),
-				HoneyBadgerNotify.class), 0);
+		PendingIntent contentI = PendingIntent.getActivity(getActivity(), 1, new Intent(
+				getActivity(), HoneyBadgerNotify.class), 0);
 
 		notification.setLatestEventInfo(getActivity(), "Malicious Domains",
 				"Known malicious domains are blocked.", contentI);
@@ -343,7 +336,7 @@ public class AddRulesFragment extends SherlockFragment
 			initialValues.put(RulesDBAdapter.KEY_ACTION, allow);
 			initialValues.put(RulesDBAdapter.KEY_DOMAIN, domain);
 			initialValues.put(RulesDBAdapter.KEY_SAVED, "false");
-			
+
 			if (direction == "both")
 			{
 				if (netInt == "both")
@@ -351,14 +344,14 @@ public class AddRulesFragment extends SherlockFragment
 					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
 					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "wifi");
 					rulesDB.createEntry(initialValues);
-					
+
 					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
 					rulesDB.createEntry(initialValues);
-					
+
 					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
 					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "cell");
 					rulesDB.createEntry(initialValues);
-					
+
 					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
 					rulesDB.createEntry(initialValues);
 				}
@@ -367,7 +360,7 @@ public class AddRulesFragment extends SherlockFragment
 					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
 					initialValues.put(RulesDBAdapter.KEY_INTERFACE, netInt);
 					rulesDB.createEntry(initialValues);
-					
+
 					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
 					rulesDB.createEntry(initialValues);
 				}
@@ -375,13 +368,13 @@ public class AddRulesFragment extends SherlockFragment
 			else
 			{
 				initialValues.put(RulesDBAdapter.KEY_DIRECTION, direction);
-				
+
 				if (netInt == "both")
 				{
-					
+
 					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "wifi");
 					rulesDB.createEntry(initialValues);
-					
+
 					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "cell");
 					rulesDB.createEntry(initialValues);
 				}

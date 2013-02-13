@@ -1,12 +1,11 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Brad Hitchens
- * Version: 2.1
- * Date of last modification: 19 June 2012
+ * Version: 4.0
+ * Date of last modification: 12FEB13
  *
  * Edit 2.1: Loads app rules
- *
+ * Edit 4.0: Clean up
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -41,27 +40,23 @@ public class BootInit extends BroadcastReceiver
 		startScript = SharedMethods.setBlock(startScript, settings, context);
 
 		// Launch Script
-		Intent script = new Intent();
-		script.setClass(context, Scripts.class);
+		Intent script = new Intent(context, Scripts.class);
 		script.putExtra("script", startScript);
 		context.startService(script);
 
 		// reload rules
-		Intent reload = new Intent();
-		reload.setClass(context, Blocker.class);
+		Intent reload = new Intent(context, Blocker.class);
 		reload.putExtra("reload", "true");
 		context.startService(reload);
 
 		// reload app rules
-		Intent reloadApps = new Intent();
-		reloadApps.setClass(context, AppBlocker.class);
+		Intent reloadApps = new Intent(context, AppBlocker.class);
 		context.startService(reloadApps);
 
 		// reload auto-generated rules if specified
 		if (settings.getBoolean("generate", false) | settings.getBoolean("autoUpdate", false))
 		{
-			Intent generate = new Intent();
-			generate.setClass(context, Fetcher.class);
+			Intent generate = new Intent(context, Fetcher.class);
 			generate.putExtra(
 					"script",
 					context.getDir("bin", 0)
