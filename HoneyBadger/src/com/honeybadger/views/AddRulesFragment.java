@@ -9,6 +9,9 @@ package com.honeybadger.views;
  */
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.honeybadger.HoneyBadgerNotify;
 import com.honeybadger.R;
 import com.honeybadger.api.Blocker;
@@ -443,5 +446,28 @@ public class AddRulesFragment extends SherlockFragment
 		((CompoundButton) CheckCell).setChecked(false);
 		cell = false;
 	}
-
+	
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		inflater.inflate(R.menu.add_rules_menu, menu);
+	}
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		// Handle item selection
+		switch (item.getItemId())
+		{
+			case R.id.settingsFromAddRules:
+				Intent prefIntent = new Intent(getActivity(), EditPreferencesActivity.class);
+				startActivity(prefIntent);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+	
 }
