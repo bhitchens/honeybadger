@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  _________________________________________________________________________________________________________________________________________________________
- * Author(s): Alex Harris
  * Version: 1.1
  * Date of last modification: 4 MAR 2012
  * Source Info:    
- |The majority of form code is the adaptation of tutorials from the Android Developers Resource page  
- |located at the following link: http://developer.android.com/resources/tutorials/views/hello-formstuff.html
- |Background image obtained from: http://www.slashphone.com/wallpaper/detail.php?photo=33152
- _________________________________________________________________________________________________________________________________________________________
+  _________________________________________________________________________________________________________________________________________________________
 -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -41,7 +37,8 @@
             android:layout_height="wrap_content"
             android:background="@android:drawable/editbox_background"
             android:imeOptions="actionDone"
-            android:inputType="textUri" />
+            android:inputType="textUri"
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/orlabel"
@@ -64,7 +61,8 @@
             android:background="@android:drawable/editbox_background"
             android:digits="0,1,2,3,4,5,6,7,8,9,."
             android:imeOptions="actionDone"
-            android:inputType="number" >
+            android:inputType="number"
+            android:textColor="@android:color/black" >
         </EditText>
 
         <TextView
@@ -136,7 +134,7 @@
             android:background="@drawable/cust_buttons"
             android:text="@string/down_ips"
             android:textColor="@android:color/white" />
-        
+
         <Button
             android:id="@+id/button_clear_download"
             android:layout_width="120dp"

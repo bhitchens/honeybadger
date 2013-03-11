@@ -70,6 +70,13 @@ public class ViewLogFragment extends SherlockListFragment implements
 
 		return super.onCreateView(mInflater, container, savedInstanceState);
 	}
+	
+	@Override
+	public void onResume()
+	{
+		getLoaderManager().restartLoader(10, null, ViewLogFragment.this);
+		super.onResume();		
+	}
 
 	/**
 	 * Uses {@link LogScript} to parse raw log data into database and displays

@@ -30,7 +30,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -413,7 +412,6 @@ public class AddRulesFragment extends SherlockFragment
 				{
 					public void onClick(DialogInterface dialog, int id)
 					{
-						Log.d("test", "1a");
 						Intent myIntent = new Intent(getActivity(), Blocker.class);
 						myIntent.putExtra("reload", "false");
 						getActivity().startService(myIntent);

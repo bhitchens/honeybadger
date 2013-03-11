@@ -63,9 +63,7 @@ public class ViewRulesFragment extends SherlockListFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		setHasOptionsMenu(true);
 		mInflater = inflater;
-
 		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.log_viewer, null,
 				new String[]
 				{ RulesDBAdapter.KEY_ROWID, RulesDBAdapter.KEY_IP_ADDRESS, RulesDBAdapter.KEY_PORT,
@@ -73,17 +71,24 @@ public class ViewRulesFragment extends SherlockListFragment implements
 						RulesDBAdapter.KEY_INTERFACE, RulesDBAdapter.KEY_DOMAIN,
 						RulesDBAdapter.KEY_SAVED }, null, 0);
 
-		// display(mInflater);
 		setListAdapter(mAdapter);
 
 		mCallbacks = this;
 		LoaderManager lm = getLoaderManager();
 		lm.initLoader(10, null, mCallbacks);
 
-		// display(mInflater);
+		setHasOptionsMenu(true);
+		
 		return super.onCreateView(mInflater, container, savedInstanceState);
 	}
 
+	@Override
+	public void onResume()
+	{
+		getLoaderManager().restartLoader(10, null, ViewRulesFragment.this);
+		super.onResume();		
+	}
+	
 	/**
 	 * Creates list view based on data in rules database.
 	 */
@@ -119,58 +124,64 @@ public class ViewRulesFragment extends SherlockListFragment implements
 	{
 		ruleText = (String) ((TextView) v).getText();
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(
-				"This rule is currently enforced by Honeybadger.  Would you like to delete it?")
-				.setCancelable(true).setPositiveButton("Yes", new DialogInterface.OnClickListener()
-				{
-					public void onClick(DialogInterface dialog, int id)
+		if (!ruleText.contains("No current rules"))
+		{
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setMessage(
+					"This rule is currently enforced by Honeybadger.  Would you like to delete it?")
+					.setCancelable(true)
+					.setPositiveButton("Yes", new DialogInterface.OnClickListener()
 					{
-						String delims = " ";
-						String[] tokens = ruleText.split(delims);
-
-						String direction;
-
-						if (tokens[1].contains("inbound"))
+						public void onClick(DialogInterface dialog, int id)
 						{
-							direction = "in";
+
+							String delims = " ";
+							String[] tokens = ruleText.split(delims);
+
+							String direction;
+
+							if (tokens[1].contains("inbound"))
+							{
+								direction = "in";
+							}
+							else
+							{
+								direction = "out";
+							}
+
+							String dropAllow;
+
+							if (tokens[0].contains("block"))
+							{
+								dropAllow = "DROP";
+							}
+							else
+							{
+								dropAllow = "ALLOW";
+							}
+
+							String netInt = tokens[7];
+
+							ruleAdapter.open();
+							ruleAdapter.deleteEntry(RulesDBAdapter.KEY_IP_ADDRESS + "= ? AND "
+									+ RulesDBAdapter.KEY_DIRECTION + "= ? AND "
+									+ RulesDBAdapter.KEY_INTERFACE + "= ?", new String[]
+							{ tokens[4], direction, netInt });
+							ruleAdapter.close();
+
+							deleteRule(tokens[4], direction, dropAllow, netInt);
 						}
-						else
-						{
-							direction = "out";
-						}
-
-						String dropAllow;
-
-						if (tokens[0].contains("block"))
-						{
-							dropAllow = "DROP";
-						}
-						else
-						{
-							dropAllow = "ALLOW";
-						}
-
-						String netInt = tokens[7];
-
-						ruleAdapter.open();
-						ruleAdapter.deleteEntry(RulesDBAdapter.KEY_IP_ADDRESS + "= ? AND "
-								+ RulesDBAdapter.KEY_DIRECTION + "= ? AND "
-								+ RulesDBAdapter.KEY_INTERFACE + "= ?", new String[]
-						{ tokens[4], direction, netInt });
-						ruleAdapter.close();
-
-						deleteRule(tokens[4], direction, dropAllow, netInt);
-					}
-				}).setNegativeButton("No", new DialogInterface.OnClickListener()
-				{
-					public void onClick(DialogInterface dialog, int id)
+					}).setNegativeButton("No", new DialogInterface.OnClickListener()
 					{
-						dialog.cancel();
-					}
-				});
-		AlertDialog alert = builder.create();
-		alert.show();
+						public void onClick(DialogInterface dialog, int id)
+						{
+							dialog.cancel();
+						}
+					});
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
 	}
 
 	/**
@@ -252,8 +263,7 @@ public class ViewRulesFragment extends SherlockListFragment implements
 	{
 		mAdapter.swapCursor(null);
 	}
-	
-	
+
 	private String currentQuery = null;
 
 	private OnQueryTextListener queryListener = new OnQueryTextListener()
@@ -291,10 +301,9 @@ public class ViewRulesFragment extends SherlockListFragment implements
 			return false;
 		}
 	};
-	
 
 	/**
-	 * Initializes options menu. 
+	 * Initializes options menu.
 	 */
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
