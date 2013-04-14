@@ -1,11 +1,11 @@
 package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Brad Hitchens
  * Version: 2.1
- * Date of last modification: 19 June 2012
+ * Date of last modification: 14APR13
  *
  * Edit 2.1: Combined startup and script creation; added methods for fetching application data.
+ * Edit 4.11: See loadApps
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -415,7 +415,8 @@ public final class SharedMethods
 	 *************************************************/
 
 	/**
-	 * Loads applications into database
+	 * Loads applications into database.
+	 * Last Update: 14APR13 - used try/catch to prevent crashes due to non-bitmap app icons
 	 * 
 	 * @param ctx
 	 *            Passed in context.
@@ -451,8 +452,20 @@ public final class SharedMethods
 					continue;
 				}
 				Drawable d = list.get(i).icon;
-				BitmapDrawable bitIcon = (BitmapDrawable) d;
-				Bitmap bm = bitIcon.getBitmap();
+				
+				BitmapDrawable bitIcon;
+				Bitmap bm;
+				
+				try
+				{
+					bitIcon = (BitmapDrawable) d;
+					bm = bitIcon.getBitmap();
+				}
+				catch (Exception e)
+				{
+					bm = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+				}
+				
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
@@ -699,7 +712,7 @@ public final class SharedMethods
 									initialValues.put(RulesDBAdapter.KEY_DOMAIN, tokens[4]);
 									initialValues.put(RulesDBAdapter.KEY_INTERFACE, tokens[5]);
 									initialValues.put(RulesDBAdapter.KEY_SAVED, "false");
-									
+
 									ruleAdapter.createEntry(initialValues);
 								}
 								else
