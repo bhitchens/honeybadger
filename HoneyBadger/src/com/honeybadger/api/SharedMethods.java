@@ -320,19 +320,20 @@ public final class SharedMethods
 	private static String ruleBuilderF(Context ctx, String rule, String type, String target,
 			Boolean add, String block, String in, String netInt)
 	{
-
-		String newRule = rule;
+		StringBuilder newRule = new StringBuilder();
+		newRule.append(rule);
+		// String newRule = rule;
 		if (type == "App")
 		{
 			if (add)
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -A APPS -m owner --uid-owner "
-						+ target + " -o " + netInt + " -j " + block + in + "\n";
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -A APPS -m owner --uid-owner "
+						+ target + " -o " + netInt + " -j " + block + in + "\n");
 			}
 			else
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -D APPS -m owner --uid-owner "
-						+ target + " -o " + netInt + " -j " + block + in + "\n";
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -D APPS -m owner --uid-owner "
+						+ target + " -o " + netInt + " -j " + block + in + "\n");
 			}
 
 		}
@@ -341,18 +342,18 @@ public final class SharedMethods
 			if (add && in == "IN")
 			{
 				// create chain with name of domain name + direction
-				newRule += ctx.getDir("bin", 0) + "/iptables -N " + target + in + netInt
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -N " + target + in + netInt
 						+ "\n"
 						// create rule(s) for domain in chain
 						+ ctx.getDir("bin", 0) + "/iptables -A " + target + in + netInt + " -s "
 						+ target + " -i " + netInt + " -j " + block + in + "\n"
 						// create rule to jump to the chain
 						+ ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT -i " + netInt + " -j "
-						+ target + in + netInt + "\n";
+						+ target + in + netInt + "\n");
 			}
 			else if (add && in == "OUT")
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -N " + target + in
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -N " + target + in
 						+ netInt
 						+ "\n"
 						// create rule(s) for domain in chain
@@ -361,55 +362,55 @@ public final class SharedMethods
 						+ " -m state --state NEW,RELATED,ESTABLISHED -j " + block + in + "\n"
 						// create rule to jump to the chain
 						+ ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT -o " + netInt + " -j "
-						+ target + in + netInt + "\n";
+						+ target + in + netInt + "\n");
 			}
 			else if (in == "IN")
 			{
 				// delete rule that jumps to chain
-				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT -i " + netInt
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT -i " + netInt
 						+ " -j " + target + in + netInt + "\n"
 						// delete rules from in chain
 						+ ctx.getDir("bin", 0) + "/iptables -F " + target + in + netInt + "\n"
 						// attempt to delete chain (will fail if not empty)
-						+ ctx.getDir("bin", 0) + "/iptables -X " + target + in + netInt + "\n";
+						+ ctx.getDir("bin", 0) + "/iptables -X " + target + in + netInt + "\n");
 			}
 			else
 			{
 				// delete rule that jumps to chain
-				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT -o " + netInt
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT -o " + netInt
 						+ " -j " + target + in + netInt + "\n"
 						// delete rules from in chain
 						+ ctx.getDir("bin", 0) + "/iptables -F " + target + in + netInt + "\n"
 						// attempt to delete chain (will fail if not empty)
-						+ ctx.getDir("bin", 0) + "/iptables -X " + target + in + netInt + "\n";
+						+ ctx.getDir("bin", 0) + "/iptables -X " + target + in + netInt + "\n");
 			}
 		}
 		else if (type == "IP")
 		{
 			if (add & in == "IN")
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -s " + target
-						+ " -i " + netInt + " -j " + block + in + "\n";
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -s " + target
+						+ " -i " + netInt + " -j " + block + in + "\n");
 			}
 			else if (add & in == "OUT")
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -d " + target
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -d " + target
 						+ " -o " + netInt + " -m state --state NEW,RELATED,ESTABLISHED -j " + block
-						+ in + "\n";
+						+ in + "\n");
 			}
 			else if (in == "IN")
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -s " + target
-						+ " -i " + netInt + " -j " + block + in + "\n";
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -s " + target
+						+ " -i " + netInt + " -j " + block + in + "\n");
 			}
 			else
 			{
-				newRule += ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -d " + target
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -d " + target
 						+ " -o " + netInt + " -m state --state NEW,RELATED,ESTABLISHED -j " + block
-						+ in + "\n";
+						+ in + "\n");
 			}
 		}
-		return newRule;
+		return newRule.toString();
 	}
 
 	/*************************************************
@@ -832,21 +833,22 @@ public final class SharedMethods
 
 	/**
 	 * Fetches IP addresses from database and creates rules to block them.
-	 * @param ctx Context
+	 * 
+	 * @param ctx
+	 *            Context
 	 */
-	 
+
 	public static void fetch(final Context ctx)
 	{
 		new Thread(new Runnable()
 		{
 			public void run()
 			{
-				String output = SharedMethods
-						.execScript(ctx.getDir("bin", 0)
-								+ "/iptables -F FETCH"
-								+ "\n"
-								+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
-								+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}' | uniq");
+				String output = SharedMethods.execScript(ctx.getDir("bin", 0)
+						+ "/iptables -F FETCH"
+						+ "\n"
+						+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
+						+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}' | uniq");
 				String lines[] = output.split("\n");
 
 				StringBuilder sb = new StringBuilder();
