@@ -322,7 +322,6 @@ public final class SharedMethods
 	{
 		StringBuilder newRule = new StringBuilder();
 		newRule.append(rule);
-		// String newRule = rule;
 		if (type == "App")
 		{
 			if (add)

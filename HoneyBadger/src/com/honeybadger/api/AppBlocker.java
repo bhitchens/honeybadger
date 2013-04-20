@@ -1,12 +1,11 @@
 package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Brad Hitchens
- * Version: 2.1
- * Date of last modification: 19 June 2012
- * Source Info:    
+ * Version: 4.2
+ * Date of last modification: 20APR13
  *
  * Edit 2.1 (Initial): Uses database of applications and status of those applications to create rules.
+ * Edit 4.2: See method createAppRules
  * 
  *--------------------------------------------------------------------------------------------------------------------------------
  */
@@ -42,6 +41,9 @@ public class AppBlocker extends IntentService
 	 * Uses database of applications and status of those applications to create
 	 * rules.
 	 * 
+	 * Update 4.2 (20APR13): Moved execution of script outside of loops to
+	 * reduce number of script executions.
+	 * 
 	 * @param context
 	 */
 	public void createAppRules(Context context)
@@ -65,10 +67,9 @@ public class AppBlocker extends IntentService
 							true, "DROP", "OUT", c.getString(3).contains("block"), c.getString(4)
 									.contains("block"));
 				}
-
-				SharedMethods.execScript(script);
-				script = "";
 			}
+			SharedMethods.execScript(script);
+			script = "";
 		}
 		else
 		{
@@ -82,10 +83,9 @@ public class AppBlocker extends IntentService
 							true, "ACCEPT", "OUT", !appAdapter.checkBlockW(uid),
 							!appAdapter.checkBlockC(uid));
 				}
-
-				SharedMethods.execScript(script);
-				script = "";
 			}
+			SharedMethods.execScript(script);
+			script = "";
 		}
 
 		SharedMethods.execScript(script);
