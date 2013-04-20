@@ -20,7 +20,6 @@ import com.honeybadger.R;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.DBContentProvider;
 import com.honeybadger.api.databases.RulesDBAdapter;
-import com.honeybadger.api.scripts.Scripts;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -236,9 +235,7 @@ public class ViewRulesFragment extends SherlockListFragment implements
 			}
 		}
 
-		Intent intent2 = new Intent(getActivity(), Scripts.class);
-		intent2.putExtra("script", rule);
-		getActivity().startService(intent2);
+		SharedMethods.execScript(rule);
 
 		getLoaderManager().restartLoader(10, null, ViewRulesFragment.this);
 	}

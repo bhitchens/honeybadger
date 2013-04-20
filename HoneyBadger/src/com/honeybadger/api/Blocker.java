@@ -11,7 +11,6 @@ package com.honeybadger.api;
  */
 
 import com.honeybadger.api.databases.RulesDBAdapter;
-import com.honeybadger.api.scripts.Scripts;
 
 import android.app.Service;
 import android.content.Intent;
@@ -79,7 +78,7 @@ public class Blocker extends Service
 		c = ruleAdapter.fetchAllEntries();
 		String target;
 		String netInt;
-		
+
 		// Loop through rows of database
 		while (c.getPosition() < c.getCount() - 1)
 		{
@@ -134,10 +133,7 @@ public class Blocker extends Service
 				// Mark rule as having been applied
 				ruleAdapter.changeSaved(c.getString(1));
 
-				// Create intent to start service which applies rules script.
-				Intent intent2 = new Intent(this, Scripts.class);
-				intent2.putExtra("script", rule);
-				startService(intent2);
+				SharedMethods.execScript(rule);
 			}
 			rule = "";
 		}

@@ -13,8 +13,6 @@ import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.Blocker;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.AppsDBAdapter;
-import com.honeybadger.api.scripts.Fetcher;
-import com.honeybadger.api.scripts.Scripts;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -40,9 +38,7 @@ public class BootInit extends BroadcastReceiver
 		startScript = SharedMethods.setBlock(startScript, settings, context);
 
 		// Launch Script
-		Intent script = new Intent(context, Scripts.class);
-		script.putExtra("script", startScript);
-		context.startService(script);
+		SharedMethods.execScript(startScript);
 
 		// reload rules
 		Intent reload = new Intent(context, Blocker.class);
@@ -56,15 +52,7 @@ public class BootInit extends BroadcastReceiver
 		// reload auto-generated rules if specified
 		if (settings.getBoolean("generate", false) | settings.getBoolean("autoUpdate", false))
 		{
-			Intent generate = new Intent(context, Fetcher.class);
-			generate.putExtra(
-					"script",
-					context.getDir("bin", 0)
-							+ "/iptables -F FETCH"
-							+ "\n"
-							+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
-							+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'");
-			context.startService(generate);
+			SharedMethods.fetch(context);
 		}
 
 		SharedMethods.loadApps(context, settings, appAdapter);

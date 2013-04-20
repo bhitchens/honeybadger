@@ -12,7 +12,6 @@ package com.honeybadger.api;
  */
 
 import com.honeybadger.api.databases.AppsDBAdapter;
-import com.honeybadger.api.scripts.Scripts;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -67,9 +66,7 @@ public class AppBlocker extends IntentService
 									.contains("block"));
 				}
 
-				Intent scriptIntent = new Intent(context, Scripts.class);
-				scriptIntent.putExtra("script", script);
-				context.startService(scriptIntent);
+				SharedMethods.execScript(script);
 				script = "";
 			}
 		}
@@ -86,16 +83,12 @@ public class AppBlocker extends IntentService
 							!appAdapter.checkBlockC(uid));
 				}
 
-				Intent scriptIntent = new Intent(context, Scripts.class);
-				scriptIntent.putExtra("script", script);
-				context.startService(scriptIntent);
+				SharedMethods.execScript(script);
 				script = "";
 			}
 		}
 
-		Intent scriptIntent = new Intent(context, Scripts.class);
-		scriptIntent.putExtra("script", script);
-		context.startService(scriptIntent);
+		SharedMethods.execScript(script);
 
 		c.close();
 	}

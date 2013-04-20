@@ -13,7 +13,7 @@ package com.honeybadger;
 
 import java.util.Calendar;
 
-import com.honeybadger.api.scripts.Fetcher;
+import com.honeybadger.api.SharedMethods;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -49,23 +49,10 @@ public class AlarmReceiver extends BroadcastReceiver
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.HOUR, 24);
 				scheduleUpdate(cal, context);
-
-				// readies the intent to launch Fetcher service that updates
-				// IPs.
-				Intent start = new Intent(context, Fetcher.class);
-
-				start.putExtra(
-						"script",
-						context.getDir("bin", 0)
-								+ "/iptables -F FETCH"
-								+ "\n"
-								+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
-								+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'");
-
+				
+				SharedMethods.fetch(context);
+				
 				sendNotification(context);
-
-				// launches the Fetcher service intent
-				context.startService(start);
 			}
 		}
 		catch (Exception e)

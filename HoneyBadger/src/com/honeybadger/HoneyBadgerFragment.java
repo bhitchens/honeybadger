@@ -33,9 +33,7 @@ import com.honeybadger.api.Blocker;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.AppsDBAdapter;
 import com.honeybadger.api.databases.LogDBAdapter;
-import com.honeybadger.api.scripts.Fetcher;
 import com.honeybadger.api.scripts.RequirementsScript;
-import com.honeybadger.api.scripts.Scripts;
 import com.honeybadger.views.EditPreferencesActivity;
 import com.honeybadger.views.AddRulesFragment;
 
@@ -53,7 +51,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
+
 		settings = getActivity().getSharedPreferences("main", 1);
 		editor = settings.edit();
 
@@ -67,21 +65,20 @@ public class HoneyBadgerFragment extends SherlockFragment
 					"iptables -L FORWARD\nbusybox wget -O - http://www.google.com");
 			getActivity().startService(checkRequirements);
 		}
-		
+
 		setHasOptionsMenu(true);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		final View v = inflater.inflate(R.layout.home, container, false);
 
-		AppRater.app_launched(getActivity());	
+		AppRater.app_launched(getActivity());
 
 		return v;
 	}
 
-	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
@@ -118,9 +115,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 				{
 					String disableScript = getActivity().getDir("bin", 0) + "/iptables -F\n"
 							+ getActivity().getDir("bin", 0) + "/iptables -X\n";
-					Intent scriptIntent = new Intent(getActivity(), Scripts.class);
-					scriptIntent.putExtra("script", disableScript);
-					getActivity().startService(scriptIntent);
+					SharedMethods.execScript(disableScript);
 
 					editor.putBoolean("fwEnabled", false);
 					this.fwEnabledItem.setTitle("Enable HB");
@@ -141,9 +136,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 					startScript = SharedMethods.setBlock(startScript, settings, getActivity());
 
 					// Launch Script
-					Intent script = new Intent(getActivity(), Scripts.class);
-					script.putExtra("script", startScript);
-					getActivity().startService(script);
+					SharedMethods.execScript(startScript);
 
 					// reload rules
 					Intent reload = new Intent(getActivity(), Blocker.class);
@@ -158,16 +151,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 					if (settings.getBoolean("generate", false)
 							| settings.getBoolean("autoUpdate", false))
 					{
-						Intent generate = new Intent(getActivity(), Fetcher.class);
-						// generate.setClass(this, Fetcher.class);
-						generate.putExtra(
-								"script",
-								getActivity().getDir("bin", 0)
-										+ "/iptables -F FETCH"
-										+ "\n"
-										+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
-										+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'");
-						getActivity().startService(generate);
+						SharedMethods.fetch(getActivity());
 					}
 
 					AppsDBAdapter appAdapter = new AppsDBAdapter(getActivity());

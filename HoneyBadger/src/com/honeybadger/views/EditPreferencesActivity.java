@@ -14,7 +14,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.honeybadger.AlarmReceiver;
 import com.honeybadger.R;
 import com.honeybadger.api.AppBlocker;
-import com.honeybadger.api.scripts.Scripts;
+import com.honeybadger.api.SharedMethods;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -38,7 +38,6 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 
 	CheckBox CheckAutoUpdate;
 	CheckBox CheckSuppressWarn;
-	//CheckBox CheckShowIcons;
 
 	RadioButton RadioBlock;
 	RadioButton RadioAllow;
@@ -92,8 +91,6 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 
 		ButtonViewRules = (Button) findViewById(R.id.pref_raw_rule_button);
 
-		//CheckShowIcons = (CheckBox) findViewById(R.id.checkShowIcons);
-
 		// make sure proper buttons are checked
 		checkBoxes();
 
@@ -125,9 +122,7 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 		// send scripts to apply update
 		if (logChange | blockChange)
 		{
-			Intent updateScript = new Intent(this, Scripts.class);
-			updateScript.putExtra("script", script);
-			startService(updateScript);
+			SharedMethods.execScript(script);
 		}
 	}
 

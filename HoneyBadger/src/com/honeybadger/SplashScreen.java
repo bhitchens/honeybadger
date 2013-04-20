@@ -9,7 +9,6 @@ package com.honeybadger;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.AppsDBAdapter;
 import com.honeybadger.api.databases.LogDBAdapter;
-import com.honeybadger.api.scripts.Scripts;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -65,9 +64,11 @@ public class SplashScreen extends Activity
 				}
 
 				// Launch Script
-				Intent script = new Intent(SplashScreen.this, Scripts.class);
+				/*Intent script = new Intent(SplashScreen.this, Scripts.class);
 				script.putExtra("script", startScript);
-				startService(script);
+				startService(script);*/
+				//Log.d("test", "2" + startScript);
+				SharedMethods.execScript(startScript);
 
 				if (!settings.getBoolean("4_0", false))
 				{

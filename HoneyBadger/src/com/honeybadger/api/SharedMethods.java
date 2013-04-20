@@ -11,6 +11,8 @@ package com.honeybadger.api;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -37,6 +39,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -415,8 +418,8 @@ public final class SharedMethods
 	 *************************************************/
 
 	/**
-	 * Loads applications into database.
-	 * Last Update: 14APR13 - used try/catch to prevent crashes due to non-bitmap app icons
+	 * Loads applications into database. Last Update: 14APR13 - used try/catch
+	 * to prevent crashes due to non-bitmap app icons
 	 * 
 	 * @param ctx
 	 *            Passed in context.
@@ -452,10 +455,10 @@ public final class SharedMethods
 					continue;
 				}
 				Drawable d = list.get(i).icon;
-				
+
 				BitmapDrawable bitIcon;
 				Bitmap bm;
-				
+
 				try
 				{
 					bitIcon = (BitmapDrawable) d;
@@ -465,7 +468,7 @@ public final class SharedMethods
 				{
 					bm = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
 				}
-				
+
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
@@ -481,8 +484,20 @@ public final class SharedMethods
 					continue;
 				}
 				Drawable d = list.get(i).icon;
-				BitmapDrawable bitIcon = (BitmapDrawable) d;
-				Bitmap bm = bitIcon.getBitmap();
+
+				BitmapDrawable bitIcon;
+				Bitmap bm;
+
+				try
+				{
+					bitIcon = (BitmapDrawable) d;
+					bm = bitIcon.getBitmap();
+				}
+				catch (Exception e)
+				{
+					bm = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+				}
+
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
 				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 				byte[] imageInByte = stream.toByteArray();
@@ -752,6 +767,99 @@ public final class SharedMethods
 			}
 		});
 		prompt.show();
+	}
+
+	/********************************
+	 * Scripts
+	 ********************************/
+
+	public interface ScriptMethod
+	{
+		public void execute(String data);
+	}
+
+	@SuppressWarnings("deprecation")
+	public static String execScript(String script)
+	{
+		String output = "";
+		String line;
+
+		Process process;
+		try
+		{
+			process = Runtime.getRuntime().exec("su");
+
+			DataOutputStream stdin = new DataOutputStream(process.getOutputStream());
+			DataInputStream stdout = new DataInputStream(process.getInputStream());
+			DataInputStream stderr = new DataInputStream(process.getErrorStream());
+
+			stdin.writeBytes(script + " \n");
+			stdin.writeBytes("exit\n");
+
+			stdin.flush();
+
+			StringBuilder sb = new StringBuilder();
+
+			while ((line = stdout.readLine()) != null)
+			{
+				sb.append(line);
+				sb.append("\n");
+			}
+
+			while ((line = stderr.readLine()) != null)
+			{
+				sb.append(line);
+				sb.append("\n");
+			}
+
+			output = sb.toString();
+
+			process.waitFor();
+			stderr.close();
+			stdout.close();
+			stdin.close();
+
+		}
+		catch (IOException e)
+		{
+
+		}
+		catch (InterruptedException e)
+		{
+		}
+
+		return output;
+	}
+
+	/**
+	 * Fetches IP addresses from database and creates rules to block them.
+	 * @param ctx Context
+	 */
+	 
+	public static void fetch(final Context ctx)
+	{
+		new Thread(new Runnable()
+		{
+			public void run()
+			{
+				String output = SharedMethods
+						.execScript(ctx.getDir("bin", 0)
+								+ "/iptables -F FETCH"
+								+ "\n"
+								+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
+								+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}' | uniq");
+				String lines[] = output.split("\n");
+
+				StringBuilder sb = new StringBuilder();
+				for (int x = 0; x < lines.length; x += 1)
+				{
+					sb.append(ctx.getDir("bin", 0) + "/iptables -A FETCH -s " + lines[x]
+							+ " -j DROP\n");
+				}
+
+				SharedMethods.execScript(sb.toString());
+			}
+		}).start();
 	}
 
 }

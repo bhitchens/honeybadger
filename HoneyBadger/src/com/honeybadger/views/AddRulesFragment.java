@@ -12,20 +12,14 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.honeybadger.HoneyBadgerNotify;
 import com.honeybadger.R;
 import com.honeybadger.api.Blocker;
+import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.RulesDBAdapter;
-import com.honeybadger.api.scripts.Fetcher;
-import com.honeybadger.api.scripts.Scripts;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -204,7 +198,8 @@ public class AddRulesFragment extends SherlockFragment
 			public void onClick(View view)
 			{
 				fetchIPs();
-				sendUpdateNotification();
+				Toast.makeText(getActivity(), "Honeybadger has begun creating rules.",
+						Toast.LENGTH_LONG).show();
 			}
 		});
 
@@ -212,10 +207,7 @@ public class AddRulesFragment extends SherlockFragment
 		{
 			public void onClick(View view)
 			{
-				Intent clearScript = new Intent(getActivity(), Scripts.class);
-				clearScript.putExtra("script", getActivity().getDir("bin", 0)
-						+ "/iptables -F FETCH \n");
-				getActivity().startService(clearScript);
+				SharedMethods.execScript(getActivity().getDir("bin", 0) + "/iptables -F FETCH \n");
 				Toast.makeText(getActivity(), "Downloaded IPs have been cleared.",
 						Toast.LENGTH_LONG).show();
 			}
@@ -234,38 +226,9 @@ public class AddRulesFragment extends SherlockFragment
 		editor.putBoolean("generate", true);
 		editor.commit();
 
-		Intent start = new Intent(getActivity(), Fetcher.class);
-		start.putExtra(
-				"script",
-				getActivity().getDir("bin", 0)
-						+ "/iptables -F FETCH"
-						+ "\n"
-						+ "busybox wget http://www.malwaredomainlist.com/mdlcsv.php -O - | "
-						+ "busybox egrep -o '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'");
-		getActivity().startService(start);
+		SharedMethods.fetch(getActivity());
 	}
 
-	/**
-	 * Sends Android notification to user that the malicious IP address database
-	 * has been updated.
-	 */
-	@SuppressWarnings("deprecation")
-	public void sendUpdateNotification()
-	{
-		NotificationManager manager = (NotificationManager) getActivity().getSystemService(
-				Context.NOTIFICATION_SERVICE);
-
-		Notification notification = new Notification(R.drawable.icon,
-				"Malicious Domains have been successfully updated.", System.currentTimeMillis());
-
-		PendingIntent contentI = PendingIntent.getActivity(getActivity(), 1, new Intent(
-				getActivity(), HoneyBadgerNotify.class), 0);
-
-		notification.setLatestEventInfo(getActivity(), "Malicious Domains",
-				"Known malicious domains are blocked.", contentI);
-
-		manager.notify(2, notification);
-	}
 
 	/**
 	 * Commits all uncommitted rules in the database.
@@ -444,15 +407,13 @@ public class AddRulesFragment extends SherlockFragment
 		((CompoundButton) CheckCell).setChecked(false);
 		cell = false;
 	}
-	
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
 		inflater.inflate(R.menu.add_rules_menu, menu);
 	}
-	
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -467,5 +428,5 @@ public class AddRulesFragment extends SherlockFragment
 				return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 }
