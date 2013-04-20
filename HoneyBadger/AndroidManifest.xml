@@ -49,23 +49,8 @@
         </receiver>
 
         <!-- api package -->
-
-        <service
-            android:name=".api.scripts.Scripts"
-            android:process=":scriptProc" >
-        </service>
-        <service
-            android:name=".api.scripts.LogScript"
-            android:process=":logProc" >
-        </service>
-        <service
-            android:name=".api.scripts.Fetcher"
-            android:process=":fetchProc" >
-        </service>
         <service android:name="com.honeybadger.api.Blocker" />
         <service android:name="com.honeybadger.api.AppBlocker" />
-        <service android:name="com.honeybadger.api.scripts.RequirementsScript" />
-        <service android:name="com.honeybadger.api.scripts.ReturnOutput" />
 
         <provider
             android:name=".api.databases.DBContentProvider"

@@ -18,9 +18,9 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.honeybadger.R;
+import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.DBContentProvider;
 import com.honeybadger.api.databases.LogDBAdapter;
-import com.honeybadger.api.scripts.LogScript;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -70,12 +70,99 @@ public class ViewLogFragment extends SherlockListFragment implements
 
 		return super.onCreateView(mInflater, container, savedInstanceState);
 	}
-	
+
 	@Override
 	public void onResume()
 	{
 		getLoaderManager().restartLoader(10, null, ViewLogFragment.this);
-		super.onResume();		
+		super.onResume();
+	}
+
+	public void updateLog()
+	{
+		new Thread(new Runnable()
+		{
+			public void run()
+			{
+				LogDBAdapter logAdapter = new LogDBAdapter(getActivity());
+
+				String scriptOutput = SharedMethods
+						.execScript("dmesg -c | busybox grep HoneyBadger");
+
+				String inout = "";
+				String src = "";
+				String dst = "";
+				String tos = "";
+				String prec = "";
+				String id = "";
+				String proto = "";
+				String spt = "";
+				String dpt = "";
+				String uid = "";
+				String gid = "";
+
+				String delims = "[ =]+";
+				String[] tokens;
+				String lines[] = scriptOutput.split("\n");
+				for (int x = 0; x < lines.length; x += 1)
+				{
+					if (lines[x].length() > 5)
+					{
+						tokens = lines[x].split(delims);
+						inout = tokens[1];
+
+						for (int i = 3; i < tokens.length; i++)
+						{
+							if (tokens[i].contains("SRC"))
+							{
+								src = tokens[i + 1];
+							}
+							else if (tokens[i].contains("DST"))
+							{
+								dst = tokens[i + 1];
+							}
+							else if (tokens[i].contains("TOS"))
+							{
+								tos = tokens[i + 1];
+							}
+							else if (tokens[i].contains("PREC"))
+							{
+								prec = tokens[i + 1];
+							}
+							else if (tokens[i].contains("ID"))
+							{
+								id = tokens[i + 1];
+							}
+							else if (tokens[i].contains("PROTO"))
+							{
+								proto = tokens[i + 1];
+							}
+							else if (tokens[i].contains("SPT"))
+							{
+								spt = tokens[i + 1];
+							}
+							else if (tokens[i].contains("DPT"))
+							{
+								dpt = tokens[i + 1];
+							}
+							else if (tokens[i].contains("UID"))
+							{
+								uid = tokens[i + 1];
+							}
+							else if (tokens[i].contains("GID"))
+							{
+								gid = tokens[i + 1];
+							}
+
+						}
+						logAdapter.open();
+						logAdapter.createEntry(inout, src, dst, tos, prec, id, proto, spt, dpt,
+								uid, gid);
+						logAdapter.close();
+					}
+				}
+			}
+		}).start();
 	}
 
 	/**
@@ -84,9 +171,7 @@ public class ViewLogFragment extends SherlockListFragment implements
 	 */
 	public void display()
 	{
-		Intent logIntent = new Intent(getActivity(), LogScript.class);
-		logIntent.putExtra("script", "dmesg -c | busybox grep HoneyBadger");
-		getActivity().startService(logIntent);
+		updateLog();
 
 		DATA = new ArrayList<String>();
 
@@ -173,7 +258,6 @@ public class ViewLogFragment extends SherlockListFragment implements
 			return false;
 		}
 	};
-	
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1)
 	{
@@ -194,7 +278,6 @@ public class ViewLogFragment extends SherlockListFragment implements
 		mAdapter.swapCursor(null);
 	}
 
-	
 	/**
 	 * Initializes options menu.
 	 */
@@ -232,6 +315,5 @@ public class ViewLogFragment extends SherlockListFragment implements
 				return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	
+
 }

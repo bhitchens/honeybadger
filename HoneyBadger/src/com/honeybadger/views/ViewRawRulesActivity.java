@@ -2,10 +2,9 @@ package com.honeybadger.views;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.honeybadger.R;
-import com.honeybadger.api.scripts.ReturnOutput;
+import com.honeybadger.api.SharedMethods;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,20 +47,7 @@ public class ViewRawRulesActivity extends SherlockFragmentActivity
 			String scriptText = ViewRawRulesActivity.this.getDir("bin", 0)
 					+ "/iptables -L -n -v | cut -d \"\n\" -f" + lineNum + "-" + (lineNum + 12);
 
-			Intent script = new Intent(ViewRawRulesActivity.this, ReturnOutput.class);
-			script.putExtra("script", scriptText);
-			startService(script);
-
-			ruleText = "";
-			ruleText = settings.getString("tempText", "not ready");
-
-			while (ruleText.contains("not ready"))
-			{
-				ruleText = settings.getString("tempText", "not ready");
-			}
-
-			editor.remove("tempText");
-			editor.commit();
+			ruleText = SharedMethods.execScript(scriptText);
 
 			ViewRawRulesActivity.this.runOnUiThread(new Runnable()
 			{

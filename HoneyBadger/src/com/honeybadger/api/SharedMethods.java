@@ -837,7 +837,6 @@ public final class SharedMethods
 	 * @param ctx
 	 *            Context
 	 */
-
 	public static void fetch(final Context ctx)
 	{
 		new Thread(new Runnable()

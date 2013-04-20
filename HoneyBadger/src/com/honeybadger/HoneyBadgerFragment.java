@@ -11,11 +11,8 @@ package com.honeybadger;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,7 +30,6 @@ import com.honeybadger.api.Blocker;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.AppsDBAdapter;
 import com.honeybadger.api.databases.LogDBAdapter;
-import com.honeybadger.api.scripts.RequirementsScript;
 import com.honeybadger.views.EditPreferencesActivity;
 import com.honeybadger.views.AddRulesFragment;
 
@@ -57,15 +53,28 @@ public class HoneyBadgerFragment extends SherlockFragment
 
 		if (!settings.getBoolean("suppressWarn", false))
 		{
-			IntentFilter filter = new IntentFilter("com.honeybadger.ERROR");
-			rec = getActivity().registerReceiver(new Receiver(), filter);
-
-			Intent checkRequirements = new Intent(getActivity(), RequirementsScript.class);
-			checkRequirements.putExtra("script",
-					"iptables -L FORWARD\nbusybox wget -O - http://www.google.com");
-			getActivity().startService(checkRequirements);
+			String check = SharedMethods.execScript("iptables -L FORWARD\nbusybox wget -O - http://www.google.com");
+			if (check.contains("can't initialize"))
+			{
+				createDialog(0);
+				return;
+			}
+			if (check.contains("not found"))
+			{
+				createDialog(1);
+				return;
+			}
+			if (check.contains("bad address"))
+			{
+				createDialog(2);
+				return;
+			}
+			if (check.contains("not allowed") || check == "")
+			{
+				createDialog(3);
+				return;
+			}
 		}
-
 		setHasOptionsMenu(true);
 	}
 
@@ -174,12 +183,9 @@ public class HoneyBadgerFragment extends SherlockFragment
 		}
 	}
 
-	private class Receiver extends BroadcastReceiver
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
+	
+		/*public void errorCalled(String error)
 		{
-			final String error = intent.getExtras().getString("error");
 
 			if (error.contains("iptables"))
 			{
@@ -193,10 +199,10 @@ public class HoneyBadgerFragment extends SherlockFragment
 			{
 				createDialog(2);
 			}
-		}
-	}
+		}*/
+	
 
-	protected Dialog createDialog(int error)
+	protected void createDialog(int error)
 	{
 		Dialog d;
 		AlertDialog.Builder builder;
@@ -215,6 +221,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 							}
 						});
 				d = builder.create();
+				d.show();
 				break;
 			case 1:
 				builder = new AlertDialog.Builder(getActivity());
@@ -230,6 +237,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 							}
 						});
 				d = builder.create();
+				d.show();
 				break;
 			case 2:
 				builder = new AlertDialog.Builder(getActivity());
@@ -245,10 +253,26 @@ public class HoneyBadgerFragment extends SherlockFragment
 							}
 						});
 				d = builder.create();
+				d.show();
+				break;
+			case 3:
+				builder = new AlertDialog.Builder(getActivity());
+
+				builder.setMessage(
+						"It appears that your phone is not rooted or that you have not given SU permission to the app. This application requires a rooted phone and SU permission.\n\nThis warning may be suppressed in the application settings.")
+						.setCancelable(true)
+						.setNeutralButton("OK", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								dialog.dismiss();
+							}
+						});
+				d = builder.create();
+				d.show();
 				break;
 			default:
 				d = null;
 		}
-		return d;
 	}
 }
