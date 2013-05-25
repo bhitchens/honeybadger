@@ -63,7 +63,7 @@ public class ViewRulesFragment extends SherlockListFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		mInflater = inflater;
-		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.log_viewer, null,
+		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.view_log, null,
 				new String[]
 				{ RulesDBAdapter.KEY_ROWID, RulesDBAdapter.KEY_IP_ADDRESS, RulesDBAdapter.KEY_PORT,
 						RulesDBAdapter.KEY_DIRECTION, RulesDBAdapter.KEY_ACTION,
@@ -114,7 +114,7 @@ public class ViewRulesFragment extends SherlockListFragment implements
 			RULES.add("No current rules.");
 		}
 
-		arrayAdapter = new ArrayAdapter<String>(mInflater.getContext(), R.layout.log_viewer, RULES);
+		arrayAdapter = new ArrayAdapter<String>(mInflater.getContext(), R.layout.view_log, RULES);
 		setListAdapter(arrayAdapter);
 	};
 
@@ -271,7 +271,7 @@ public class ViewRulesFragment extends SherlockListFragment implements
 			if (currentQuery == null)
 			{
 				arrayAdapter = new ArrayAdapter<String>(mInflater.getContext(),
-						R.layout.log_viewer, RULES);
+						R.layout.view_log, RULES);
 			}
 			else
 			{
@@ -305,7 +305,7 @@ public class ViewRulesFragment extends SherlockListFragment implements
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.rulesviewoptionsmenu, menu);
+		inflater.inflate(R.menu.menu_view_rules, menu);
 
 		SearchView searchView = (SearchView) menu.findItem(R.id.search_rules).getActionView();
 

@@ -1,7 +1,6 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Todd Berry Ann, Alex Harris, Brad Hitchens
  * Version: 2.1
  * Date of last modification: 19 June 2012
  *
@@ -81,7 +80,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		final View v = inflater.inflate(R.layout.home, container, false);
+		final View v = inflater.inflate(R.layout.view_home, container, false);
 
 		AppRater.app_launched(getActivity());
 
@@ -91,7 +90,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.menu, menu);
+		inflater.inflate(R.menu.menu_home, menu);
 
 		optionsMenu = menu;
 		fwEnabledItem = optionsMenu.findItem(id.fw_enabled);

@@ -59,7 +59,7 @@ public class ViewLogFragment extends SherlockListFragment implements
 		setHasOptionsMenu(true);
 
 		mInflater = inflater;
-		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.log_viewer, null, new String[]
+		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.view_log, null, new String[]
 		{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, null, 0);
 
 		setListAdapter(mAdapter);
@@ -176,7 +176,7 @@ public class ViewLogFragment extends SherlockListFragment implements
 		DATA = new ArrayList<String>();
 
 		setData(mAdapter);
-		arrayAdapter = new ArrayAdapter<String>(mInflater.getContext(), R.layout.log_viewer, DATA);
+		arrayAdapter = new ArrayAdapter<String>(mInflater.getContext(), R.layout.view_log, DATA);
 		setListAdapter(arrayAdapter);
 	}
 
@@ -231,7 +231,7 @@ public class ViewLogFragment extends SherlockListFragment implements
 			if (currentQuery == null)
 			{
 				arrayAdapter = new ArrayAdapter<String>(mInflater.getContext(),
-						R.layout.log_viewer, DATA);
+						R.layout.view_log, DATA);
 			}
 			else
 			{
@@ -284,7 +284,7 @@ public class ViewLogFragment extends SherlockListFragment implements
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.logviewoptionsmenu, menu);
+		inflater.inflate(R.menu.menu_log, menu);
 
 		SearchView searchView = (SearchView) menu.findItem(R.id.search_log).getActionView();
 

@@ -79,7 +79,7 @@ public class AddRulesFragment extends SherlockFragment
 	{
 		setHasOptionsMenu(true);
 
-		final View v = inflater.inflate(R.layout.editrule_viewer, container, false);
+		final View v = inflater.inflate(R.layout.view_add_rule, container, false);
 
 		settings = getActivity().getSharedPreferences("main", 0);
 
@@ -411,7 +411,7 @@ public class AddRulesFragment extends SherlockFragment
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.add_rules_menu, menu);
+		inflater.inflate(R.menu.menu_add_rules, menu);
 	}
 
 	@Override

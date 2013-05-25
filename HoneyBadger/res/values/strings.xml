@@ -3,7 +3,7 @@
 
     <string name="app_name">HoneyBadger</string>
     <string name="intro_header">Welcome to the HoneyBadger Firewall!</string>
-    <string name="supwarn_text">Supress Warnings</string>
+    <string name="supwarn_text">Suppress Warnings</string>
     <string name="showicon_text">Enable/Disble Icons</string>
     <string name="def_rule">Default Rule:</string>    
     
@@ -53,7 +53,7 @@
     <string name="check_all">Check All</string>
     <string name="clear_all">Clear All</string>
     <string name="clear_down">Clear Downloaded IPs</string>
-    <string name="dis_log">Diable Logging</string>
+    <string name="dis_log">Disable Logging</string>
     <string name="down_ips">Download IPs</string>
     <string name="en_auto">Enable Auto Update</string>
     <string name="en_log">Enable Logging</string>

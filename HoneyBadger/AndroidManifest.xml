@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.honeybadger"
-    android:versionCode="22"
+    android:versionCode="23"
     android:versionName="4.2" >
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:allowBackup="false"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/Theme.Sherlock" >
@@ -54,8 +55,8 @@
 
         <provider
             android:name=".api.databases.DBContentProvider"
-            android:authorities="com.honeybadger.api.databases" 
-            android:exported="false">
+            android:authorities="com.honeybadger.api.databases"
+            android:exported="false" >
         </provider>
 
         <!-- views package -->

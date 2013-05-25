@@ -35,7 +35,6 @@ public class ViewRawRulesActivity extends SherlockFragmentActivity
 		super.onCreate(savedInstanceState);
 
 		settings = getSharedPreferences("main", 0);
-		editor = settings.edit();
 
 		new GetRules().execute();
 	}
@@ -45,7 +44,7 @@ public class ViewRawRulesActivity extends SherlockFragmentActivity
 		protected Integer doInBackground(Integer... integers)
 		{
 			String scriptText = ViewRawRulesActivity.this.getDir("bin", 0)
-					+ "/iptables -L -n -v | cut -d \"\n\" -f" + lineNum + "-" + (lineNum + 12);
+					+ "/iptables -L -n -v | busybox cut -d \"\n\" -f" + lineNum + "-" + (lineNum + 12);
 
 			ruleText = SharedMethods.execScript(scriptText);
 
@@ -57,7 +56,7 @@ public class ViewRawRulesActivity extends SherlockFragmentActivity
 					{
 						public void run()
 						{
-							setContentView(R.layout.raw_rules);
+							setContentView(R.layout.view_raw_rules);
 
 							goBackButton = (Button) findViewById(R.id.go_back);
 							if (lineNum == 0)

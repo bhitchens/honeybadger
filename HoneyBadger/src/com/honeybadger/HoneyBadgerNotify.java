@@ -1,12 +1,9 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Todd Berry Ann
  * Version: 1.1
  * Date of last modification: 4 MAR 2012
  * Source Info:    
- |Information regarding the creation of _____________ was obtained and adapted from the following two resources:
- |
   --------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -20,6 +17,6 @@ public class HoneyBadgerNotify extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.home);
+		setContentView(R.layout.view_home);
 	}
 }

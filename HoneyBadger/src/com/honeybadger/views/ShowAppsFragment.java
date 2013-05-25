@@ -71,7 +71,7 @@ public class ShowAppsFragment extends SherlockFragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		setHasOptionsMenu(true);
-		final View v = inflater.inflate(R.layout.show_apps, container, false);
+		final View v = inflater.inflate(R.layout.view_apps, container, false);
 		display();
 		CheckAllButton = (Button) v.findViewById(R.id.check_all);
 		ClearAllButton = (Button) v.findViewById(R.id.clear_all);
@@ -250,7 +250,7 @@ public class ShowAppsFragment extends SherlockFragment
 							public void run()
 							{
 								AppAdapter adapter = new AppAdapter(getActivity(),
-										R.layout.app_item_row, list);
+										R.layout.component_app_item_row, list);
 
 								lv = (ListView) getActivity().findViewById(R.id.listView1);
 								lv.setAdapter(adapter);
@@ -278,7 +278,7 @@ public class ShowAppsFragment extends SherlockFragment
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		inflater.inflate(R.menu.app_menu, menu);
+		inflater.inflate(R.menu.menu_app, menu);
 	}
 
 	@Override

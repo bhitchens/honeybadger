@@ -1,7 +1,6 @@
 package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Brad Hitchens
  * Version: 1.3
  * Date of last modification: 14 June 2012
  * Source Info: n/a

@@ -1,7 +1,6 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Todd Berry Ann, Brad Hitchens
  * Version: 1.1
  * Date of last modification: 22 April 2012
  * Source Info:    

@@ -1,7 +1,6 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Author(s): Brad Hitchens
  * Version: 1.3
  * Date of last modification: 14 JUNE 2012
  * Source Info: n/a
