@@ -18,6 +18,6 @@
         android:id="@+id/settings"
         android:icon="@drawable/ic_menu_settings_holo_light"
         android:title="Settings"
-        android:showAsAction="withText"/>
+        android:showAsAction="ifRoom|withText"/>
 
 </menu>
