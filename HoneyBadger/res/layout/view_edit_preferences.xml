@@ -178,15 +178,16 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/pref_raw_iptables_rules"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginTop="5dip" />
 
         <Button
             android:id="@+id/pref_raw_rule_button"
             android:layout_width="120dp"
-            android:layout_height="35dp"
-            android:layout_gravity="left"
-            android:layout_marginTop="10dip"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dip"
             android:text="@string/view_rules" />
+
     </LinearLayout>
 
 </ScrollView>
