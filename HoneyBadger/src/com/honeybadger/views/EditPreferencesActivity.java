@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -56,6 +55,8 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 	RadioButton RadioAdd;
 	RadioButton RadioView;
 	RadioButton RadioLog;
+
+	CheckBox CheckHideIcons;
 
 	/**
 	 * Called when the activity is first created; allows for modification of
@@ -91,6 +92,8 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 		RadioLog = (RadioButton) findViewById(R.id.radioLog);
 
 		ButtonViewRules = (Button) findViewById(R.id.pref_raw_rule_button);
+
+		CheckHideIcons = (CheckBox) findViewById(R.id.checkHideIcons);
 
 		// make sure proper buttons are checked
 		checkBoxes();
@@ -251,19 +254,18 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 		// get right thing checked for blocking
 		RadioBlock.setChecked(settings.getBoolean("block", false));
 		RadioAllow.setChecked(!settings.getBoolean("block", false));
-		Log.d("test", "1");
 
 		// get right thing checked for logging
 		RadioLogOn.setChecked(settings.getBoolean("log", true));
 		RadioLogOff.setChecked(!settings.getBoolean("log", true));
-		Log.d("test", "2");
+
 		// check auto-update if necessary
 		CheckAutoUpdate.setChecked(settings.getBoolean("autoUpdate", false));
-		Log.d("test", "3");
-		//check suppress-warning is necessary
+
+		// check suppress-warning is necessary
 		CheckSuppressWarn.setChecked(settings.getBoolean("suppressWarn", false));
-		Log.d("test", "4");
-		//get right thing checked for start tab
+
+		// get right thing checked for start tab
 		RadioHome.setChecked(false);
 		RadioApps.setChecked(false);
 		RadioAdd.setChecked(false);
@@ -273,7 +275,6 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 		{
 			case 0:
 				RadioHome.setChecked(true);
-				Log.d("test", "s");
 				break;
 			case 1:
 				RadioApps.setChecked(true);
@@ -285,14 +286,13 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 				RadioView.setChecked(true);
 				break;
 			case 4:
-				RadioLog.setChecked(true);Log.d("test", "log");
 				break;
 		}
-		Log.d("test", "5");
-		/*
-		 * if (settings.getBoolean("showIcons", true)) {
-		 * CheckShowIcons.setChecked(true); }
-		 */
+
+		if (settings.getBoolean("hideIcons", false))
+		{
+			CheckHideIcons.setChecked(true);
+		}
 	}
 
 	/**
@@ -444,17 +444,25 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 		});
 
 		// Listener for showing icons
-		/*
-		 * CheckShowIcons.setOnClickListener(new OnClickListener() { public void
-		 * onClick(View v) { // Perform action on clicks, depending on whether
-		 * it's now // checked // if checked, schedule update if (((CheckBox)
-		 * v).isChecked()) { editor.putBoolean("showIcons", true);
-		 * Toast.makeText(EditPreferencesActivity.this,
-		 * "Icons will be diplayed.", Toast.LENGTH_SHORT).show(); } else {
-		 * editor.putBoolean("showIcons", false);
-		 * Toast.makeText(EditPreferencesActivity.this,
-		 * "Icons will not be displayed.", Toast.LENGTH_SHORT).show(); } } });
-		 */
+		CheckHideIcons.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				editor.putBoolean("loaded", false);
+				if (((CheckBox) v).isChecked())
+				{
+					editor.putBoolean("hideIcons", true);		
+					Toast.makeText(EditPreferencesActivity.this, "Icons will not be diplayed.",
+							Toast.LENGTH_SHORT).show();
+				}
+				else
+				{
+					editor.putBoolean("hideIcons", false);
+					Toast.makeText(EditPreferencesActivity.this, "Icons will be displayed.",
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
 
 		ButtonViewRules.setOnClickListener(new OnClickListener()
 		{
@@ -466,5 +474,4 @@ public class EditPreferencesActivity extends SherlockFragmentActivity
 			}
 		});
 	}
-
 }

@@ -63,11 +63,6 @@ public class SplashScreen extends Activity
 					startScript = SharedMethods.setBlock(startScript, settings, SplashScreen.this);
 				}
 
-				// Launch Script
-				/*Intent script = new Intent(SplashScreen.this, Scripts.class);
-				script.putExtra("script", startScript);
-				startService(script);*/
-				//Log.d("test", "2" + startScript);
 				SharedMethods.execScript(startScript);
 
 				if (!settings.getBoolean("4_0", false))

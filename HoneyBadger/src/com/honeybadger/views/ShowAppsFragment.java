@@ -101,7 +101,7 @@ public class ShowAppsFragment extends SherlockFragment
 				appAdapter.open();
 				appAdapter.checkAll(true);
 				appAdapter.close();
-				setLV();
+				display();
 			}
 		});
 
@@ -113,7 +113,7 @@ public class ShowAppsFragment extends SherlockFragment
 				appAdapter.open();
 				appAdapter.checkAll(false);
 				appAdapter.close();
-				setLV();
+				display();
 			}
 		});
 
@@ -140,7 +140,7 @@ public class ShowAppsFragment extends SherlockFragment
 								appAdapter.open();
 								appAdapter.checkWifi(true);
 								appAdapter.close();
-								setLV();
+								display();
 							}
 						}).setNegativeButton("Clear All", new DialogInterface.OnClickListener()
 						{
@@ -149,7 +149,7 @@ public class ShowAppsFragment extends SherlockFragment
 								appAdapter.open();
 								appAdapter.checkWifi(false);
 								appAdapter.close();
-								setLV();
+								display();
 							}
 						}).setNeutralButton("Cancel", new DialogInterface.OnClickListener()
 						{
@@ -175,7 +175,7 @@ public class ShowAppsFragment extends SherlockFragment
 								appAdapter.open();
 								appAdapter.checkCell(true);
 								appAdapter.close();
-								setLV();
+								display();
 							}
 						}).setNegativeButton("Clear All", new DialogInterface.OnClickListener()
 						{
@@ -184,7 +184,7 @@ public class ShowAppsFragment extends SherlockFragment
 								appAdapter.open();
 								appAdapter.checkCell(false);
 								appAdapter.close();
-								setLV();
+								display();
 							}
 						}).setNeutralButton("Cancel", new DialogInterface.OnClickListener()
 						{
@@ -208,19 +208,22 @@ public class ShowAppsFragment extends SherlockFragment
 	}
 
 	/**
-	 * Sets overall content view then calls method to set the list view.
-	 */
-	public void display()
-	{
-		setLV();
-	}
-
-	/**
 	 * Creates ArrayList of AppInfo objects (which contain application data) and
 	 * uses it to create and set a list view.
 	 */
-	public void setLV()
+	public void display()
 	{
+		settings = getActivity().getSharedPreferences("main", 1);
+		
+		// Load apps if not already added
+		if (!settings.getBoolean("loaded", false))
+		{
+			SharedMethods.loadApps(getActivity(), settings, appAdapter);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("loaded", true);
+			editor.commit();
+		}
+		
 		class GetLV extends AsyncTask<Integer, Integer, Integer>
 		{
 			protected Integer doInBackground(Integer... integers)
@@ -293,6 +296,9 @@ public class ShowAppsFragment extends SherlockFragment
 				SharedPreferences.Editor editor = settings.edit();
 				editor.putBoolean("loaded", false);
 				editor.commit();
+				appAdapter.open();
+				appAdapter.clear();
+				appAdapter.close();
 				SharedMethods.loadApps(getActivity(), settings, appAdapter);
 				display();
 				return true;

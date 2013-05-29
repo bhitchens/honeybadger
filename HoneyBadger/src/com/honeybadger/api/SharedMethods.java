@@ -388,25 +388,25 @@ public final class SharedMethods
 		{
 			if (add & in == "IN")
 			{
-				newRule.append(ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -s " + target
-						+ " -i " + netInt + " -j " + block + in + "\n");
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -s "
+						+ target + " -i " + netInt + " -j " + block + in + "\n");
 			}
 			else if (add & in == "OUT")
 			{
-				newRule.append(ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -d " + target
-						+ " -o " + netInt + " -m state --state NEW,RELATED,ESTABLISHED -j " + block
-						+ in + "\n");
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -I " + in + "PUT" + " -d "
+						+ target + " -o " + netInt
+						+ " -m state --state NEW,RELATED,ESTABLISHED -j " + block + in + "\n");
 			}
 			else if (in == "IN")
 			{
-				newRule.append(ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -s " + target
-						+ " -i " + netInt + " -j " + block + in + "\n");
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -s "
+						+ target + " -i " + netInt + " -j " + block + in + "\n");
 			}
 			else
 			{
-				newRule.append(ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -d " + target
-						+ " -o " + netInt + " -m state --state NEW,RELATED,ESTABLISHED -j " + block
-						+ in + "\n");
+				newRule.append(ctx.getDir("bin", 0) + "/iptables -D " + in + "PUT" + " -d "
+						+ target + " -o " + netInt
+						+ " -m state --state NEW,RELATED,ESTABLISHED -j " + block + in + "\n");
 			}
 		}
 		return newRule.toString();
@@ -453,56 +453,73 @@ public final class SharedMethods
 				{
 					continue;
 				}
-				Drawable d = list.get(i).icon;
-
-				BitmapDrawable bitIcon;
-				Bitmap bm;
-
-				try
+				if (!settings.getBoolean("hideIcons", false))
 				{
-					bitIcon = (BitmapDrawable) d;
-					bm = bitIcon.getBitmap();
+					Drawable d = list.get(i).icon;
+
+					BitmapDrawable bitIcon;
+					Bitmap bm;
+
+					try
+					{
+						bitIcon = (BitmapDrawable) d;
+						bm = bitIcon.getBitmap();
+					}
+					catch (Exception e)
+					{
+						bm = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+					}
+
+					ByteArrayOutputStream stream = new ByteArrayOutputStream();
+					bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+					byte[] imageInByte = stream.toByteArray();
+
+					appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte,
+							block, block);
 				}
-				catch (Exception e)
+				else
 				{
-					bm = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+					appAdapter.createEntry(list.get(i).uid, list.get(i).appname, new byte[] {},
+							block, block);
 				}
-
-				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-				byte[] imageInByte = stream.toByteArray();
-
-				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block,
-						block);
 			}
 
 			for (i = 0; i < list.size(); i++)
 			{
+
 				if (!((packs.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 1))
 				{
 					continue;
 				}
-				Drawable d = list.get(i).icon;
-
-				BitmapDrawable bitIcon;
-				Bitmap bm;
-
-				try
+				if (!settings.getBoolean("hideIcons", false))
 				{
-					bitIcon = (BitmapDrawable) d;
-					bm = bitIcon.getBitmap();
+					Drawable d = list.get(i).icon;
+
+					BitmapDrawable bitIcon;
+					Bitmap bm;
+
+					try
+					{
+						bitIcon = (BitmapDrawable) d;
+						bm = bitIcon.getBitmap();
+					}
+					catch (Exception e)
+					{
+						bm = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+					}
+
+					ByteArrayOutputStream stream = new ByteArrayOutputStream();
+					bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+					byte[] imageInByte = stream.toByteArray();
+
+					appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte,
+							block, block);
 				}
-				catch (Exception e)
+				else
 				{
-					bm = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+					appAdapter.createEntry(list.get(i).uid, list.get(i).appname, new byte[] {},
+							block, block);
 				}
-
-				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-				byte[] imageInByte = stream.toByteArray();
-
-				appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte, block,
-						block);
 			}
 
 			SharedPreferences.Editor editor = settings.edit();

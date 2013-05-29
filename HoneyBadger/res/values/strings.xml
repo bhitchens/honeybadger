@@ -4,7 +4,7 @@
     <string name="app_name">HoneyBadger</string>
     <string name="intro_header">Welcome to the HoneyBadger Firewall!</string>
     <string name="supwarn_text">Suppress Warnings</string>
-    <string name="showicon_text">Enable/Disble Icons</string>
+    <string name="showicon_text">Disable Icons</string>
     <string name="def_rule">Default Rule:</string>    
     
     <!-- Raw rules strings -->
@@ -17,7 +17,7 @@
     <string name="pref_warnings">Warnings.</string>
     <string name="pref_raw_iptables_rules">Raw IPTables rules</string>
     <string name="pref_select_tab">Choose Starting Tab</string>
-    <!--<string name="pref_icons">Enable/Disable Icons</string>-->
+    <string name="pref_icons">Enable/Disable Icons in Apps Tab</string>
     
     <string name="intro_body">
         <lo>

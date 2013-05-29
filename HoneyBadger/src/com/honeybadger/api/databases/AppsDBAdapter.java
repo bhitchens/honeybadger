@@ -26,7 +26,7 @@ public class AppsDBAdapter
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDb;
 
-	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, ICON blob not null, WSTATUS text not null, CSTATUS text not null)";
+	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, ICON blob, WSTATUS text not null, CSTATUS text not null)";
 
 	private static final String DATABASE_NAME = "appDB";
 	private static final String DATABASE_TABLE = "apps";

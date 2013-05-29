@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- * Author(s): Alex Harris
  * Version: 1.1
  * Date of last modification: 4 MAR 2012
- *
 -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -113,7 +111,6 @@
             android:layout_height="wrap_content"
             android:text="@string/supwarn_text" />
 
-        <!--
         <TextView
             android:id="@+id/pref_show_icons"
             android:layout_width="fill_parent"
@@ -122,11 +119,10 @@
             android:textStyle="bold" />
         
         <CheckBox
-            android:id="@+id/checkShowIcons"
+            android:id="@+id/checkHideIcons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/showicon_text" />
-        -->
 
         <TextView
             android:id="@+id/pref_select_tab"
