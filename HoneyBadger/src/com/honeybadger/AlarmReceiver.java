@@ -1,12 +1,12 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 1.1
- * Date of last modification: 22 April 2012
- * Source Info:    
- |This Broadcast receiver is fired by the alarm to update known malicious IPs.  The use of the Alarm Manager and AlarmReceiver were heavily influenced by
- | the blog at http://www.androidguys.com/2009/04/02/wake-up-with-the-alarm/.  Documentation for Alarm Manager was referenced from http://developer.android.com/reference/android/app/AlarmManager.html.
- |
+ * Version: 4.4
+ * Date of last modification: 17JUN13
+ * 
+ * Edit 4.4: Brought notification into standard compliance
+ * 
+ * This Broadcast receiver is fired by the alarm to update known malicious IPs.  
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -15,13 +15,14 @@ import java.util.Calendar;
 import com.honeybadger.api.SharedMethods;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.widget.Toast;
 
 public class AlarmReceiver extends BroadcastReceiver
@@ -48,9 +49,9 @@ public class AlarmReceiver extends BroadcastReceiver
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.HOUR, 24);
 				scheduleUpdate(cal, context);
-				
+
 				SharedMethods.fetch(context);
-				
+
 				sendNotification(context);
 			}
 		}
@@ -87,21 +88,35 @@ public class AlarmReceiver extends BroadcastReceiver
 	 * 
 	 * @param context
 	 */
-	@SuppressWarnings("deprecation")
 	public void sendNotification(Context context)
 	{
-		NotificationManager manager = (NotificationManager) context
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+				.setSmallIcon(R.drawable.icon)
+				.setContentTitle("Malicious IPs Updated")
+				.setContentText(
+						"Honeybadger has updated the malicious IPs from which you are protected");
+
+		// Creates an explicit intent for an Activity
+		Intent resultIntent = new Intent(context, HBTabActivity.class);
+
+		// The stack builder object will contain an artificial back stack for
+		// the started Activity.
+		// This ensures that navigating backward from the Activity leads out of
+		// the application to the Home screen.
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+		
+		// Adds the back stack for the Intent (but not the Intent itself)
+		stackBuilder.addParentStack(HBTabActivity.class);
+		
+		// Adds the Intent that starts the Activity to the top of the stack
+		stackBuilder.addNextIntent(resultIntent);
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		mBuilder.setContentIntent(resultPendingIntent);
+		NotificationManager mNotificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		Notification notification = new Notification(R.drawable.icon,
-				"Malicious IPs have been updated.", System.currentTimeMillis());
-
-		PendingIntent contentI = PendingIntent.getActivity(context, 1, new Intent(context,
-				HoneyBadgerNotify.class), 0);
-
-		notification.setLatestEventInfo(context, "HoneyBadger", "Malicious IPs have been updated.",
-				contentI);
-
-		manager.notify(2, notification);
+		
+		// mId allows you to update the notification later on.
+		mNotificationManager.notify(0, mBuilder.build());
 	}
 }

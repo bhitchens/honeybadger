@@ -525,6 +525,7 @@ public final class SharedMethods
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
 			editor.commit();
+			appAdapter.close();
 		}
 	}
 

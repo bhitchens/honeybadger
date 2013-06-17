@@ -2,22 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/refresh_apps"
-        android:icon="@drawable/navigation_refresh"
-        android:title="Refresh Apps List"
-        android:showAsAction="ifRoom|withText"/>
-    <item
         android:id="@+id/settings_from_apps"
         android:icon="@drawable/ic_menu_settings_holo_light"
-        android:title="Settings"
+        android:title="@string/menu_settings"
         android:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/export_rules_from_apps"
-        android:icon="@drawable/av_upload"
-        android:title="Export Rules"/>
+        android:title="@string/menu_export"/>
     <item
-        android:id="@+id/import_rules_from_apps"    
-        android:icon="@drawable/av_download"    
-        android:title="Import Rules"/>
+        android:id="@+id/import_rules_from_apps"  
+        android:title="@string/menu_import"/>
+    <item
+        android:id="@+id/refresh_apps"
+        android:title="@string/menu_app_refresh"/>
 
 </menu>

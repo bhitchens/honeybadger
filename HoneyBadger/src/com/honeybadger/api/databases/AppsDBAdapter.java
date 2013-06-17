@@ -1,10 +1,11 @@
 package com.honeybadger.api.databases;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 1.3
- * Date of last modification: 14 JUNE 2012
+ * Version: 4.4
+ * Date of last modification: 17JUN13
  *
  * Edit 1.3: Created
+ * Edit 4.4: Added deleteEntry
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -189,7 +190,7 @@ public class AppsDBAdapter
 			this.changeStatus(c.getInt(0), block, block);
 		}
 	}
-	
+
 	public void checkWifi(Boolean check)
 	{
 		String block = "";
@@ -212,7 +213,7 @@ public class AppsDBAdapter
 			this.changeStatus(c.getInt(0), block, "default");
 		}
 	}
-	
+
 	public void checkCell(Boolean check)
 	{
 		String block = "";
@@ -272,9 +273,7 @@ public class AppsDBAdapter
 
 	public Boolean checkBlockC(int uid)
 	{
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "CSTATUS" }, "UID= ? ", new String[]
-		{ Integer.toString(uid) }, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]{ "CSTATUS" }, "UID= ? ", new String[]{ Integer.toString(uid) }, null, null, null);
 		if (c != null && c.getCount() != 0)
 		{
 			c.moveToFirst();
@@ -291,6 +290,15 @@ public class AppsDBAdapter
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Removes entry for application with specified UID
+	 * @param uid Integer giving UID of application
+	 */
+	public void deleteEntry(int uid)
+	{
+		mDb.delete(DATABASE_TABLE, "UID= ? ", new String[]{Integer.toString(uid)});
 	}
 
 	public void clear()

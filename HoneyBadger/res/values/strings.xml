@@ -76,4 +76,24 @@
     <string name="radio_add">Add Rules</string>
     <string name="radio_view">View Rules</string>
     <string name="radio_log">Log</string>
+    
+    <!-- __________________________________Menu Strings__________________________________ -->
+    
+    <!-- General -->
+    <string name="menu_export">Export Rules</string>
+    <string name="menu_import">Import Rules</string>    
+    <string name="menu_search">Search</string>
+    <string name="menu_settings">Settings</string>
+    
+    <!-- menu_app -->
+    <string name="menu_app_refresh">Refresh Apps List</string>
+    
+    <!-- menu_view_rules -->     
+    <string name="menu_view_rules_raw">Raw IPTables Rules</string>   
+    <string name="menu_view_rules_refresh">Refresh Rules</string> 
+    
+    <!-- menu_log -->
+    <string name="menu_log_clear">Clear Log</string> 
+    <string name="menu_log_refresh">Refresh Log</string> 
+
 </resources>

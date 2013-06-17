@@ -60,11 +60,12 @@ public class ShowAppsFragment extends SherlockFragment
 	ProgressDialog dialog;
 
 	ArrayList<AppInfo> list;
-	
+
 	@Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        appAdapter = new AppsDBAdapter(activity);
+	public void onAttach(Activity activity)
+	{
+		super.onAttach(activity);
+		appAdapter = new AppsDBAdapter(activity);
 	}
 
 	@Override
@@ -80,11 +81,10 @@ public class ShowAppsFragment extends SherlockFragment
 		wifi = (ImageView) v.findViewById(R.id.imageWifi);
 		cell = (ImageView) v.findViewById(R.id.imageCell);
 		createListeners(getActivity());
-		
+
 		return v;
 	}
-	
-	
+
 	/**
 	 * Declares click listeners for all of the buttons.
 	 * 
@@ -122,8 +122,7 @@ public class ShowAppsFragment extends SherlockFragment
 			public void onClick(View v)
 			{
 				createRules();
-				Toast.makeText(getActivity(), "Rules have been applied.", Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(getActivity(), "Rules have been applied.", Toast.LENGTH_LONG).show();
 			}
 		});
 
@@ -214,7 +213,7 @@ public class ShowAppsFragment extends SherlockFragment
 	public void display()
 	{
 		settings = getActivity().getSharedPreferences("main", 1);
-		
+
 		// Load apps if not already added
 		if (!settings.getBoolean("loaded", false))
 		{
@@ -223,7 +222,7 @@ public class ShowAppsFragment extends SherlockFragment
 			editor.putBoolean("loaded", true);
 			editor.commit();
 		}
-		
+
 		class GetLV extends AsyncTask<Integer, Integer, Integer>
 		{
 			protected Integer doInBackground(Integer... integers)
@@ -237,8 +236,8 @@ public class ShowAppsFragment extends SherlockFragment
 					AppInfo app = (new SharedMethods()).new AppInfo();
 					app.uid = c.getInt(0);
 					app.appname = c.getString(1);
-					app.icon = new BitmapDrawable(getActivity().getResources(), BitmapFactory.decodeByteArray(c.getBlob(2), 0,
-							c.getBlob(2).length));
+					app.icon = new BitmapDrawable(getActivity().getResources(),
+							BitmapFactory.decodeByteArray(c.getBlob(2), 0, c.getBlob(2).length));
 					list.add(app);
 				}
 				c.close();
@@ -290,18 +289,6 @@ public class ShowAppsFragment extends SherlockFragment
 		// Handle item selection
 		switch (item.getItemId())
 		{
-
-			case R.id.refresh_apps:
-				settings = getActivity().getSharedPreferences("main", 1);
-				SharedPreferences.Editor editor = settings.edit();
-				editor.putBoolean("loaded", false);
-				editor.commit();
-				appAdapter.open();
-				appAdapter.clear();
-				appAdapter.close();
-				SharedMethods.loadApps(getActivity(), settings, appAdapter);
-				display();
-				return true;
 			case R.id.settings_from_apps:
 				Intent prefIntent = new Intent(getActivity(), EditPreferencesActivity.class);
 				startActivity(prefIntent);
@@ -311,6 +298,57 @@ public class ShowAppsFragment extends SherlockFragment
 				return true;
 			case R.id.import_rules_from_apps:
 				SharedMethods.importRules(getActivity());
+				return true;
+			case R.id.refresh_apps:
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setMessage(
+						"Warning: This action is generally not neccessary and will reset your app rules. If you need to refresh, please backup your rules first.")
+						.setCancelable(true)
+						.setPositiveButton("Continue", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+								
+								class RefreshApps extends AsyncTask<Integer, Integer, Integer>
+								{
+									ProgressDialog refDialog;
+									protected Integer doInBackground(Integer... integers)
+									{
+										settings = getActivity().getSharedPreferences("main", 1);
+										SharedPreferences.Editor editor = settings.edit();
+										editor.putBoolean("loaded", false);
+										editor.commit();
+										appAdapter.open();
+										appAdapter.clear();
+										appAdapter.close();
+										SharedMethods.loadApps(getActivity(), settings, appAdapter);
+										
+										return 0;
+									}
+
+									protected void onPreExecute()
+									{
+										refDialog = ProgressDialog.show(getActivity(), "", "Loading");
+									}
+
+									protected void onPostExecute(Integer result)
+									{
+										refDialog.dismiss();
+									}
+								}
+								new RefreshApps().execute();
+
+								display();
+							}
+						}).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+						{
+							public void onClick(DialogInterface dialog, int id)
+							{
+							}
+						});
+				AlertDialog alert = builder.create();
+				alert.show();
+
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
