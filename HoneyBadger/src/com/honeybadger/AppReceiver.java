@@ -61,7 +61,9 @@ public class AppReceiver extends BroadcastReceiver
 			block = "allow";
 		}
 
-		if (action == Intent.ACTION_PACKAGE_ADDED)
+		Bundle b = intent.getExtras();
+
+		if (action == Intent.ACTION_PACKAGE_ADDED && !b.getBoolean(Intent.EXTRA_REPLACING))
 		{
 			try
 			{
@@ -107,22 +109,22 @@ public class AppReceiver extends BroadcastReceiver
 
 			notify(context, block, appInfo.loadLabel(context.getPackageManager()).toString());
 		}
-		else if (action == Intent.ACTION_PACKAGE_REMOVED)
+		else if (action == Intent.ACTION_PACKAGE_REMOVED && !b.getBoolean(Intent.EXTRA_REPLACING))
 		{
-			Bundle b = intent.getExtras();
-			if (!b.getBoolean(Intent.EXTRA_REPLACING))
-			{
-				appAdapter.deleteEntry(intent.getExtras().getInt(Intent.EXTRA_UID));
-				appAdapter.close();
-			}
+			appAdapter.deleteEntry(intent.getExtras().getInt(Intent.EXTRA_UID));
+			appAdapter.close();
 		}
 	}
 
 	/**
 	 * Notifies user of action HB is taking on new application
-	 * @param context context received
-	 * @param block String indicating whether application is blocked or allowed
-	 * @param name String giving name of application
+	 * 
+	 * @param context
+	 *            context received
+	 * @param block
+	 *            String indicating whether application is blocked or allowed
+	 * @param name
+	 *            String giving name of application
 	 */
 	private void notify(Context context, String block, String name)
 	{
