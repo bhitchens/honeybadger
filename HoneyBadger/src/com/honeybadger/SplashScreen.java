@@ -1,15 +1,15 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 4.4
- * Date of last modification: 17JUN13
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  * 
- * Edit 4.4: Removed notification on installation of iptables
+ * Edit 4.4 (17JUN13): Removed notification on installation of iptables
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
 import com.honeybadger.api.SharedMethods;
-import com.honeybadger.api.databases.DBApps;
 import com.honeybadger.api.databases.DBContentProvider;
 
 import android.app.Activity;
@@ -18,7 +18,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import java.lang.Runnable;
 

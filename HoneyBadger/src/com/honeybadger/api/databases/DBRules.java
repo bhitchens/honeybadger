@@ -1,11 +1,12 @@
 package com.honeybadger.api.databases;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 4.0
- * Date of last modification: 11FEB13
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  * 
  * Edit 1.3: Moved to new package
- * Edit 4.0: Clean up
+ * Edit 4.0 (11FEB13): Clean up
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 

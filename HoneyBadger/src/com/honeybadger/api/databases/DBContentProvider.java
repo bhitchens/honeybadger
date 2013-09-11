@@ -49,7 +49,6 @@ public class DBContentProvider extends ContentProvider
 	public static final String CONTENT_ITEM_TYPE_APPS = ContentResolver.CURSOR_ITEM_BASE_TYPE
 			+ "/app";
 
-	// private static final int APPDB_ID = 60;
 	private static final int APPDB = 70;
 	private static final int APPDB_MATCH = 80;
 
@@ -137,6 +136,7 @@ public class DBContentProvider extends ContentProvider
 
 				if (c == null || c.getCount() == 0)
 				{
+					values.put(DBLog.CULUMN_TOTAL, 1);
 					sqlDB.insert(DBLog.DATABASE_TABLE, null, values);
 				}
 				else

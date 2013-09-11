@@ -1,11 +1,12 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 1.3
- * Date of last modification: 14 JUNE 2012
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  * Source Info: n/a
  * 
- * Edit 1.3: Created
+ * Edit 1.3 (14JUN12): Created
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +27,6 @@ import android.widget.TextView;
 import com.honeybadger.R;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.SharedMethods.AppInfo;
-import com.honeybadger.api.databases.DBApps;
 import com.honeybadger.api.databases.DBContentProvider;
 
 public class AppAdapter extends ArrayAdapter<AppInfo>
@@ -77,27 +76,21 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 		}
 
 		final AppInfo app = data.get(position);
-
-		//dba = new DBApps(context);		
 		
 		holder.boxW.setOnCheckedChangeListener(new OnCheckedChangeListener()
 		{
 
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 			{
-				//dba.open();
-				Boolean prevBlock = SharedMethods.checkBlockW(context, app.uid);//dba.checkBlockW(app.uid);
+				Boolean prevBlock = SharedMethods.checkBlockW(context, app.uid);
 				if (isChecked && !prevBlock)
 				{
-					//dba.changeStatus(app.uid, "block", "default");
 					context.getContentResolver().update(DBContentProvider.CONTENT_URI_APPS, null, Integer.toString(app.uid), new String[] {"block", "default"});
 				}
 				else if (!isChecked && prevBlock)
 				{
-					//dba.changeStatus(app.uid, "allow", "default");
 					context.getContentResolver().update(DBContentProvider.CONTENT_URI_APPS, null, Integer.toString(app.uid), new String[] {"allow", "default"});
 				}
-				//dba.close();
 			}
 		});
 		
@@ -106,30 +99,24 @@ public class AppAdapter extends ArrayAdapter<AppInfo>
 
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 			{
-				//dba.open();
-				Boolean prevBlock = SharedMethods.checkBlockC(context, app.uid);//dba.checkBlockC(app.uid);
-				//SharedMethods.checkBlockC(context, app.uid);
+				Boolean prevBlock = SharedMethods.checkBlockC(context, app.uid);
 				if (isChecked && !prevBlock)
 				{
-					//dba.changeStatus(app.uid, "default", "block");
 					context.getContentResolver().update(DBContentProvider.CONTENT_URI_APPS, null, Integer.toString(app.uid), new String[] {"default", "block"});
 				}
 				else if (!isChecked && prevBlock)
 				{
-					//dba.changeStatus(app.uid, "default", "allow");
 					context.getContentResolver().update(DBContentProvider.CONTENT_URI_APPS, null, Integer.toString(app.uid), new String[] {"default", "allow"});
 				}
-				//dba.close();
 			}
 		});
 		
-		//dba.open();
 		final CheckBox boxW = holder.boxW;
-		boxW.setChecked(SharedMethods.checkBlockW(context, app.uid));//dba.checkBlockW(app.uid));
-		//dba.open();
+		boxW.setChecked(SharedMethods.checkBlockW(context, app.uid));
+		
 		final CheckBox boxC = holder.boxC;
-		boxC.setChecked(SharedMethods.checkBlockC(context, app.uid));//dba.checkBlockC(app.uid));
-		//dba.close();
+		boxC.setChecked(SharedMethods.checkBlockC(context, app.uid));
+		
 		holder.txtTitle.setText(app.appname + " (" + Integer.toString(app.uid) + ")");
 		holder.imgIcon.setImageDrawable(app.icon);
 

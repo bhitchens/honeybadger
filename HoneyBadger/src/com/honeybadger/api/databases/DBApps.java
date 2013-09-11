@@ -1,11 +1,12 @@
 package com.honeybadger.api.databases;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 4.4
- * Date of last modification: 17JUN13
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  *
  * Edit 1.3: Created
- * Edit 4.4: Added deleteEntry
+ * Edit 4.4 (17JUN13): Added deleteEntry
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -14,7 +15,6 @@ import android.database.sqlite.SQLiteDatabase;
 public class DBApps
 {
 
-	// public static final String KEY_BODY = "body";
 	public static final String KEY_ROWID = "_id";
 	public static final String KEY_UID = "UID";
 	public static final String KEY_NAME = "NAME";
@@ -22,19 +22,9 @@ public class DBApps
 	public static final String KEY_WSTATUS = "WSTATUS";
 	public static final String KEY_CSTATUS = "CSTATUS";
 
-	// private static final String TAG = "AppsDBAdapter";
-	// private DatabaseHelper mDbHelper;
-	// private SQLiteDatabase mDb;
-
 	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, ICON blob, WSTATUS text not null, CSTATUS text not null)";
 
-	// private static final String DATABASE_NAME = "appDB";
 	public static final String DATABASE_TABLE = "apps";
-	// private static final int DATABASE_VERSION = 2;
-
-	// private final Context mCtx;
-
-	public String check = "bad";
 
 	/**
 	 * Creates database for logging
@@ -52,252 +42,4 @@ public class DBApps
 		db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
 		onCreate(db);
 	}
-
-	/**
-	 * Constructor - takes the context to allow the database to be
-	 * opened/created
-	 * 
-	 * @param ctx
-	 *            the Context within which to work
-	 *//*
-	public DBApps(Context ctx)
-	{
-		this.mCtx = ctx;
-	}
-
-	*//**
-	 * Open the Log database. If it cannot be opened, try to create a new
-	 * instance of the database. If it cannot be created, throw an exception to
-	 * signal the failure
-	 * 
-	 * @return this (self reference, allowing this to be chained in an
-	 *         initialization call)
-	 * @throws SQLException
-	 *             if the database could be neither opened or created
-	 *//*
-	public DBApps open() throws SQLException
-	{
-		mDbHelper = new DatabaseHelper(mCtx);
-		mDb = mDbHelper.getWritableDatabase();
-		check = mDb.getPath();
-		return this;
-	}
-
-	public void close()
-	{
-		mDbHelper.close();
-	}
-
-	*//**
-	 * Create a new entry using the body provided. If the entry is successfully
-	 * created return the new rowId for that entry, otherwise return a -1 to
-	 * indicate failure.
-	 * 
-	 * @param body
-	 *            the body of the note
-	 * @return rowId or -1 if failed
-	 *//*
-	public void createEntry(int uid, String name, byte[] icon, String wStatus, String cStatus)
-	{
-		// Check to see if entry already exists
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "NAME" }, "UID='" + uid + "'", null, null, null, null);
-
-		// if there is no entry
-		if (c == null || c.getCount() == 0)
-		{
-			// this prepares values to be placed into entry
-			ContentValues initialValues = new ContentValues();
-			initialValues.put("UID", uid);
-			initialValues.put("NAME", name);
-			initialValues.put("ICON", icon);
-			initialValues.put("WSTATUS", wStatus);
-			initialValues.put("CSTATUS", cStatus);
-
-			// inserts entry with data from initialValues
-			mDb.insert(DATABASE_TABLE, null, initialValues);
-		}
-		else
-		{
-			c.moveToFirst();
-			if (!c.getString(0).contains(name))
-			{
-				String sql = "UPDATE apps SET NAME= ? WHERE UID= ? ";
-				Object[] bindArgs = new Object[]
-				{ c.getString(0) + "; " + name, uid };
-				mDb.execSQL(sql, bindArgs);
-			}
-		}
-
-	}
-
-	*//**
-	 * Used to change block/allow status of apps.
-	 * 
-	 * @param uid
-	 *            UID of app
-	 * @param status
-	 *            whether app is blocked or allowed
-	 *//*
-	public void changeStatus(int uid, String wStatus, String cStatus)
-	{
-		if (!(wStatus == "default"))
-		{
-			String sql = "UPDATE apps SET WSTATUS= ? WHERE UID= ? ";
-			Object[] bindArgs = new Object[]
-			{ wStatus, uid };
-			mDb.execSQL(sql, bindArgs);
-		}
-		if (!(cStatus == "default"))
-		{
-			String sql = "UPDATE apps SET CSTATUS= ? WHERE UID= ? ";
-			Object[] bindArgs = new Object[]
-			{ cStatus, uid };
-			mDb.execSQL(sql, bindArgs);
-		}
-	}
-
-	public void checkAll(Boolean check)
-	{
-		String block = "";
-		if (check)
-		{
-			block = "block";
-		}
-		else
-		{
-			block = "allow";
-		}
-
-		// fetch the table
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "UID", "NAME", "ICON" }, null, null, null, null, null);
-
-		while (c.getPosition() < c.getCount() - 1)
-		{
-			c.moveToNext();
-			this.changeStatus(c.getInt(0), block, block);
-		}
-	}
-
-	public void checkWifi(Boolean check)
-	{
-		String block = "";
-		if (check)
-		{
-			block = "block";
-		}
-		else
-		{
-			block = "allow";
-		}
-
-		// fetch the table
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "UID", "NAME", "ICON" }, null, null, null, null, null);
-
-		while (c.getPosition() < c.getCount() - 1)
-		{
-			c.moveToNext();
-			this.changeStatus(c.getInt(0), block, "default");
-		}
-	}
-
-	public void checkCell(Boolean check)
-	{
-		String block = "";
-		if (check)
-		{
-			block = "block";
-		}
-		else
-		{
-			block = "allow";
-		}
-
-		// fetch the table
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "UID", "NAME", "ICON" }, null, null, null, null, null);
-
-		while (c.getPosition() < c.getCount() - 1)
-		{
-			c.moveToNext();
-			this.changeStatus(c.getInt(0), "default", block);
-		}
-	}
-
-	*//**
-	 * Return a Cursor over the list of all entries in the database
-	 * 
-	 * @return Cursor over all entries
-	 *//*
-	public Cursor fetchAllEntries()
-	{
-		return mDb.query(DATABASE_TABLE, null, null, null, null, null, null);
-	}
-
-	public Boolean checkBlockW(int uid)
-	{
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "WSTATUS" }, "UID= ? ", new String[]
-		{ Integer.toString(uid) }, null, null, null);
-
-		if (c != null && c.getCount() != 0)
-		{
-			c.moveToFirst();
-			if (c.getString(0).contains("block"))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	public Boolean checkBlockC(int uid)
-	{
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]
-		{ "CSTATUS" }, "UID= ? ", new String[]
-		{ Integer.toString(uid) }, null, null, null);
-		if (c != null && c.getCount() != 0)
-		{
-			c.moveToFirst();
-			if (c.getString(0).contains("block"))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	*//**
-	 * Removes entry for application with specified UID
-	 * 
-	 * @param uid
-	 *            Integer giving UID of application
-	 *//*
-	public void deleteEntry(int uid)
-	{
-		mDb.delete(DATABASE_TABLE, "UID= ? ", new String[]
-		{ Integer.toString(uid) });
-	}
-
-	public void clear()
-	{
-		mDb.execSQL("DROP TABLE apps");
-		mDb.execSQL(DATABASE_CREATE);
-	}*/
 }

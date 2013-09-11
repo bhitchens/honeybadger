@@ -1,10 +1,11 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 2.1
- * Date of last modification: 19 June 2012
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  *
- * Edit 2.1: Added method call to load apps; conformed to change from StartUp to SharedMethods
+ * Edit 2.1 (19JUN12): Added method call to load apps; conformed to change from StartUp to SharedMethods
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -27,7 +28,6 @@ import com.honeybadger.R.id;
 import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.Blocker;
 import com.honeybadger.api.SharedMethods;
-import com.honeybadger.api.databases.DBApps;
 import com.honeybadger.api.databases.DBLog;
 import com.honeybadger.views.EditPreferencesActivity;
 import com.honeybadger.views.AddRulesFragment;
@@ -161,10 +161,8 @@ public class HoneyBadgerFragment extends SherlockFragment
 					{
 						SharedMethods.fetch(getActivity());
 					}
-
-					//DBApps appAdapter = new DBApps(getActivity());
 					
-					SharedMethods.loadApps(getActivity(), settings);//, appAdapter);
+					SharedMethods.loadApps(getActivity(), settings);
 
 					editor.putBoolean("fwEnabled", true);
 					this.fwEnabledItem.setTitle("Disable HB");
@@ -181,25 +179,6 @@ public class HoneyBadgerFragment extends SherlockFragment
 				return super.onOptionsItemSelected(item);
 		}
 	}
-
-	
-		/*public void errorCalled(String error)
-		{
-
-			if (error.contains("iptables"))
-			{
-				createDialog(0);
-			}
-			else if (error.contains("busybox"))
-			{
-				createDialog(1);
-			}
-			else if (error.contains("wget"))
-			{
-				createDialog(2);
-			}
-		}*/
-	
 
 	protected void createDialog(int error)
 	{

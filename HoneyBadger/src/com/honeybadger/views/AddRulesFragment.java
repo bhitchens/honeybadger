@@ -1,10 +1,11 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 1.3
- * Date of last modification: 14 JUNE 2012
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  *
- * Edit 1.3: Effected by move of database adapter.
+ * Edit 1.3 (14JUN12): Effected by move of database adapter.
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  --------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -323,11 +324,9 @@ public class AddRulesFragment extends SherlockFragment
 				{
 					initialValues.put(DBRules.KEY_DIRECTION, "in");
 					initialValues.put(DBRules.KEY_INTERFACE, netInt);
-					//rulesDB.createEntry(initialValues);
 					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 
 					initialValues.put(DBRules.KEY_DIRECTION, "out");
-					//rulesDB.createEntry(initialValues);
 					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 				}
 			}
@@ -339,17 +338,14 @@ public class AddRulesFragment extends SherlockFragment
 				{
 
 					initialValues.put(DBRules.KEY_INTERFACE, "wifi");
-					//rulesDB.createEntry(initialValues);
 					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 
 					initialValues.put(DBRules.KEY_INTERFACE, "cell");
-					//rulesDB.createEntry(initialValues);
 					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 				}
 				else
 				{
 					initialValues.put(DBRules.KEY_INTERFACE, netInt);
-					//rulesDB.createEntry(initialValues);
 					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 				}
 			}
@@ -363,7 +359,6 @@ public class AddRulesFragment extends SherlockFragment
 					"You must enter either an IP Address or Domain name, and specify direction and interface of traffic.",
 					Toast.LENGTH_LONG).show();
 		}
-		//rulesDB.close();
 		ipAddress = "null";
 	}
 

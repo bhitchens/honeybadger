@@ -1,11 +1,12 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 2.1
- * Date of last modification: 14 JUNE 2012
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  * Source Info: n/a
  * 
- * Edit 2.1: Affected by refactoring.
+ * Edit 2.1 (14JUN12): Affected by refactoring.
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -97,10 +98,7 @@ public class ShowAppsFragment extends SherlockFragment
 			public void onClick(View v)
 			{
 				// Perform action on clicks
-				//appAdapter.open();
-				//appAdapter.checkAll(true);
 				getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/all"), null, "true", null);
-				//appAdapter.close();
 				display();
 			}
 		});
@@ -110,9 +108,6 @@ public class ShowAppsFragment extends SherlockFragment
 			public void onClick(View v)
 			{
 				// Perform action on clicks
-				/*appAdapter.open();
-				appAdapter.checkAll(false);
-				appAdapter.close();*/
 				getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/all"), null, "false", null);
 				display();
 			}
@@ -137,9 +132,6 @@ public class ShowAppsFragment extends SherlockFragment
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								/*appAdapter.open();
-								appAdapter.checkWifi(true);
-								appAdapter.close();*/
 								getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/wifi"), null, "true", null);
 								display();
 							}
@@ -147,9 +139,6 @@ public class ShowAppsFragment extends SherlockFragment
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								/*appAdapter.open();
-								appAdapter.checkWifi(false);
-								appAdapter.close();*/
 								getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/wifi"), null, "false", null);
 								display();
 							}
@@ -174,9 +163,6 @@ public class ShowAppsFragment extends SherlockFragment
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								/*appAdapter.open();
-								appAdapter.checkCell(true);
-								appAdapter.close();*/
 								getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/cell"), null, "true", null);
 								display();
 							}
@@ -184,9 +170,6 @@ public class ShowAppsFragment extends SherlockFragment
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								/*appAdapter.open();
-								appAdapter.checkCell(false);
-								appAdapter.close();*/
 								getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/cell"), null, "false", null);
 								display();
 							}
@@ -222,7 +205,7 @@ public class ShowAppsFragment extends SherlockFragment
 		// Load apps if not already added
 		if (!settings.getBoolean("loaded", false))
 		{
-			SharedMethods.loadApps(getActivity(), settings);//, appAdapter);
+			SharedMethods.loadApps(getActivity(), settings);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
 			editor.commit();
@@ -233,7 +216,6 @@ public class ShowAppsFragment extends SherlockFragment
 			protected Integer doInBackground(Integer... integers)
 			{
 				list = new ArrayList<AppInfo>();
-				//appAdapter.open();
 				Cursor c = getActivity().getContentResolver().query(DBContentProvider.CONTENT_URI_APPS, null, null, null, null);//appAdapter.fetchAllEntries();
 				while (c.getPosition() < c.getCount() - 1)
 				{
@@ -246,7 +228,6 @@ public class ShowAppsFragment extends SherlockFragment
 					list.add(app);
 				}
 				c.close();
-				//appAdapter.close();
 
 				getActivity().runOnUiThread(new Runnable()
 				{
@@ -323,11 +304,8 @@ public class ShowAppsFragment extends SherlockFragment
 										SharedPreferences.Editor editor = settings.edit();
 										editor.putBoolean("loaded", false);
 										editor.commit();
-										//appAdapter.open();
-										//appAdapter.clear();
-										//appAdapter.close();
 										getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/delete"), null, null, null);
-										SharedMethods.loadApps(getActivity(), settings);//, appAdapter);
+										SharedMethods.loadApps(getActivity(), settings);
 										
 										return 0;
 									}

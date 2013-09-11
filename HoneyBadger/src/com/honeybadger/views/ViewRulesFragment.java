@@ -1,10 +1,11 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 1.3
- * Date of last modification: 14 JUNE 2012
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  *
- * Edit 1.3: Effected by move of database adapter
+ * Edit 1.3 (14JUN12): Effected by move of database adapter
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -154,13 +155,6 @@ public class ViewRulesFragment extends SherlockListFragment implements
 							}
 
 							String netInt = tokens[7];
-
-							/*ruleAdapter.open();
-							ruleAdapter.deleteEntry(DBRules.KEY_IP_ADDRESS + "= ? AND "
-									+ DBRules.KEY_DIRECTION + "= ? AND "
-									+ DBRules.KEY_INTERFACE + "= ?", new String[]
-							{ tokens[4], direction, netInt });
-							ruleAdapter.close();*/
 							
 							getActivity().getContentResolver().delete(DBContentProvider.CONTENT_URI_RULES, DBRules.KEY_IP_ADDRESS + "= ? AND "
 									+ DBRules.KEY_DIRECTION + "= ? AND "

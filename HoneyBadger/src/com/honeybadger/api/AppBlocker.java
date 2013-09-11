@@ -1,16 +1,15 @@
 package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 4.2
- * Date of last modification: 20APR13
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  *
  * Edit 2.1 (Initial): Uses database of applications and status of those applications to create rules.
- * Edit 4.2: See method createAppRules
- * 
+ * Edit 4.2 (20APR13): See method createAppRules
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
-import com.honeybadger.api.databases.DBApps;
 import com.honeybadger.api.databases.DBContentProvider;
 
 import android.app.IntentService;
@@ -24,7 +23,7 @@ import android.os.IBinder;
 public class AppBlocker extends IntentService
 {
 	SharedPreferences settings;
-	//private DBApps appAdapter;
+
 	private final IBinder mBinder = new MyBinder();
 
 	public AppBlocker()
@@ -53,8 +52,6 @@ public class AppBlocker extends IntentService
 		int uid;
 
 		// Perform action on clicks
-		//appAdapter = new DBApps(context);
-		//appAdapter.open();
 		Cursor c = context.getContentResolver().query(DBContentProvider.CONTENT_URI_APPS, null, null, null, null);
 		if (!settings.getBoolean("block", false))
 		{

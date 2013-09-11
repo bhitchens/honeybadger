@@ -1,11 +1,12 @@
 package com.honeybadger.views;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 1.3
- * Date of last modification: 11FEB13
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  *
  * Edit 1.3: Effected by move of database adapter
- * Edit 4.0: Adapted to use loader manager and for search
+ * Edit 4.0 (11FEB13): Adapted to use loader manager and for search
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -83,8 +84,6 @@ public class ViewLogFragment extends SherlockListFragment implements
 		{
 			public void run()
 			{
-				//DBLog logAdapter = new DBLog(getActivity());
-
 				String scriptOutput = SharedMethods
 						.execScript("dmesg -c | busybox grep HoneyBadger");
 
@@ -154,10 +153,6 @@ public class ViewLogFragment extends SherlockListFragment implements
 							}
 
 						}
-						/*logAdapter.open();
-						logAdapter.createEntry(inout, src, dst, tos, prec, id, proto, spt, dpt,
-								uid, gid);
-						logAdapter.close();*/
 						ContentValues values = new ContentValues();
 						values.put(DBLog.CULUMN_INOUT, inout);
 						values.put(DBLog.CULUMN_SRC, src);
@@ -313,10 +308,6 @@ public class ViewLogFragment extends SherlockListFragment implements
 				getLoaderManager().restartLoader(LOADER_ID, null, ViewLogFragment.this);
 				return true;
 			case R.id.clearLog:
-				/*DBLog logDB = new DBLog(getActivity());
-				logDB.open();
-				logDB.clearLog();
-				logDB.close();*/
 				getActivity().getContentResolver().update(DBContentProvider.CONTENT_URI_LOG, null, null, null);
 				getLoaderManager().restartLoader(LOADER_ID, null, ViewLogFragment.this);
 				return true;

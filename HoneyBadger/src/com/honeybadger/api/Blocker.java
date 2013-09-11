@@ -2,10 +2,11 @@ package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
  * Version: 1.3
- * Date of last modification: 14 June 2012
+ * Date of last modification: 11SEP13
  * Source Info: n/a
  * 
- * Edit 1.3: Effected by move of database adapter
+ * Edit 1.3 (14JUN12): Effected by move of database adapter
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -19,12 +20,10 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.content.Loader;
 
 public class Blocker extends Service
 {
 	private Cursor c;
-	//private DBRules ruleAdapter = new DBRules(this);;
 	private String rule = "";
 
 	private final IBinder mBinder = new MyBinder();
@@ -73,11 +72,6 @@ public class Blocker extends Service
 		{
 
 		}
-
-		// Opens rules database and creates cursor to iterate through all
-		// entries
-		/*ruleAdapter.open();
-		c = ruleAdapter.fetchAllEntries();*/
 		
 		String target;
 		String netInt;
@@ -140,31 +134,12 @@ public class Blocker extends Service
 				}
 
 				// Mark rule as having been applied
-				//ruleAdapter.changeSaved(c.getString(1));
 				getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_RULES + "/" + c.getString(1)), null, null, null);
 				SharedMethods.execScript(rule);
 			}
 			rule = "";
 		}
 		return START_STICKY;
-	}
-
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onLoaderReset(Loader<Cursor> arg0)
-	{
-		// TODO Auto-generated method stub
-		
 	}
 
 }

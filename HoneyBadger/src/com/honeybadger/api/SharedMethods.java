@@ -1,11 +1,12 @@
 package com.honeybadger.api;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 2.1
- * Date of last modification: 14APR13
+ * Version: 4.5
+ * Date of last modification: 11SEP13
  *
  * Edit 2.1: Combined startup and script creation; added methods for fetching application data.
- * Edit 4.11: See loadApps
+ * Edit 4.11 (14APR13): See loadApps
+ * Edit 4.5 (11SEP13): Revamp of database interaction
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
