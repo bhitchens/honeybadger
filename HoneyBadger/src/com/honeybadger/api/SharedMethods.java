@@ -23,8 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.honeybadger.R;
-import com.honeybadger.api.databases.AppsDBAdapter;
-import com.honeybadger.api.databases.RulesDBAdapter;
+import com.honeybadger.api.databases.DBApps;
+import com.honeybadger.api.databases.DBContentProvider;
+import com.honeybadger.api.databases.DBRules;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -39,6 +40,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -427,13 +429,13 @@ public final class SharedMethods
 	 * @param appAdapter
 	 *            Passed in AppsDBAdapter
 	 */
-	public static void loadApps(Context ctx, SharedPreferences settings, AppsDBAdapter appAdapter)
+	public static void loadApps(Context ctx, SharedPreferences settings)//, DBApps appAdapter)
 	{
 		if (!settings.getBoolean("loaded", false))
 		{
 			String block = "";
-			appAdapter = new AppsDBAdapter(ctx);
-			appAdapter.open();
+			//appAdapter = new DBApps(ctx);
+			//appAdapter.open();
 
 			if (settings.getBoolean("block", false))
 			{
@@ -474,13 +476,28 @@ public final class SharedMethods
 					bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 					byte[] imageInByte = stream.toByteArray();
 
-					appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte,
-							block, block);
+					/*appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte,
+							block, block);*/
+					ContentValues initialValues = new ContentValues();
+					
+					initialValues.put("UID", list.get(i).uid);
+					initialValues.put("NAME", list.get(i).appname);
+					initialValues.put("ICON", imageInByte);
+					initialValues.put("WSTATUS", block);
+					initialValues.put("CSTATUS", block);
+					ctx.getContentResolver().insert(DBContentProvider.CONTENT_URI_APPS, initialValues);
 				}
 				else
 				{
-					appAdapter.createEntry(list.get(i).uid, list.get(i).appname, new byte[] {},
-							block, block);
+					/*appAdapter.createEntry(list.get(i).uid, list.get(i).appname, new byte[] {},
+							block, block);*/
+					ContentValues initialValues = new ContentValues();
+					initialValues.put("UID", list.get(i).uid);
+					initialValues.put("NAME", list.get(i).appname);
+					initialValues.put("ICON", new byte[] {});
+					initialValues.put("WSTATUS", block);
+					initialValues.put("CSTATUS", block);
+					ctx.getContentResolver().insert(DBContentProvider.CONTENT_URI_APPS, initialValues);
 				}
 			}
 
@@ -512,20 +529,35 @@ public final class SharedMethods
 					bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 					byte[] imageInByte = stream.toByteArray();
 
-					appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte,
-							block, block);
+					/*appAdapter.createEntry(list.get(i).uid, list.get(i).appname, imageInByte,
+							block, block);*/
+					ContentValues initialValues = new ContentValues();
+					initialValues.put("UID", list.get(i).uid);
+					initialValues.put("NAME", list.get(i).appname);
+					initialValues.put("ICON", imageInByte);
+					initialValues.put("WSTATUS", block);
+					initialValues.put("CSTATUS", block);
+					ctx.getContentResolver().insert(DBContentProvider.CONTENT_URI_APPS, initialValues);
+					
 				}
 				else
 				{
-					appAdapter.createEntry(list.get(i).uid, list.get(i).appname, new byte[] {},
-							block, block);
+					/*appAdapter.createEntry(list.get(i).uid, list.get(i).appname, new byte[] {},
+							block, block);*/
+					ContentValues initialValues = new ContentValues();
+					initialValues.put("UID", list.get(i).uid);
+					initialValues.put("NAME", list.get(i).appname);
+					initialValues.put("ICON", new byte[] {});
+					initialValues.put("WSTATUS", block);
+					initialValues.put("CSTATUS", block);
+					ctx.getContentResolver().insert(DBContentProvider.CONTENT_URI_APPS, initialValues);
 				}
 			}
 
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
 			editor.commit();
-			appAdapter.close();
+			//appAdapter.close();
 		}
 	}
 
@@ -562,6 +594,50 @@ public final class SharedMethods
 		public Drawable icon;
 		public int uid = 0;
 	}
+	
+	public static Boolean checkBlockW(Context context, int uid)
+	{
+		Cursor c = context.getContentResolver().query(DBContentProvider.CONTENT_URI_APPS, new String[] {DBApps.KEY_WSTATUS}, "UID= ? ", new String[]
+				{ Integer.toString(uid) }, null);	
+		if (c != null && c.getCount() != 0)
+		{
+			c.moveToFirst();
+			if (c.getString(0).contains("block"))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public static Boolean checkBlockC(Context context, int uid)
+	{
+		Cursor c = context.getContentResolver().query(DBContentProvider.CONTENT_URI_APPS, new String[] {DBApps.KEY_CSTATUS}, "UID= ? ", new String[]
+				{ Integer.toString(uid) }, null);		
+		if (c != null && c.getCount() != 0)
+		{
+			c.moveToFirst();
+			if (c.getString(0).contains("block"))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	/****************************************************************
 	 * Importing and Exporting
@@ -575,9 +651,7 @@ public final class SharedMethods
 	 */
 	public static void exportRules(final Context ctx)
 	{
-		// create adapters for databases
-		final RulesDBAdapter ruleAdapter = new RulesDBAdapter(ctx);
-		final AppsDBAdapter appAdapter = new AppsDBAdapter(ctx);
+		//final DBApps appAdapter = new DBApps(ctx);
 
 		// Create an edit text view for user input
 		final EditText filePrompt = new EditText(ctx);
@@ -609,10 +683,16 @@ public final class SharedMethods
 						// create header of file
 						writer.append("IP Address, Port, Direction, Action, Domain, Interface\n");
 
-						// open rule DB and fetch all entries
-						ruleAdapter.open();
-						Cursor c = ruleAdapter.fetchAllEntries();
-
+						SimpleCursorAdapter mAdapter;
+						mAdapter = new SimpleCursorAdapter(ctx, R.layout.view_log, null,
+								new String[]
+								{ DBRules.KEY_ROWID, DBRules.KEY_IP_ADDRESS, DBRules.KEY_PORT,
+										DBRules.KEY_DIRECTION, DBRules.KEY_ACTION,
+										DBRules.KEY_INTERFACE, DBRules.KEY_DOMAIN,
+										DBRules.KEY_SAVED }, null, 0);
+						
+						Cursor c = mAdapter.getCursor();
+						
 						// loop through all the entries and add them to the file
 						while (c.getPosition() < c.getCount() - 1)
 						{
@@ -630,8 +710,9 @@ public final class SharedMethods
 						writer.append("UID, App Name, Block WiFi, Block Cell Data\n");
 
 						// open rule DB and fetch all entries
-						appAdapter.open();
-						Cursor c2 = appAdapter.fetchAllEntries();
+						//appAdapter.open();
+						Cursor c2 = ctx.getContentResolver().query(DBContentProvider.CONTENT_URI_APPS, null, null, null, null);
+						//Cursor c2 = appAdapter.fetchAllEntries();
 
 						// loop through all the entries and add them to the file
 						while (c2.getPosition() < c2.getCount() - 1)
@@ -650,8 +731,8 @@ public final class SharedMethods
 						c2.close();
 
 						// close db adapters
-						ruleAdapter.close();
-						appAdapter.close();
+						//ruleAdapter.close();
+						//appAdapter.close();
 					}
 					catch (Exception e)
 					{
@@ -672,8 +753,8 @@ public final class SharedMethods
 
 	public static void importRules(final Context ctx)
 	{
-		final RulesDBAdapter ruleAdapter = new RulesDBAdapter(ctx);
-		final AppsDBAdapter appAdapter = new AppsDBAdapter(ctx);
+		//final DBRules ruleAdapter = new DBRules(ctx);
+		//final DBApps appAdapter = new DBApps(ctx);
 
 		// Create an edit text view for user input
 		final EditText filePrompt = new EditText(ctx);
@@ -712,8 +793,8 @@ public final class SharedMethods
 						br.readLine();
 
 						// open rule DB
-						ruleAdapter.open();
-						appAdapter.open();
+						//ruleAdapter.open();
+						//appAdapter.open();
 
 						// go through the rest of the lines and add them to the
 						// db
@@ -737,20 +818,21 @@ public final class SharedMethods
 								{
 									// create entry in db
 									ContentValues initialValues = new ContentValues();
-									initialValues.put(RulesDBAdapter.KEY_IP_ADDRESS, tokens[0]);
-									initialValues.put(RulesDBAdapter.KEY_PORT, tokens[1]);
-									initialValues.put(RulesDBAdapter.KEY_DIRECTION, tokens[2]);
-									initialValues.put(RulesDBAdapter.KEY_ACTION, tokens[3]);
-									initialValues.put(RulesDBAdapter.KEY_DOMAIN, tokens[4]);
-									initialValues.put(RulesDBAdapter.KEY_INTERFACE, tokens[5]);
-									initialValues.put(RulesDBAdapter.KEY_SAVED, "false");
+									initialValues.put(DBRules.KEY_IP_ADDRESS, tokens[0]);
+									initialValues.put(DBRules.KEY_PORT, tokens[1]);
+									initialValues.put(DBRules.KEY_DIRECTION, tokens[2]);
+									initialValues.put(DBRules.KEY_ACTION, tokens[3]);
+									initialValues.put(DBRules.KEY_DOMAIN, tokens[4]);
+									initialValues.put(DBRules.KEY_INTERFACE, tokens[5]);
+									initialValues.put(DBRules.KEY_SAVED, "false");
 
-									ruleAdapter.createEntry(initialValues);
+									ctx.getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 								}
 								else
 								{
-									appAdapter.changeStatus(Integer.parseInt((tokens[0])),
-											tokens[2], tokens[3]);
+									ctx.getContentResolver().update(DBContentProvider.CONTENT_URI_RULES, null, tokens[0], new String[] {tokens[2], tokens[3]});
+									/*appAdapter.changeStatus(Integer.parseInt((tokens[0])),
+											tokens[2], tokens[3]);*/
 								}
 							}
 						}
@@ -759,8 +841,7 @@ public final class SharedMethods
 						br.close();
 
 						// close db
-						ruleAdapter.close();
-						appAdapter.close();
+						//appAdapter.close();
 
 						// apply rules
 						Intent loadIPRules = new Intent(ctx, Blocker.class);

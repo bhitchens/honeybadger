@@ -8,11 +8,13 @@ package com.honeybadger;
 
 import java.io.ByteArrayOutputStream;
 
-import com.honeybadger.api.databases.AppsDBAdapter;
+import com.honeybadger.api.databases.DBApps;
+import com.honeybadger.api.databases.DBContentProvider;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,9 +34,11 @@ public class AppReceiver extends BroadcastReceiver
 
 	SharedPreferences settings;
 
-	AppsDBAdapter appAdapter;
+	DBApps appsDB;
 
 	String block;
+	
+	Context ctx;
 
 	@Override
 	/**
@@ -42,8 +46,10 @@ public class AppReceiver extends BroadcastReceiver
 	 */
 	public void onReceive(Context context, Intent intent)
 	{
-		appAdapter = new AppsDBAdapter(context);
-		appAdapter.open();
+		//appAdapter = new DBApps(context);
+		//appAdapter.open();
+		
+		ctx = context;
 
 		settings = context.getSharedPreferences("main", 1);
 
@@ -89,30 +95,46 @@ public class AppReceiver extends BroadcastReceiver
 					bm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 					byte[] imageInByte = stream.toByteArray();
 
-					appAdapter.createEntry(appInfo.uid,
+					/*appAdapter.createEntry(appInfo.uid,
 							appInfo.loadLabel(context.getPackageManager()).toString(), imageInByte,
-							block, block);
+							block, block);*/
+					ContentValues initialValues = new ContentValues();
+					initialValues.put("UID", appInfo.uid);
+					initialValues.put("NAME", appInfo.loadLabel(context.getPackageManager()).toString());
+					initialValues.put("ICON", imageInByte);
+					initialValues.put("WSTATUS", block);
+					initialValues.put("CSTATUS", block);
+					ctx.getContentResolver().insert(DBContentProvider.CONTENT_URI_APPS, initialValues);
 				}
 				else
 				{
-					appAdapter.createEntry(appInfo.uid,
+					/*appAdapter.createEntry(appInfo.uid,
 							appInfo.loadLabel(context.getPackageManager()).toString(),
-							new byte[] {}, block, block);
+							new byte[] {}, block, block);*/
+					ContentValues initialValues = new ContentValues();
+					initialValues.put("UID", appInfo.uid);
+					initialValues.put("NAME", appInfo.loadLabel(context.getPackageManager()).toString());
+					initialValues.put("ICON", new byte[] {});
+					initialValues.put("WSTATUS", block);
+					initialValues.put("CSTATUS", block);
+					ctx.getContentResolver().insert(DBContentProvider.CONTENT_URI_APPS, initialValues);
 				}
 			}
 			catch (NameNotFoundException e)
 			{
-				appAdapter.close();
+				//appAdapter.close();
 			}
 
-			appAdapter.close();
+			//appAdapter.close();
 
 			notify(context, block, appInfo.loadLabel(context.getPackageManager()).toString());
 		}
 		else if (action == Intent.ACTION_PACKAGE_REMOVED && !b.getBoolean(Intent.EXTRA_REPLACING))
 		{
-			appAdapter.deleteEntry(intent.getExtras().getInt(Intent.EXTRA_UID));
-			appAdapter.close();
+			/*appAdapter.deleteEntry(intent.getExtras().getInt(Intent.EXTRA_UID));
+			appAdapter.close();*/
+			
+			ctx.getContentResolver().delete(DBContentProvider.CONTENT_URI_APPS, null, new String[] {Integer.toString(intent.getExtras().getInt(Intent.EXTRA_UID))});
 		}
 	}
 

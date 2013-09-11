@@ -67,6 +67,7 @@ public class HBTabActivity extends SherlockFragmentActivity
 			if (mFragment != null && !mFragment.isDetached())
 			{
 				ft.detach(mFragment);
+				ft.commit();
 			}
 		}
 
@@ -124,6 +125,7 @@ public class HBTabActivity extends SherlockFragmentActivity
 			if (mFragment != null && !mFragment.isDetached())
 			{
 				ft.detach(mFragment);
+				ft.commit();
 			}
 		}
 

@@ -20,11 +20,11 @@ import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.honeybadger.R;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.DBContentProvider;
-import com.honeybadger.api.databases.LogDBAdapter;
+import com.honeybadger.api.databases.DBLog;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -32,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -84,7 +83,7 @@ public class ViewLogFragment extends SherlockListFragment implements
 		{
 			public void run()
 			{
-				LogDBAdapter logAdapter = new LogDBAdapter(getActivity());
+				//DBLog logAdapter = new DBLog(getActivity());
 
 				String scriptOutput = SharedMethods
 						.execScript("dmesg -c | busybox grep HoneyBadger");
@@ -155,10 +154,23 @@ public class ViewLogFragment extends SherlockListFragment implements
 							}
 
 						}
-						logAdapter.open();
+						/*logAdapter.open();
 						logAdapter.createEntry(inout, src, dst, tos, prec, id, proto, spt, dpt,
 								uid, gid);
-						logAdapter.close();
+						logAdapter.close();*/
+						ContentValues values = new ContentValues();
+						values.put(DBLog.CULUMN_INOUT, inout);
+						values.put(DBLog.CULUMN_SRC, src);
+						values.put(DBLog.CULUMN_DST, dst);
+						values.put(DBLog.CULUMN_TOS, tos);
+						values.put(DBLog.CULUMN_PREC, prec);
+						values.put(DBLog.CULUMN_ID, id);
+						values.put(DBLog.CULUMN_PROTO, proto);
+						values.put(DBLog.CULUMN_SPT, spt);
+						values.put(DBLog.CULUMN_DPT, dpt);
+						values.put(DBLog.CULUMN_UID, uid);
+						values.put(DBLog.CULUMN_GID, gid);
+						getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_LOG, values);
 					}
 				}
 			}
@@ -261,7 +273,7 @@ public class ViewLogFragment extends SherlockListFragment implements
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1)
 	{
-		return new CursorLoader(getActivity(), Uri.parse(DBContentProvider.CONTENT_URI + "/log"),
+		return new CursorLoader(getActivity(), DBContentProvider.CONTENT_URI_LOG,
 				new String[]
 				{ "_id", "INOUT", "SRC", "DST", "Proto", "SPT", "DPT", "UID", "total" }, null,
 				null, null);
@@ -301,10 +313,11 @@ public class ViewLogFragment extends SherlockListFragment implements
 				getLoaderManager().restartLoader(LOADER_ID, null, ViewLogFragment.this);
 				return true;
 			case R.id.clearLog:
-				LogDBAdapter logDB = new LogDBAdapter(getActivity());
+				/*DBLog logDB = new DBLog(getActivity());
 				logDB.open();
 				logDB.clearLog();
-				logDB.close();
+				logDB.close();*/
+				getActivity().getContentResolver().update(DBContentProvider.CONTENT_URI_LOG, null, null, null);
 				getLoaderManager().restartLoader(LOADER_ID, null, ViewLogFragment.this);
 				return true;
 			case R.id.settingsFromLog:

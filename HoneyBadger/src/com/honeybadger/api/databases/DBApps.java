@@ -9,59 +9,48 @@ package com.honeybadger.api.databases;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
-public class AppsDBAdapter
+public class DBApps
 {
 
-	public static final String KEY_BODY = "body";
+	// public static final String KEY_BODY = "body";
 	public static final String KEY_ROWID = "_id";
+	public static final String KEY_UID = "UID";
+	public static final String KEY_NAME = "NAME";
+	public static final String KEY_ICON = "ICON";
+	public static final String KEY_WSTATUS = "WSTATUS";
+	public static final String KEY_CSTATUS = "CSTATUS";
 
-	private static final String TAG = "AppsDBAdapter";
-	private DatabaseHelper mDbHelper;
-	private SQLiteDatabase mDb;
+	// private static final String TAG = "AppsDBAdapter";
+	// private DatabaseHelper mDbHelper;
+	// private SQLiteDatabase mDb;
 
 	private static final String DATABASE_CREATE = "create table apps (UID int not null, NAME text not null, ICON blob, WSTATUS text not null, CSTATUS text not null)";
 
-	private static final String DATABASE_NAME = "appDB";
-	private static final String DATABASE_TABLE = "apps";
-	private static final int DATABASE_VERSION = 2;
+	// private static final String DATABASE_NAME = "appDB";
+	public static final String DATABASE_TABLE = "apps";
+	// private static final int DATABASE_VERSION = 2;
 
-	private final Context mCtx;
+	// private final Context mCtx;
 
 	public String check = "bad";
 
-	private static class DatabaseHelper extends SQLiteOpenHelper
+	/**
+	 * Creates database for logging
+	 */
+	public static void onCreate(SQLiteDatabase db)
 	{
-		DatabaseHelper(Context context)
-		{
-			super(context, DATABASE_NAME, null, DATABASE_VERSION);
-		}
+		db.execSQL(DATABASE_CREATE);
+	}
 
-		@Override
-		/**
-		 * Creates database for logging
-		 */
-		public void onCreate(SQLiteDatabase db)
-		{
-			db.execSQL(DATABASE_CREATE);
-		}
-
-		@Override
-		/**
-		 * replaces database with new database
-		 */
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
-		{
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion
-					+ ", which will destroy all old data");
-		}
+	/**
+	 * replaces database with new database
+	 */
+	public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+	{
+		db.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
+		onCreate(db);
 	}
 
 	/**
@@ -70,13 +59,13 @@ public class AppsDBAdapter
 	 * 
 	 * @param ctx
 	 *            the Context within which to work
-	 */
-	public AppsDBAdapter(Context ctx)
+	 *//*
+	public DBApps(Context ctx)
 	{
 		this.mCtx = ctx;
 	}
 
-	/**
+	*//**
 	 * Open the Log database. If it cannot be opened, try to create a new
 	 * instance of the database. If it cannot be created, throw an exception to
 	 * signal the failure
@@ -85,8 +74,8 @@ public class AppsDBAdapter
 	 *         initialization call)
 	 * @throws SQLException
 	 *             if the database could be neither opened or created
-	 */
-	public AppsDBAdapter open() throws SQLException
+	 *//*
+	public DBApps open() throws SQLException
 	{
 		mDbHelper = new DatabaseHelper(mCtx);
 		mDb = mDbHelper.getWritableDatabase();
@@ -99,7 +88,7 @@ public class AppsDBAdapter
 		mDbHelper.close();
 	}
 
-	/**
+	*//**
 	 * Create a new entry using the body provided. If the entry is successfully
 	 * created return the new rowId for that entry, otherwise return a -1 to
 	 * indicate failure.
@@ -107,7 +96,7 @@ public class AppsDBAdapter
 	 * @param body
 	 *            the body of the note
 	 * @return rowId or -1 if failed
-	 */
+	 *//*
 	public void createEntry(int uid, String name, byte[] icon, String wStatus, String cStatus)
 	{
 		// Check to see if entry already exists
@@ -142,14 +131,14 @@ public class AppsDBAdapter
 
 	}
 
-	/**
+	*//**
 	 * Used to change block/allow status of apps.
 	 * 
 	 * @param uid
 	 *            UID of app
 	 * @param status
 	 *            whether app is blocked or allowed
-	 */
+	 *//*
 	public void changeStatus(int uid, String wStatus, String cStatus)
 	{
 		if (!(wStatus == "default"))
@@ -237,11 +226,11 @@ public class AppsDBAdapter
 		}
 	}
 
-	/**
+	*//**
 	 * Return a Cursor over the list of all entries in the database
 	 * 
 	 * @return Cursor over all entries
-	 */
+	 *//*
 	public Cursor fetchAllEntries()
 	{
 		return mDb.query(DATABASE_TABLE, null, null, null, null, null, null);
@@ -273,7 +262,9 @@ public class AppsDBAdapter
 
 	public Boolean checkBlockC(int uid)
 	{
-		Cursor c = mDb.query(DATABASE_TABLE, new String[]{ "CSTATUS" }, "UID= ? ", new String[]{ Integer.toString(uid) }, null, null, null);
+		Cursor c = mDb.query(DATABASE_TABLE, new String[]
+		{ "CSTATUS" }, "UID= ? ", new String[]
+		{ Integer.toString(uid) }, null, null, null);
 		if (c != null && c.getCount() != 0)
 		{
 			c.moveToFirst();
@@ -292,18 +283,21 @@ public class AppsDBAdapter
 		}
 	}
 
-	/**
+	*//**
 	 * Removes entry for application with specified UID
-	 * @param uid Integer giving UID of application
-	 */
+	 * 
+	 * @param uid
+	 *            Integer giving UID of application
+	 *//*
 	public void deleteEntry(int uid)
 	{
-		mDb.delete(DATABASE_TABLE, "UID= ? ", new String[]{Integer.toString(uid)});
+		mDb.delete(DATABASE_TABLE, "UID= ? ", new String[]
+		{ Integer.toString(uid) });
 	}
 
 	public void clear()
 	{
 		mDb.execSQL("DROP TABLE apps");
 		mDb.execSQL(DATABASE_CREATE);
-	}
+	}*/
 }

@@ -10,7 +10,8 @@ package com.honeybadger.api;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
-import com.honeybadger.api.databases.AppsDBAdapter;
+import com.honeybadger.api.databases.DBApps;
+import com.honeybadger.api.databases.DBContentProvider;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -23,7 +24,7 @@ import android.os.IBinder;
 public class AppBlocker extends IntentService
 {
 	SharedPreferences settings;
-	private AppsDBAdapter appAdapter;
+	//private DBApps appAdapter;
 	private final IBinder mBinder = new MyBinder();
 
 	public AppBlocker()
@@ -52,9 +53,9 @@ public class AppBlocker extends IntentService
 		int uid;
 
 		// Perform action on clicks
-		appAdapter = new AppsDBAdapter(context);
-		appAdapter.open();
-		Cursor c = appAdapter.fetchAllEntries();
+		//appAdapter = new DBApps(context);
+		//appAdapter.open();
+		Cursor c = context.getContentResolver().query(DBContentProvider.CONTENT_URI_APPS, null, null, null, null);
 		if (!settings.getBoolean("block", false))
 		{
 			while (c.getPosition() < c.getCount() - 1)
@@ -80,8 +81,8 @@ public class AppBlocker extends IntentService
 				if (!c.getString(3).contains("block") || !c.getString(4).contains("block"))
 				{
 					script = SharedMethods.ruleBuilder(this, script, "App", Integer.toString(uid),
-							true, "ACCEPT", "OUT", !appAdapter.checkBlockW(uid),
-							!appAdapter.checkBlockC(uid));
+							true, "ACCEPT", "OUT", !SharedMethods.checkBlockW(context, uid),
+							!SharedMethods.checkBlockC(context, uid));
 				}
 			}
 			SharedMethods.execScript(script);

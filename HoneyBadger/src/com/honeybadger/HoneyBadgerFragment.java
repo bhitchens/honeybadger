@@ -27,8 +27,8 @@ import com.honeybadger.R.id;
 import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.Blocker;
 import com.honeybadger.api.SharedMethods;
-import com.honeybadger.api.databases.AppsDBAdapter;
-import com.honeybadger.api.databases.LogDBAdapter;
+import com.honeybadger.api.databases.DBApps;
+import com.honeybadger.api.databases.DBLog;
 import com.honeybadger.views.EditPreferencesActivity;
 import com.honeybadger.views.AddRulesFragment;
 
@@ -109,7 +109,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 	 * Used to handle selection of items in options menu. Starts activity for
 	 * selected item. If "Settings" is selected, then
 	 * {@link EditPreferencesActivity} is started. If "Clear Log" is selected,
-	 * then {@link LogDBAdapter} is used to clear the log. If "Add Rule" is
+	 * then {@link DBLog} is used to clear the log. If "Add Rule" is
 	 * selected, then {@link AddRulesFragment} is started.
 	 */
 	@Override
@@ -162,9 +162,9 @@ public class HoneyBadgerFragment extends SherlockFragment
 						SharedMethods.fetch(getActivity());
 					}
 
-					AppsDBAdapter appAdapter = new AppsDBAdapter(getActivity());
-					;
-					SharedMethods.loadApps(getActivity(), settings, appAdapter);
+					//DBApps appAdapter = new DBApps(getActivity());
+					
+					SharedMethods.loadApps(getActivity(), settings);//, appAdapter);
 
 					editor.putBoolean("fwEnabled", true);
 					this.fwEnabledItem.setTitle("Disable HB");

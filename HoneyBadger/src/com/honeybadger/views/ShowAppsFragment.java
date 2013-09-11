@@ -19,7 +19,7 @@ import com.honeybadger.R;
 import com.honeybadger.api.AppBlocker;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.SharedMethods.AppInfo;
-import com.honeybadger.api.databases.AppsDBAdapter;
+import com.honeybadger.api.databases.DBContentProvider;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,6 +31,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,7 +47,6 @@ import android.widget.Toast;
 public class ShowAppsFragment extends SherlockFragment
 {
 	private ListView lv;
-	private AppsDBAdapter appAdapter;
 
 	Button CheckAllButton;
 	Button ClearAllButton;
@@ -65,7 +65,6 @@ public class ShowAppsFragment extends SherlockFragment
 	public void onAttach(Activity activity)
 	{
 		super.onAttach(activity);
-		appAdapter = new AppsDBAdapter(activity);
 	}
 
 	@Override
@@ -98,9 +97,10 @@ public class ShowAppsFragment extends SherlockFragment
 			public void onClick(View v)
 			{
 				// Perform action on clicks
-				appAdapter.open();
-				appAdapter.checkAll(true);
-				appAdapter.close();
+				//appAdapter.open();
+				//appAdapter.checkAll(true);
+				getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/all"), null, "true", null);
+				//appAdapter.close();
 				display();
 			}
 		});
@@ -110,9 +110,10 @@ public class ShowAppsFragment extends SherlockFragment
 			public void onClick(View v)
 			{
 				// Perform action on clicks
-				appAdapter.open();
+				/*appAdapter.open();
 				appAdapter.checkAll(false);
-				appAdapter.close();
+				appAdapter.close();*/
+				getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/all"), null, "false", null);
 				display();
 			}
 		});
@@ -136,18 +137,20 @@ public class ShowAppsFragment extends SherlockFragment
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								appAdapter.open();
+								/*appAdapter.open();
 								appAdapter.checkWifi(true);
-								appAdapter.close();
+								appAdapter.close();*/
+								getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/wifi"), null, "true", null);
 								display();
 							}
 						}).setNegativeButton("Clear All", new DialogInterface.OnClickListener()
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								appAdapter.open();
+								/*appAdapter.open();
 								appAdapter.checkWifi(false);
-								appAdapter.close();
+								appAdapter.close();*/
+								getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/wifi"), null, "false", null);
 								display();
 							}
 						}).setNeutralButton("Cancel", new DialogInterface.OnClickListener()
@@ -171,18 +174,20 @@ public class ShowAppsFragment extends SherlockFragment
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								appAdapter.open();
+								/*appAdapter.open();
 								appAdapter.checkCell(true);
-								appAdapter.close();
+								appAdapter.close();*/
+								getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/cell"), null, "true", null);
 								display();
 							}
 						}).setNegativeButton("Clear All", new DialogInterface.OnClickListener()
 						{
 							public void onClick(DialogInterface dialog, int id)
 							{
-								appAdapter.open();
+								/*appAdapter.open();
 								appAdapter.checkCell(false);
-								appAdapter.close();
+								appAdapter.close();*/
+								getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/cell"), null, "false", null);
 								display();
 							}
 						}).setNeutralButton("Cancel", new DialogInterface.OnClickListener()
@@ -217,7 +222,7 @@ public class ShowAppsFragment extends SherlockFragment
 		// Load apps if not already added
 		if (!settings.getBoolean("loaded", false))
 		{
-			SharedMethods.loadApps(getActivity(), settings, appAdapter);
+			SharedMethods.loadApps(getActivity(), settings);//, appAdapter);
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("loaded", true);
 			editor.commit();
@@ -228,8 +233,8 @@ public class ShowAppsFragment extends SherlockFragment
 			protected Integer doInBackground(Integer... integers)
 			{
 				list = new ArrayList<AppInfo>();
-				appAdapter.open();
-				Cursor c = appAdapter.fetchAllEntries();
+				//appAdapter.open();
+				Cursor c = getActivity().getContentResolver().query(DBContentProvider.CONTENT_URI_APPS, null, null, null, null);//appAdapter.fetchAllEntries();
 				while (c.getPosition() < c.getCount() - 1)
 				{
 					c.moveToNext();
@@ -241,7 +246,7 @@ public class ShowAppsFragment extends SherlockFragment
 					list.add(app);
 				}
 				c.close();
-				appAdapter.close();
+				//appAdapter.close();
 
 				getActivity().runOnUiThread(new Runnable()
 				{
@@ -318,10 +323,11 @@ public class ShowAppsFragment extends SherlockFragment
 										SharedPreferences.Editor editor = settings.edit();
 										editor.putBoolean("loaded", false);
 										editor.commit();
-										appAdapter.open();
-										appAdapter.clear();
-										appAdapter.close();
-										SharedMethods.loadApps(getActivity(), settings, appAdapter);
+										//appAdapter.open();
+										//appAdapter.clear();
+										//appAdapter.close();
+										getActivity().getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/delete"), null, null, null);
+										SharedMethods.loadApps(getActivity(), settings);//, appAdapter);
 										
 										return 0;
 									}

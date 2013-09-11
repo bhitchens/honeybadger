@@ -9,19 +9,22 @@ package com.honeybadger.api;
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
-import com.honeybadger.api.databases.RulesDBAdapter;
+import com.honeybadger.api.databases.DBContentProvider;
+import com.honeybadger.api.databases.DBRules;
 
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.Loader;
 
 public class Blocker extends Service
 {
 	private Cursor c;
-	private RulesDBAdapter ruleAdapter = new RulesDBAdapter(this);;
+	//private DBRules ruleAdapter = new DBRules(this);;
 	private String rule = "";
 
 	private final IBinder mBinder = new MyBinder();
@@ -73,11 +76,18 @@ public class Blocker extends Service
 
 		// Opens rules database and creates cursor to iterate through all
 		// entries
-		ruleAdapter.open();
-		c = ruleAdapter.fetchAllEntries();
+		/*ruleAdapter.open();
+		c = ruleAdapter.fetchAllEntries();*/
+		
 		String target;
 		String netInt;
 
+		c = getContentResolver().query(DBContentProvider.CONTENT_URI_RULES, new String[]
+				{ DBRules.KEY_ROWID, DBRules.KEY_IP_ADDRESS, DBRules.KEY_PORT,
+				DBRules.KEY_DIRECTION, DBRules.KEY_ACTION,
+				DBRules.KEY_INTERFACE, DBRules.KEY_DOMAIN,
+				DBRules.KEY_SAVED }, null, null, null);
+		
 		// Loop through rows of database
 		while (c.getPosition() < c.getCount() - 1)
 		{
@@ -130,13 +140,31 @@ public class Blocker extends Service
 				}
 
 				// Mark rule as having been applied
-				ruleAdapter.changeSaved(c.getString(1));
-
+				//ruleAdapter.changeSaved(c.getString(1));
+				getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_RULES + "/" + c.getString(1)), null, null, null);
 				SharedMethods.execScript(rule);
 			}
 			rule = "";
 		}
 		return START_STICKY;
+	}
+
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onLoaderReset(Loader<Cursor> arg0)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

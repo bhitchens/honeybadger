@@ -15,7 +15,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.honeybadger.R;
 import com.honeybadger.api.Blocker;
 import com.honeybadger.api.SharedMethods;
-import com.honeybadger.api.databases.RulesDBAdapter;
+import com.honeybadger.api.databases.DBContentProvider;
+import com.honeybadger.api.databases.DBRules;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -65,13 +66,12 @@ public class AddRulesFragment extends SherlockFragment
 	SharedPreferences settings;
 	SharedPreferences.Editor editor;
 
-	RulesDBAdapter rulesDB;
+	DBRules rulesDB;
 
 	@Override
 	public void onAttach(Activity activity)
 	{
 		super.onAttach(activity);
-		rulesDB = new RulesDBAdapter(activity);
 	}
 
 	@Override
@@ -237,7 +237,6 @@ public class AddRulesFragment extends SherlockFragment
 	{
 		String domain = "";
 
-		rulesDB.open();
 		if ((!(ipAddress == "null" & urlAddress == "null") & (in | out)) & (wifi | cell))
 		{
 
@@ -296,57 +295,62 @@ public class AddRulesFragment extends SherlockFragment
 			}
 
 			ContentValues initialValues = new ContentValues();
-			initialValues.put(RulesDBAdapter.KEY_IP_ADDRESS, source);
-			initialValues.put(RulesDBAdapter.KEY_PORT, port);
-			initialValues.put(RulesDBAdapter.KEY_ACTION, allow);
-			initialValues.put(RulesDBAdapter.KEY_DOMAIN, domain);
-			initialValues.put(RulesDBAdapter.KEY_SAVED, "false");
+			initialValues.put(DBRules.KEY_IP_ADDRESS, source);
+			initialValues.put(DBRules.KEY_PORT, port);
+			initialValues.put(DBRules.KEY_ACTION, allow);
+			initialValues.put(DBRules.KEY_DOMAIN, domain);
+			initialValues.put(DBRules.KEY_SAVED, "false");
 
 			if (direction == "both")
 			{
 				if (netInt == "both")
 				{
-					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
-					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "wifi");
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_DIRECTION, "in");
+					initialValues.put(DBRules.KEY_INTERFACE, "wifi");
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 
-					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_DIRECTION, "out");
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 
-					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
-					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "cell");
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_DIRECTION, "in");
+					initialValues.put(DBRules.KEY_INTERFACE, "cell");
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 
-					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_DIRECTION, "out");
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 				}
 				else
 				{
-					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "in");
-					initialValues.put(RulesDBAdapter.KEY_INTERFACE, netInt);
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_DIRECTION, "in");
+					initialValues.put(DBRules.KEY_INTERFACE, netInt);
+					//rulesDB.createEntry(initialValues);
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 
-					initialValues.put(RulesDBAdapter.KEY_DIRECTION, "out");
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_DIRECTION, "out");
+					//rulesDB.createEntry(initialValues);
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 				}
 			}
 			else
 			{
-				initialValues.put(RulesDBAdapter.KEY_DIRECTION, direction);
+				initialValues.put(DBRules.KEY_DIRECTION, direction);
 
 				if (netInt == "both")
 				{
 
-					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "wifi");
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_INTERFACE, "wifi");
+					//rulesDB.createEntry(initialValues);
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 
-					initialValues.put(RulesDBAdapter.KEY_INTERFACE, "cell");
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_INTERFACE, "cell");
+					//rulesDB.createEntry(initialValues);
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 				}
 				else
 				{
-					initialValues.put(RulesDBAdapter.KEY_INTERFACE, netInt);
-					rulesDB.createEntry(initialValues);
+					initialValues.put(DBRules.KEY_INTERFACE, netInt);
+					//rulesDB.createEntry(initialValues);
+					getActivity().getContentResolver().insert(DBContentProvider.CONTENT_URI_RULES, initialValues);
 				}
 			}
 
@@ -359,7 +363,7 @@ public class AddRulesFragment extends SherlockFragment
 					"You must enter either an IP Address or Domain name, and specify direction and interface of traffic.",
 					Toast.LENGTH_LONG).show();
 		}
-		rulesDB.close();
+		//rulesDB.close();
 		ipAddress = "null";
 	}
 

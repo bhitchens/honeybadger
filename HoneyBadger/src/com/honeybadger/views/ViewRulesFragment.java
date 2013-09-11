@@ -19,13 +19,12 @@ import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.honeybadger.R;
 import com.honeybadger.api.SharedMethods;
 import com.honeybadger.api.databases.DBContentProvider;
-import com.honeybadger.api.databases.RulesDBAdapter;
+import com.honeybadger.api.databases.DBRules;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -47,7 +46,6 @@ public class ViewRulesFragment extends SherlockListFragment implements
 	Menu optionsMenu = null;
 
 	private Cursor c;
-	private RulesDBAdapter ruleAdapter;
 	private ArrayList<String> RULES;
 	private ArrayAdapter<String> arrayAdapter;
 
@@ -65,10 +63,10 @@ public class ViewRulesFragment extends SherlockListFragment implements
 		mInflater = inflater;
 		mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.view_log, null,
 				new String[]
-				{ RulesDBAdapter.KEY_ROWID, RulesDBAdapter.KEY_IP_ADDRESS, RulesDBAdapter.KEY_PORT,
-						RulesDBAdapter.KEY_DIRECTION, RulesDBAdapter.KEY_ACTION,
-						RulesDBAdapter.KEY_INTERFACE, RulesDBAdapter.KEY_DOMAIN,
-						RulesDBAdapter.KEY_SAVED }, null, 0);
+				{ DBRules.KEY_ROWID, DBRules.KEY_IP_ADDRESS, DBRules.KEY_PORT,
+						DBRules.KEY_DIRECTION, DBRules.KEY_ACTION,
+						DBRules.KEY_INTERFACE, DBRules.KEY_DOMAIN,
+						DBRules.KEY_SAVED }, null, 0);
 
 		setListAdapter(mAdapter);
 
@@ -93,9 +91,6 @@ public class ViewRulesFragment extends SherlockListFragment implements
 	 */
 	private void display()
 	{
-		ruleAdapter = new RulesDBAdapter(getActivity());
-		ruleAdapter.open();
-
 		c = mAdapter.getCursor();
 
 		RULES = new ArrayList<String>();
@@ -106,8 +101,6 @@ public class ViewRulesFragment extends SherlockListFragment implements
 			RULES.add(c.getString(4) + " " + c.getString(3) + "bound traffic from "
 					+ c.getString(1) + " over the " + c.getString(5) + " interface.");
 		}
-
-		ruleAdapter.close();
 
 		if (RULES.isEmpty())
 		{
@@ -162,12 +155,17 @@ public class ViewRulesFragment extends SherlockListFragment implements
 
 							String netInt = tokens[7];
 
-							ruleAdapter.open();
-							ruleAdapter.deleteEntry(RulesDBAdapter.KEY_IP_ADDRESS + "= ? AND "
-									+ RulesDBAdapter.KEY_DIRECTION + "= ? AND "
-									+ RulesDBAdapter.KEY_INTERFACE + "= ?", new String[]
+							/*ruleAdapter.open();
+							ruleAdapter.deleteEntry(DBRules.KEY_IP_ADDRESS + "= ? AND "
+									+ DBRules.KEY_DIRECTION + "= ? AND "
+									+ DBRules.KEY_INTERFACE + "= ?", new String[]
 							{ tokens[4], direction, netInt });
-							ruleAdapter.close();
+							ruleAdapter.close();*/
+							
+							getActivity().getContentResolver().delete(DBContentProvider.CONTENT_URI_RULES, DBRules.KEY_IP_ADDRESS + "= ? AND "
+									+ DBRules.KEY_DIRECTION + "= ? AND "
+									+ DBRules.KEY_INTERFACE + "= ?", new String[]
+							{ tokens[4], direction, netInt });
 
 							deleteRule(tokens[4], direction, dropAllow, netInt);
 						}
@@ -242,12 +240,12 @@ public class ViewRulesFragment extends SherlockListFragment implements
 
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1)
 	{
-		return new CursorLoader(getActivity(), Uri.parse(DBContentProvider.CONTENT_URI + "/rules"),
+		return new CursorLoader(getActivity(), DBContentProvider.CONTENT_URI_RULES,
 				new String[]
-				{ RulesDBAdapter.KEY_ROWID, RulesDBAdapter.KEY_IP_ADDRESS, RulesDBAdapter.KEY_PORT,
-						RulesDBAdapter.KEY_DIRECTION, RulesDBAdapter.KEY_ACTION,
-						RulesDBAdapter.KEY_INTERFACE, RulesDBAdapter.KEY_DOMAIN,
-						RulesDBAdapter.KEY_SAVED }, null, null, null);
+				{ DBRules.KEY_ROWID, DBRules.KEY_IP_ADDRESS, DBRules.KEY_PORT,
+						DBRules.KEY_DIRECTION, DBRules.KEY_ACTION,
+						DBRules.KEY_INTERFACE, DBRules.KEY_DOMAIN,
+						DBRules.KEY_SAVED }, null, null, null);
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)

@@ -9,14 +9,16 @@ package com.honeybadger;
  */
 
 import com.honeybadger.api.SharedMethods;
-import com.honeybadger.api.databases.AppsDBAdapter;
-import com.honeybadger.api.databases.LogDBAdapter;
+import com.honeybadger.api.databases.DBApps;
+import com.honeybadger.api.databases.DBContentProvider;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import java.lang.Runnable;
 
@@ -26,8 +28,6 @@ public class SplashScreen extends Activity
 
 	SharedPreferences settings;
 	SharedPreferences.Editor editor;
-
-	private AppsDBAdapter appAdapter;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -59,15 +59,16 @@ public class SplashScreen extends Activity
 
 				SharedMethods.execScript(startScript);
 
-				if (!settings.getBoolean("4_0", false))
+				if (!settings.getBoolean("4_5", false))
 				{
 					upgrade();
+					editor.putBoolean("loaded", false);
 				}
 
 				// Load apps if not already added
 				if (!settings.getBoolean("loaded", false))
 				{
-					SharedMethods.loadApps(SplashScreen.this, settings, appAdapter);
+					SharedMethods.loadApps(SplashScreen.this, settings);
 					SharedPreferences.Editor editor = settings.edit();
 					editor.putBoolean("loaded", true);
 					editor.commit();
@@ -82,11 +83,9 @@ public class SplashScreen extends Activity
 
 	public void upgrade()
 	{
-		LogDBAdapter db = new LogDBAdapter(this);
-		db.open();
-		db.clearLog();
-		db.close();
+		getContentResolver().update(Uri.parse(DBContentProvider.CONTENT_URI_APPS+ "/delete"), null, null, null);
 
-		editor.putBoolean("4_0", true);
+		editor.putBoolean("4_5", true);
+		editor.commit();
 	}
 }
