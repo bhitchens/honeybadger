@@ -1,11 +1,12 @@
 package com.honeybadger;
 
 /*--------------------------------------------------------------------------------------------------------------------------------
- * Version: 4.5
- * Date of last modification: 11SEP13
+ * Version: 4.51
+ * Date of last modification: 29OCT14
  *
- * Edit 2.1 (19JUN12): Added method call to load apps; conformed to change from StartUp to SharedMethods
- * Edit 4.5 (11SEP13): Revamp of database interaction
+ * Edit 2.1  (19JUN12): Added method call to load apps; conformed to change from StartUp to SharedMethods
+ * Edit 4.5  (11SEP13): Revamp of database interaction
+ * Edit 4.51 (29OCT14): Prevented false busybox failure due to "not found" being in the Google.com page
  *--------------------------------------------------------------------------------------------------------------------------------
  */
 
@@ -58,7 +59,7 @@ public class HoneyBadgerFragment extends SherlockFragment
 				createDialog(0);
 				return;
 			}
-			if (check.contains("not found"))
+			if (check.contains("busybox: not found"))
 			{
 				createDialog(1);
 				return;
